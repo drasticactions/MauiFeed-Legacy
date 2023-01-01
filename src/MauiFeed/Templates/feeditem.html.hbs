@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+<head>
+    <style>
+        body {
+            font-family: "Segoe UI", Helvetica, sans-serif;
+            margin-left: auto;
+            margin-right: auto;
+            word-wrap: break-word;
+            max-width: 44em;
+        }
+
+        :root {
+            color-scheme: light dark;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .headerTable {
+            width: 100%;
+            height: 68px;
+        }
+
+        .avatar img {
+            border-radius: 4px;
+        }
+
+        .feedIcon {
+            border-radius: 4px;
+        }
+
+        .rightAlign {
+            text-align: end;
+        }
+
+        .leftAlign {
+            text-align: start;
+        }
+
+        .headerContainer a:link, .headerContainer a:visited {
+            text-decoration: none;
+            color: var(--feedlink-color);
+        }
+
+        .headerContainer a:hover {
+            text-decoration: underline;
+        }
+
+        .articleTitle a:link, .articleTitle a:visited {
+            text-decoration: none;
+            color: var(--article-title-color);
+            margin-top: 26px;
+        }
+
+        .articleTitle a:hover {
+            text-decoration: underline;
+        }
+
+        .articleDateline {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+            .articleDateline a:link, .articleDateline a:visited {
+                text-decoration: none;
+                color: var(--article-date-color);
+            }
+
+            .articleDateline a:hover {
+                text-decoration: underline;
+            }
+
+        .articleDatelineTitle {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+            .articleDatelineTitle a:link, .articleDatelineTitle a:visited {
+                text-decoration: none;
+                color: var(--article-title-color);
+            }
+
+            .articleDatelineTitle a:hover {
+                text-decoration: underline;
+            }
+
+        .articleBody {
+            margin-top: 20px;
+            line-height: 1.6em;
+        }
+    </style>
+</head>
+<body>
+    <header class="headerContainer">
+        <table cellpadding="0" cellspacing="0" border="0" class="headerTable">
+            <tr>
+                <td class="header leftAlign"><a class="feedlink" href="{{{FeedListItem.Link}}}">{{FeedListItem.Name}}</a><br /></td>
+                <td class="header rightAlign avatar"><img id="nnwImageIcon" src="data:image/png;base64,{{{Image}}}" height=48 width=48 /></td>
+            </tr>
+        </table>
+    </header>
+    <div class="articleTitle"><h1><a href="{{{FeedItem.Link}}}">{{FeedItem.Title}}</a></h1></div>
+    <div class="articleDateline "><a href="{{{FeedItem.Link}}}">{{FeedItem.PublishingDateString}}</a></div>
+    <div id="bodyContainer" class="articleBody">
+        {{{FeedItem.Html}}}
+    </div>
+</body>
