@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiFeed", "MauiFeed\MauiFe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiFeed.Tests", "MauiFeed.Tests\MauiFeed.Tests.csproj", "{586B2433-4D0E-46CE-A78B-B89A566F817E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiFeed.Apple", "MauiFeed.Apple\MauiFeed.Apple.csproj", "{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiFeed.MacCatalyst", "MauiFeed.MacCatalyst\MauiFeed.MacCatalyst.csproj", "{AEE21EFC-C974-40E2-B791-2198E73AD5C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,38 @@ Global
 		{586B2433-4D0E-46CE-A78B-B89A566F817E}.Release|x64.Build.0 = Release|Any CPU
 		{586B2433-4D0E-46CE-A78B-B89A566F817E}.Release|x86.ActiveCfg = Release|Any CPU
 		{586B2433-4D0E-46CE-A78B-B89A566F817E}.Release|x86.Build.0 = Release|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Debug|x64.Build.0 = Debug|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Debug|x86.Build.0 = Debug|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Release|ARM64.Build.0 = Release|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Release|x64.ActiveCfg = Release|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Release|x64.Build.0 = Release|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Release|x86.ActiveCfg = Release|Any CPU
+		{CEE71866-7EF9-415A-9AC2-9BFE49CA564D}.Release|x86.Build.0 = Release|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Debug|x64.Build.0 = Debug|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Debug|x86.Build.0 = Debug|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Release|ARM64.Build.0 = Release|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Release|x64.ActiveCfg = Release|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Release|x64.Build.0 = Release|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Release|x86.ActiveCfg = Release|Any CPU
+		{AEE21EFC-C974-40E2-B791-2198E73AD5C0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
