@@ -11,7 +11,7 @@ namespace MauiFeed
     {
         public PromptDialog()
         {
-            this.Title = "Add Feed";
+            this.Title = Translations.Common.AddFeedButton;
             this.PrimaryButtonText = "Ok";
             this.SecondaryButtonText = "Cancel";
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -79,6 +80,16 @@ namespace MauiFeed.Models
         /// Gets or sets the Feed Link.
         /// </summary>
         public string? Link { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of FeedListItem this is.
+        /// This helps organize where in the list it goes.
+        /// </summary>
+        public FeedListItemType Type { get; set; }
+
+        [NotMapped]
+
+        public virtual IEnumerable<FeedItem>? Items { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the feed is favorited.

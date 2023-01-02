@@ -6,11 +6,31 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:MauiFeed.WinUI"
+    xmlns:common="using:MauiFeed.Translations"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
-    </StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="34"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" x:Name="AppTitleBar" Grid.Row="0" Height="34">
+            <Image  Margin="8,0,0,0" Width="16" Height="16" Source="Assets/SmallTile.scale-125.png" x:Name="AppIcon" />
+            <TextBlock x:Name="AppTitleTextBlock" Text="{x:Bind common:Common.AppTitle}"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Margin="12,0,0,0" VerticalAlignment="Center" />
+        </StackPanel>
+        <NavigationView 
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="False"
+            MenuItemsSource="{x:Bind Items, Mode=OneWay}" 
+            Grid.Row="1"
+            IsTitleBarAutoPaddingEnabled="True"
+            x:Name="NavView">
+            <NavigationView.AutoSuggestBox>
+                <AutoSuggestBox HorizontalAlignment="Stretch" QueryIcon="Find"/>
+            </NavigationView.AutoSuggestBox>
+        </NavigationView>
+    </Grid>
 </Window>

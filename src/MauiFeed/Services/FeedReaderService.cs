@@ -26,13 +26,14 @@ namespace MauiFeed.Services
         }
 
         /// <inheritdoc/>
-        public async Task<(FeedListItem? FeedList, IList<Models.FeedItem>? FeedItemList)> ReadFeedAsync(string feedUri, CancellationToken? token = default)
+        public async Task<(FeedListItem? FeedList, IList<Models.FeedItem>? FeedItemList)> ReadFeedAsync(string feedUri, FeedListItemType type = FeedListItemType.Local, CancellationToken? token = default)
         {
             var cancelationToken = token ?? CancellationToken.None;
             var feed = await FeedReader.ReadAsync(feedUri, cancelationToken);
             if (feed is not null)
             {
                 var item = feed.ToFeedListItem(feedUri);
+                item.Type = type;
 
                 if (item.ImageCache is null && item.ImageUri is not null)
                 {

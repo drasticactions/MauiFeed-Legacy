@@ -40,6 +40,8 @@ namespace MauiFeed.Models
         /// </summary>
         public int FeedListItemId { get; set; }
 
+        public virtual FeedListItem? Feed { get; set; }
+
         /// <summary>
         /// Gets or sets the title of the feed item.
         /// </summary>
