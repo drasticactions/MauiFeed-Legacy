@@ -6,6 +6,7 @@ using MauiFeed.Events;
 using MauiFeed.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using System.Collections;
 using System.Linq.Expressions;
 
 namespace MauiFeed.Services
@@ -166,7 +167,7 @@ namespace MauiFeed.Services
             var parameter = Expression.Parameter(typeof(TData));
             var expressionParameter = Expression.Property(parameter, GetParameterName(selector));
 
-            BinaryExpression? body = null;
+            Expression? body = null;
 
             switch (type)
             {
@@ -193,6 +194,13 @@ namespace MauiFeed.Services
 
         private string GetParameterName<TData, TKey>(Expression<Func<TData, TKey>> expression)
         {
+
+            if (expression.Body is UnaryExpression x)
+            {
+                var type = x.Operand.GetType();
+                var mem = x.Operand;
+            }
+
             if (!(expression.Body is MemberExpression memberExpression))
             {
                 memberExpression = (MemberExpression)((UnaryExpression)expression.Body).Operand;

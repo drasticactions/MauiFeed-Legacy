@@ -258,12 +258,37 @@ namespace MauiFeed.WinUI
 
             this.databaseContext.UpdateFeedItems(items).FireAndForgetSafeAsync();
         }
+
+        private void FeedSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            this.SelectedNavigationViewItem = new SearchFeedNavigationViewItem(args.QueryText, this.databaseContext) { Content = args.QueryText };
+            var test = this.SelectedNavigationViewItem.Items;
+        }
+    }
+}
+
+public class SearchFeedNavigationViewItem : FeedNavigationViewItem
+{
+    private string searchTerm;
+
+    public SearchFeedNavigationViewItem(string searchTerm, EFCoreDatabaseContext context, Expression<Func<FeedItem, bool>>? filter = null)
+        : base(context, filter)
+    {
+        this.searchTerm = searchTerm;
+    }
+
+    public override IList<FeedItem> Items
+    {
+        get
+        {
+            return this.context.FeedItems!.Where(n => (n.Content ?? string.Empty).Contains(this.searchTerm)).OrderByDescending(n => n.PublishingDate).ToList();
+        }
     }
 }
 
 public class FeedNavigationViewItem : NavigationViewItem, INotifyPropertyChanged
 {
-    private EFCoreDatabaseContext context;
+    internal EFCoreDatabaseContext context;
 
     public FeedNavigationViewItem(EFCoreDatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default)
     {
@@ -281,7 +306,7 @@ public class FeedNavigationViewItem : NavigationViewItem, INotifyPropertyChanged
 
     public int UnreadCount => this.Items.Where(n => !n.IsRead).Count();
 
-    public IList<FeedItem> Items
+    public virtual IList<FeedItem> Items
     {
         get
         {

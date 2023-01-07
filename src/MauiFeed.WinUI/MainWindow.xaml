@@ -30,7 +30,7 @@
             IsTitleBarAutoPaddingEnabled="True"
             x:Name="NavView">
             <NavigationView.AutoSuggestBox>
-                <AutoSuggestBox HorizontalAlignment="Stretch" QueryIcon="Find"/>
+                <AutoSuggestBox x:Name="FeedSuggestBox" QuerySubmitted="FeedSuggestBox_QuerySubmitted" HorizontalAlignment="Stretch" QueryIcon="Find"/>
             </NavigationView.AutoSuggestBox>
 
             <NavigationView.Content>
