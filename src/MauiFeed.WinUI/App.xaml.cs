@@ -1,6 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using CommunityToolkit.Mvvm.DependencyInjection;
+using DotnetRss.Win;
+using Drastic.Services;
+using MauiFeed.Services;
+using MauiFeed.WinUI.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -36,6 +42,16 @@ namespace MauiFeed.WinUI
         public App()
         {
             this.InitializeComponent();
+            this.SetupDebugDatabase();
+            var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+            Ioc.Default.ConfigureServices(
+                new ServiceCollection()
+                .AddSingleton<IAppDispatcher>(new AppDispatcher(dispatcherQueue))
+                .AddSingleton<IDatabaseService>(new EFCoreDatabaseContext(System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db")))
+                .AddSingleton<IErrorHandlerService, ErrorHandlerService>()
+                .AddSingleton<ITemplateService, HandlebarsTemplateService>()
+                .AddSingleton<IRssService, FeedReaderService>()
+                .BuildServiceProvider());
         }
 
         /// <summary>
@@ -49,5 +65,18 @@ namespace MauiFeed.WinUI
         }
 
         private Window? m_window;
+
+        private void SetupDebugDatabase()
+        {
+            var realPath = System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db");
+            if (File.Exists(realPath))
+            {
+                File.Delete(realPath);
+            }
+
+            var db = MauiFeed.Utilities.GetResourceFileContent("DebugFiles.database_test.db")!;
+            using var feed = File.OpenWrite(realPath);
+            db.CopyTo(feed);
+        }
     }
 }

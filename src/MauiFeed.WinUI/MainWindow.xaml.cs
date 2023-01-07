@@ -1,7 +1,10 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Drastic.Tools;
 using MauiFeed.Models;
+using MauiFeed.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -30,8 +33,11 @@ namespace MauiFeed.WinUI
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        private EFCoreDatabaseContext databaseContext;
+
         public MainWindow()
         {
+            this.databaseContext = Ioc.Default.ResolveWith<EFCoreDatabaseContext>();
             this.InitializeComponent();
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(this.AppTitleBar);
@@ -46,6 +52,12 @@ namespace MauiFeed.WinUI
             var smartFilters = new NavigationViewItem();
             smartFilters.Content = Translations.Common.SmartFeedsLabel;
             smartFilters.Icon = new SymbolIcon(Symbol.Filter);
+
+            var all = new NavigationViewItem();
+            all.Content = Translations.Common.AllLabel;
+            all.Icon = new SymbolIcon(Symbol.Bookmarks);
+
+            this.Items.Add(all);
 
             var today = new NavigationViewItem();
             today.Content = Translations.Common.TodayLabel;

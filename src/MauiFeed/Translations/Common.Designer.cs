@@ -70,6 +70,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   All に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AllLabel {
+            get {
+                return ResourceManager.GetString("AllLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   All Unread に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string AllUnreadLabel {

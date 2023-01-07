@@ -6,6 +6,7 @@ using MauiFeed.Events;
 using MauiFeed.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using System.Linq.Expressions;
 
 namespace MauiFeed.Services
 {
@@ -128,6 +129,30 @@ namespace MauiFeed.Services
             modelBuilder.Entity<FeedListItem>().HasIndex(n => n.Uri).IsUnique();
             modelBuilder.Entity<FeedItem>().HasKey(n => n.Id);
             modelBuilder.Entity<FeedItem>().HasIndex(n => n.RssId).IsUnique();
+        }
+
+        public Task<List<FeedListItem>> GetAllFeedListAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Expression<Func<TData, bool>> CreateFilter<TData, TKey>(Expression<Func<TData, TKey>> selector, TKey valueToCompare)
+        {
+            var parameter = Expression.Parameter(typeof(TData));
+            var expressionParameter = Expression.Property(parameter, GetParameterName(selector));
+
+            var body = Expression.GreaterThan(expressionParameter, Expression.Constant(valueToCompare, typeof(TKey)));
+            return Expression.Lambda<Func<TData, bool>>(body, parameter);
+        }
+
+        private string GetParameterName<TData, TKey>(Expression<Func<TData, TKey>> expression)
+        {
+            if (!(expression.Body is MemberExpression memberExpression))
+            {
+                memberExpression = (MemberExpression)((UnaryExpression)expression.Body).Operand;
+            }
+
+            return memberExpression.ToString().Substring(2);
         }
     }
 }

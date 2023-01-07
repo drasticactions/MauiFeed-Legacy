@@ -17,5 +17,7 @@ namespace MauiFeed.Services
         public Task<FeedListItem> UpdateFeedListItem(FeedListItem feedListItem);
 
         public Task<FeedItem> UpdateFeedItem(FeedItem item);
+
+        public Task<List<FeedListItem>> GetAllFeedListAsync();
     }
 }

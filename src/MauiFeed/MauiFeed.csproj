@@ -7,12 +7,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="DebugFiles\database_test.db" />
 	  <None Remove="Icon\dotnet_bot.png" />
 	  <None Remove="Icon\favicon.ico" />
 	  <None Remove="Templates\feeditem.html.hbs" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="DebugFiles\database_test.db" />
 	  <EmbeddedResource Include="Icon\dotnet_bot.png" />
 	  <EmbeddedResource Include="Icon\favicon.ico" />
 	  <EmbeddedResource Include="Templates\feeditem.html.hbs" />
