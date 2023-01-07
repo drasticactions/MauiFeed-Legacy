@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+﻿<!-- Copyright (c) Microsoft Corporation and Contributors. -->
 <!-- Licensed under the MIT License. -->
 
 <Window
@@ -8,7 +8,7 @@
     xmlns:local="using:MauiFeed.WinUI"
     xmlns:common="using:MauiFeed.Translations"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:models="using:MauiFeed.Models"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
@@ -25,12 +25,56 @@
             IsBackButtonVisible="Collapsed"
             IsSettingsVisible="False"
             MenuItemsSource="{x:Bind Items, Mode=OneWay}" 
+            SelectionChanged="NavView_SelectionChanged"
             Grid.Row="1"
             IsTitleBarAutoPaddingEnabled="True"
             x:Name="NavView">
             <NavigationView.AutoSuggestBox>
                 <AutoSuggestBox HorizontalAlignment="Stretch" QueryIcon="Find"/>
             </NavigationView.AutoSuggestBox>
+
+            <NavigationView.Content>
+                <SplitView DisplayMode="Inline" IsPaneOpen="True">
+                    <SplitView.Pane>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Margin="20,15,0,20" Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Grid.Column="1" FontWeight="Bold" MaxLines="1" TextTrimming="WordEllipsis" Text="MauiFeed"/>
+                                </StackPanel>
+                            </Grid>
+                            <ListView x:Name="ArticleList" Grid.Row="1" ItemsSource="{x:Bind FeedItems, Mode=OneWay}" SelectionMode="Single" SelectionChanged="ArticleList_SelectionChanged" Grid.Column="0">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:FeedItem">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="20"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid Grid.Column="0">
+                                                <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Visibility="{Binding IsRead, Converter={StaticResource BooleanToVisibilityInverter}}" Foreground="{ThemeResource SystemAccentColor}" Glyph="" />
+                                                <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
+                                            </Grid>
+                                            <StackPanel Grid.Column="1" Margin="5" Orientation="Vertical">
+                                                <TextBlock TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis" FontWeight="Bold" Text="{Binding Title}"></TextBlock>
+                                                <TextBlock TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis" Text="{Binding Content}"></TextBlock>
+                                                <TextBlock MaxLines="1" FontWeight="Bold" FontSize="12" TextAlignment="End" Text="{Binding PublishingDate}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
+                    </SplitView.Pane>
+                </SplitView>
+            </NavigationView.Content>
         </NavigationView>
     </Grid>
 </Window>

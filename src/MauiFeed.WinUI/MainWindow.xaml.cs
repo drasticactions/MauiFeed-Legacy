@@ -16,9 +16,11 @@ using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -40,6 +42,8 @@ namespace MauiFeed.WinUI
         public MainWindow()
         {
             this.databaseContext = Ioc.Default.ResolveWith<EFCoreDatabaseContext>();
+            this.databaseContext.OnFeedItemUpdated += this.DatabaseContext_OnFeedItemUpdated;
+            this.databaseContext.OnFeedListItemUpdated += this.DatabaseContext_OnFeedListItemUpdated;
             this.InitializeComponent();
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(this.AppTitleBar);
@@ -50,38 +54,59 @@ namespace MauiFeed.WinUI
             this.GenerateNavItems().FireAndForgetSafeAsync();
         }
 
+        private void DatabaseContext_OnFeedListItemUpdated(object? sender, Events.FeedListItemUpdatedEventArgs e)
+        {
+            foreach (var item in this.Items)
+            {
+                item.Update();
+                foreach (var childItem in item.MenuItems)
+                {
+
+                    ((FeedNavigationViewItem)childItem).Update();
+                }
+            }
+        }
+
+        private void DatabaseContext_OnFeedItemUpdated(object? sender, Events.FeedItemUpdatedEventArgs e)
+        {
+            foreach (var item in this.Items)
+            {
+                item.Update();
+                foreach (var childItem in item.MenuItems)
+                {
+
+                    ((FeedNavigationViewItem)childItem).Update();
+                }
+            }
+        }
+
         public void GenerateSmartFeeds()
         {
             var smartFilters = new FeedNavigationViewItem(this.databaseContext);
             smartFilters.Content = Translations.Common.SmartFeedsLabel;
             smartFilters.Icon = new SymbolIcon(Symbol.Filter);
 
-            var all = new FeedNavigationViewItem(this.databaseContext);
+            var all = new FeedNavigationViewItem(this.databaseContext, this.databaseContext.CreateFilter<FeedItem, int>(o => o.Id, 0, EFCoreDatabaseContext.FilterType.GreaterThan));
             all.Content = Translations.Common.AllLabel;
             all.Icon = new SymbolIcon(Symbol.Bookmarks);
 
             smartFilters.MenuItems.Add(all);
 
-            var today = new FeedNavigationViewItem(this.databaseContext);
+            var today = new FeedNavigationViewItem(this.databaseContext, this.databaseContext.CreateFilter<FeedItem, DateTime?>(o => o.PublishingDate, DateTime.UtcNow.Date, EFCoreDatabaseContext.FilterType.GreaterThanOrEqual));
             today.Content = Translations.Common.TodayLabel;
             today.Icon = new SymbolIcon(Symbol.GoToToday);
-            today.Filter = this.databaseContext.CreateFilter<FeedItem, DateTime>(o => o.PublishingDate!.Value, DateTime.UtcNow);
 
             smartFilters.MenuItems.Add(today);
 
-            today.InfoBadge = new InfoBadge() { Value = 25 };
-
-            var unread = new FeedNavigationViewItem(this.databaseContext);
+            var unread = new FeedNavigationViewItem(this.databaseContext, this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsRead, false, EFCoreDatabaseContext.FilterType.Equals));
             unread.Content = Translations.Common.AllUnreadLabel;
             unread.Icon = new SymbolIcon(Symbol.Filter);
-            unread.Filter = this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsRead, false);
 
             smartFilters.MenuItems.Add(unread);
 
-            var star = new FeedNavigationViewItem(this.databaseContext);
+            var star = new FeedNavigationViewItem(this.databaseContext, this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsFavorite, true, EFCoreDatabaseContext.FilterType.Equals));
             star.Content = Translations.Common.StarredLabel;
             star.Icon = new SymbolIcon(Symbol.Favorite);
-            star.Filter = this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsFavorite, true);
 
             smartFilters.MenuItems.Add(star);
 
@@ -112,38 +137,68 @@ namespace MauiFeed.WinUI
             var icon = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();
             icon.SetSource(cache.ToRandomAccessStream());
 
-            var test = this.databaseContext.CreateFilter<FeedItem, int>(o => o.FeedListItemId, item.Id);
+            var test = this.databaseContext.CreateFilter<FeedItem, int>(o => o.FeedListItemId, item.Id, EFCoreDatabaseContext.FilterType.Equals);
 
-            return new FeedNavigationViewItem(this.databaseContext)
+            return new FeedNavigationViewItem(this.databaseContext, test)
             {
                 Tag = item.Id,
                 Content = item.Name,
                 Icon = new ImageIcon() { Source = icon, Width = 30, Height = 30 },
-                Filter = test,
             };
         }
 
-        private FeedNavigationViewItem GenerateFeedNavigationViewItem()
-        {
-            var icon = new FeedNavigationViewItem(this.databaseContext);
+        public ObservableCollection<FeedNavigationViewItem> Items { get; set; } = new ObservableCollection<FeedNavigationViewItem>();
 
-            return icon;
+        public ObservableCollection<FeedItem> FeedItems { get; set; } = new ObservableCollection<FeedItem>();
+
+        private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            if (args.SelectedItem is not FeedNavigationViewItem item)
+            {
+                return;
+            }
+
+            this.FeedItems.Clear();
+
+            foreach (var feedItem in item.Items)
+            {
+                this.FeedItems.Add(feedItem);
+            }
         }
 
-        public ObservableCollection<FeedNavigationViewItem> Items { get; set; } = new ObservableCollection<FeedNavigationViewItem>();
+        private void ArticleList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selected = e.AddedItems.FirstOrDefault() as FeedItem;
+            if (selected is null)
+            {
+                return;
+            }
+
+            selected.IsRead = true;
+            this.databaseContext.UpdateFeedItem(selected).FireAndForgetSafeAsync();
+        }
     }
 }
 
-public class FeedNavigationViewItem : NavigationViewItem
+public class FeedNavigationViewItem : NavigationViewItem, INotifyPropertyChanged
 {
     private EFCoreDatabaseContext context;
 
-    public FeedNavigationViewItem(EFCoreDatabaseContext context)
+    public FeedNavigationViewItem(EFCoreDatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default)
     {
         this.context = context;
+        this.Filter = filter;
+        this.Update();
     }
 
+    /// <inheritdoc/>
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public Expression<Func<FeedItem, bool>>? Filter { get; set; }
+
+    public int ItemsCount => this.Items.Count;
+
+    public int UnreadCount => this.Items.Where(n => !n.IsRead).Count();
 
     public IList<FeedItem> Items
     {
@@ -156,6 +211,34 @@ public class FeedNavigationViewItem : NavigationViewItem
 
             return new List<FeedItem>();
         }
+    }
+
+    public void Update()
+    {
+        var count = this.UnreadCount;
+        if (count > 0)
+        {
+            this.InfoBadge = new InfoBadge() { Value = count };
+        }
+        else
+        {
+            this.InfoBadge = null;
+        }
+    }
+
+    /// <summary>
+    /// On Property Changed.
+    /// </summary>
+    /// <param name="propertyName">Name of the property.</param>
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+    {
+        var changed = this.PropertyChanged;
+        if (changed == null)
+        {
+            return;
+        }
+
+        changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
 

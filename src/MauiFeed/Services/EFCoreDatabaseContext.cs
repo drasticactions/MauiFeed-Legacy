@@ -136,12 +136,33 @@ namespace MauiFeed.Services
             throw new NotImplementedException();
         }
 
-        public Expression<Func<TData, bool>> CreateFilter<TData, TKey>(Expression<Func<TData, TKey>> selector, TKey valueToCompare)
+        public Expression<Func<TData, bool>> CreateFilter<TData, TKey>(Expression<Func<TData, TKey>> selector, TKey valueToCompare, FilterType type)
         {
             var parameter = Expression.Parameter(typeof(TData));
             var expressionParameter = Expression.Property(parameter, GetParameterName(selector));
 
-            var body = Expression.GreaterThan(expressionParameter, Expression.Constant(valueToCompare, typeof(TKey)));
+            BinaryExpression? body = null;
+
+            switch (type)
+            {
+                case FilterType.Equals:
+                    body = Expression.Equal(expressionParameter, Expression.Constant(valueToCompare, typeof(TKey)));
+                    break;
+                case FilterType.GreaterThan:
+                    body = Expression.GreaterThan(expressionParameter, Expression.Constant(valueToCompare, typeof(TKey)));
+                    break;
+                case FilterType.GreaterThanOrEqual:
+                    body = Expression.GreaterThanOrEqual(expressionParameter, Expression.Constant(valueToCompare, typeof(TKey)));
+                    break;
+                case FilterType.LessThan:
+                    body = Expression.LessThan(expressionParameter, Expression.Constant(valueToCompare, typeof(TKey)));
+                    break;
+                case FilterType.LessThanOrEqual:
+                    body = Expression.LessThanOrEqual(expressionParameter, Expression.Constant(valueToCompare, typeof(TKey)));
+                    break;
+                default:
+                    throw new ArgumentNullException(nameof(type));
+            }
             return Expression.Lambda<Func<TData, bool>>(body, parameter);
         }
 
@@ -153,6 +174,15 @@ namespace MauiFeed.Services
             }
 
             return memberExpression.ToString().Substring(2);
+        }
+
+        public enum FilterType
+        {
+            Equals,
+            GreaterThan,
+            LessThan,
+            GreaterThanOrEqual,
+            LessThanOrEqual,
         }
     }
 }
