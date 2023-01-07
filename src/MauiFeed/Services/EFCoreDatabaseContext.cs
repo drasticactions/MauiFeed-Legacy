@@ -34,12 +34,33 @@ namespace MauiFeed.Services
         /// </summary>
         public event EventHandler<FeedListItemUpdatedEventArgs>? OnFeedListItemUpdated;
 
+        /// <summary>
+        /// Fired when a feed item updates.
+        /// </summary>
+        public event EventHandler<EventArgs>? OnDatabaseUpdated;
+
         public DbSet<FeedListItem>? FeedListItems { get; set; }
 
         public DbSet<FeedItem>? FeedItems { get; set; }
 
         public int GetUnreadCountForFeedListItem(FeedListItem item)
             => this.FeedItems!.Count(n => n.FeedListItemId == item.Id && !n.IsRead);
+
+        public async Task<int> UpdateFeedListItems(IList<FeedListItem> feedListItems)
+        {
+            this.FeedListItems!.UpdateRange(feedListItems);
+            var result = await this.SaveChangesAsync();
+            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            return result;
+        }
+
+        public async Task<int> UpdateFeedItems(IList<FeedItem> feedItems)
+        {
+            this.FeedItems!.UpdateRange(feedItems);
+            var result = await this.SaveChangesAsync();
+            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            return result;
+        }
 
         public async Task<FeedListItem> AddOrUpdateFeedListItem(FeedListItem feedListItem)
         {
@@ -56,6 +77,7 @@ namespace MauiFeed.Services
 
             await this.SaveChangesAsync();
             this.OnFeedListItemUpdated?.Invoke(this, new FeedListItemUpdatedEventArgs(feedListItem));
+            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
             return feedListItem;
         }
 
@@ -74,6 +96,7 @@ namespace MauiFeed.Services
 
             await this.SaveChangesAsync();
             this.OnFeedItemUpdated?.Invoke(this, new FeedItemUpdatedEventArgs(item));
+            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
             return item;
         }
 
@@ -82,6 +105,7 @@ namespace MauiFeed.Services
             await this.FeedListItems!.Upsert(feedListItem).On(n => new { n.Uri }).RunAsync();
             await this.SaveChangesAsync();
             this.OnFeedListItemUpdated?.Invoke(this, new FeedListItemUpdatedEventArgs(feedListItem));
+            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
             return feedListItem;
         }
 
@@ -90,6 +114,7 @@ namespace MauiFeed.Services
             await this.FeedItems!.Upsert(item).On(n => new { n.RssId }).RunAsync();
             await this.SaveChangesAsync();
             this.OnFeedItemUpdated?.Invoke(this, new FeedItemUpdatedEventArgs(item));
+            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
             return item;
         }
 

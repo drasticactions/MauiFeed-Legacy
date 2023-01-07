@@ -42,8 +42,7 @@ namespace MauiFeed.WinUI
         public MainWindow()
         {
             this.databaseContext = Ioc.Default.ResolveWith<EFCoreDatabaseContext>();
-            this.databaseContext.OnFeedItemUpdated += this.DatabaseContext_OnFeedItemUpdated;
-            this.databaseContext.OnFeedListItemUpdated += this.DatabaseContext_OnFeedListItemUpdated;
+            this.databaseContext.OnDatabaseUpdated += DatabaseContext_OnDatabaseUpdated;
             this.InitializeComponent();
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(this.AppTitleBar);
@@ -54,20 +53,7 @@ namespace MauiFeed.WinUI
             this.GenerateNavItems().FireAndForgetSafeAsync();
         }
 
-        private void DatabaseContext_OnFeedListItemUpdated(object? sender, Events.FeedListItemUpdatedEventArgs e)
-        {
-            foreach (var item in this.Items)
-            {
-                item.Update();
-                foreach (var childItem in item.MenuItems)
-                {
-
-                    ((FeedNavigationViewItem)childItem).Update();
-                }
-            }
-        }
-
-        private void DatabaseContext_OnFeedItemUpdated(object? sender, Events.FeedItemUpdatedEventArgs e)
+        private void DatabaseContext_OnDatabaseUpdated(object? sender, EventArgs e)
         {
             foreach (var item in this.Items)
             {
@@ -176,6 +162,16 @@ namespace MauiFeed.WinUI
 
             selected.IsRead = true;
             this.databaseContext.UpdateFeedItem(selected).FireAndForgetSafeAsync();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var feedItem in this.FeedItems)
+            {
+                feedItem.IsRead = true;
+            }
+
+            this.databaseContext.UpdateFeedItems(this.FeedItems.ToList()).FireAndForgetSafeAsync();
         }
     }
 }

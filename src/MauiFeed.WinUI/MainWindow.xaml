@@ -46,8 +46,13 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <StackPanel>
-                                    <TextBlock Grid.Column="1" FontWeight="Bold" MaxLines="1" TextTrimming="WordEllipsis" Text="MauiFeed"/>
+                                <TextBlock Grid.Column="0" FontWeight="Bold" MaxLines="1" TextTrimming="WordEllipsis" Text="MauiFeed"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <Button Click="Button_Click" Margin="0,0,20,0">
+                                        <Grid>
+                                            <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
+                                        </Grid>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                             <ListView x:Name="ArticleList" Grid.Row="1" ItemsSource="{x:Bind FeedItems, Mode=OneWay}" SelectionMode="Single" SelectionChanged="ArticleList_SelectionChanged" Grid.Column="0">
@@ -67,6 +72,11 @@
                                                 <TextBlock TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis" Text="{Binding Content}"></TextBlock>
                                                 <TextBlock MaxLines="1" FontWeight="Bold" FontSize="12" TextAlignment="End" Text="{Binding PublishingDate}"/>
                                             </StackPanel>
+                                            <Grid.ContextFlyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem Text="Mark as Unread" />
+                                                </MenuFlyout>
+                                            </Grid.ContextFlyout>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
