@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using AngleSharp.Dom;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Drastic.Services;
 using Drastic.Tools;
 using MauiFeed.Models;
 using MauiFeed.Services;
@@ -35,13 +37,21 @@ namespace MauiFeed.WinUI
     /// <summary>
     /// An empty window that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainWindow : Window
+    public sealed partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private FeedNavigationViewItem? selectedNavItem;
         private EFCoreDatabaseContext databaseContext;
+        private IErrorHandlerService errorHandler;
+        private IAppDispatcher dispatcher;
+        private ITemplateService templateService;
 
         public MainWindow()
         {
             this.databaseContext = Ioc.Default.ResolveWith<EFCoreDatabaseContext>();
+            this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
+            this.dispatcher = Ioc.Default.GetService<IAppDispatcher>()!;
+            this.templateService = Ioc.Default.GetService<ITemplateService>()!;
+
             this.databaseContext.OnDatabaseUpdated += DatabaseContext_OnDatabaseUpdated;
             this.InitializeComponent();
             this.ExtendsContentIntoTitleBar = true;
@@ -51,7 +61,45 @@ namespace MauiFeed.WinUI
 
             this.GenerateSmartFeeds();
             this.GenerateNavItems().FireAndForgetSafeAsync();
+
+            this.MarkAsReadCommand = new AsyncCommand<FeedItem>(MarkAsRead, (x) => true, this.errorHandler);
+            this.MarkAsFavoriteCommand = new AsyncCommand<FeedItem>(MarkAsFavorite, (x) => true, this.errorHandler);
+            this.OpenInBrowserCommand = new AsyncCommand<FeedItem>(OpenInBrowser, (x) => true, this.errorHandler);
+            this.ArticleList.DataContext = this;
         }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public FeedNavigationViewItem? SelectedNavigationViewItem
+        {
+            get { return this.selectedNavItem; }
+            set { this.SetProperty(ref this.selectedNavItem, value); }
+        }
+
+        public async Task MarkAsRead(FeedItem item)
+        {
+            item.IsRead = !item.IsRead;
+            this.databaseContext.UpdateFeedItem(item).FireAndForgetSafeAsync();
+
+        }
+
+        public async Task OpenInBrowser(FeedItem item)
+        {
+            await Windows.System.Launcher.LaunchUriAsync(new Uri(item.Link!));
+        }
+
+        public async Task MarkAsFavorite(FeedItem item)
+        {
+            item.IsFavorite = !item.IsFavorite;
+            this.databaseContext.UpdateFeedItem(item).FireAndForgetSafeAsync();
+        }
+
+        public AsyncCommand<FeedItem> MarkAsReadCommand { get; private set; }
+
+        public AsyncCommand<FeedItem> MarkAsFavoriteCommand { get; private set; }
+
+        public AsyncCommand<FeedItem> OpenInBrowserCommand { get; private set; }
 
         private void DatabaseContext_OnDatabaseUpdated(object? sender, EventArgs e)
         {
@@ -99,6 +147,39 @@ namespace MauiFeed.WinUI
             this.Items.Add(smartFilters);
         }
 
+        /// <summary>
+        /// On Property Changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            this.dispatcher.Dispatch(() =>
+            {
+                var changed = this.PropertyChanged;
+                if (changed == null)
+                {
+                    return;
+                }
+
+                changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            });
+        }
+
+#pragma warning disable SA1600 // Elements should be documented
+        protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "", Action? onChanged = null)
+#pragma warning restore SA1600 // Elements should be documented
+        {
+            if (EqualityComparer<T>.Default.Equals(backingStore, value))
+            {
+                return false;
+            }
+
+            backingStore = value;
+            onChanged?.Invoke();
+            this.OnPropertyChanged(propertyName);
+            return true;
+        }
+
         private async Task GenerateNavItems()
         {
             var feedItems = await this.databaseContext.FeedListItems!.ToListAsync();
@@ -135,8 +216,6 @@ namespace MauiFeed.WinUI
 
         public ObservableCollection<FeedNavigationViewItem> Items { get; set; } = new ObservableCollection<FeedNavigationViewItem>();
 
-        public ObservableCollection<FeedItem> FeedItems { get; set; } = new ObservableCollection<FeedItem>();
-
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItem is not FeedNavigationViewItem item)
@@ -144,12 +223,7 @@ namespace MauiFeed.WinUI
                 return;
             }
 
-            this.FeedItems.Clear();
-
-            foreach (var feedItem in item.Items)
-            {
-                this.FeedItems.Add(feedItem);
-            }
+            this.SelectedNavigationViewItem = item;
         }
 
         private void ArticleList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -162,16 +236,27 @@ namespace MauiFeed.WinUI
 
             selected.IsRead = true;
             this.databaseContext.UpdateFeedItem(selected).FireAndForgetSafeAsync();
+
+            Task.Run(async () => {
+                var result = await this.templateService.RenderFeedItemAsync(selected.Feed!, selected);
+                this.LocalRssWebview.SetSource(result);
+            }).FireAndForgetSafeAsync();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var feedItem in this.FeedItems)
+            if (this.SelectedNavigationViewItem is null)
+            {
+                return;
+            }
+
+            var items = this.SelectedNavigationViewItem.Items;
+            foreach (var feedItem in items)
             {
                 feedItem.IsRead = true;
             }
 
-            this.databaseContext.UpdateFeedItems(this.FeedItems.ToList()).FireAndForgetSafeAsync();
+            this.databaseContext.UpdateFeedItems(items).FireAndForgetSafeAsync();
         }
     }
 }
@@ -202,7 +287,7 @@ public class FeedNavigationViewItem : NavigationViewItem, INotifyPropertyChanged
         {
             if (this.Filter is not null)
             {
-                return this.context.FeedItems!.Where(this.Filter).ToList();
+                return this.context.FeedItems!.Where(this.Filter).OrderByDescending(n => n.PublishingDate).ToList();
             }
 
             return new List<FeedItem>();

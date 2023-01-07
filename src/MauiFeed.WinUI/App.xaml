@@ -16,6 +16,9 @@
             <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <local:BooleanToVisibilityInverter x:Key="BooleanToVisibilityInverter"/>
             <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <local:FavoriteLabelConverter x:Key="FavoriteLabelConverter"/>
+            <local:UnreadReadLabelConverter x:Key="UnreadReadLabelConverter"/>
+            <local:HtmlToTextConverter x:Key="HtmlToTextConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

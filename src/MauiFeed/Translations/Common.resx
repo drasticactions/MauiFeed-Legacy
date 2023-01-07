@@ -153,14 +153,32 @@
   <data name="LocalLabel" xml:space="preserve">
     <value>Local</value>
   </data>
+  <data name="MarkAllAsUnrealLabel" xml:space="preserve">
+    <value>Mark All As Unread</value>
+  </data>
+  <data name="MarkAsReadLabel" xml:space="preserve">
+    <value>Mark As Read</value>
+  </data>
+  <data name="MarkAsStarLabel" xml:space="preserve">
+    <value>Add As Favorite</value>
+  </data>
+  <data name="MarkAsUnreadLabel" xml:space="preserve">
+    <value>Mark As Unread</value>
+  </data>
+  <data name="OpenInBrowserLabel" xml:space="preserve">
+    <value>Open In Browser</value>
+  </data>
   <data name="RefreshButton" xml:space="preserve">
     <value>Refresh</value>
+  </data>
+  <data name="RemoveStarLabel" xml:space="preserve">
+    <value>Remove From Favorites</value>
   </data>
   <data name="SmartFeedsLabel" xml:space="preserve">
     <value>Smart Feeds</value>
   </data>
   <data name="StarredLabel" xml:space="preserve">
-    <value>Starred</value>
+    <value>Favorites</value>
   </data>
   <data name="TodayLabel" xml:space="preserve">
     <value>Today</value>

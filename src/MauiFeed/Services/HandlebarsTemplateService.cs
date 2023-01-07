@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HandlebarsDotNet;
 using MauiFeed.Models;
 
@@ -31,8 +32,20 @@ namespace MauiFeed.Services
                 throw new ArgumentNullException(nameof(item.Link));
             }
 
-            SmartReader.Article article = await SmartReader.Reader.ParseArticleAsync(item.Link);
-            item.Html = article.Content;
+            var isHtml = Regex.IsMatch(item.Content ?? string.Empty, "<.*?>");
+
+            if (!isHtml)
+            {
+                SmartReader.Article article = await SmartReader.Reader.ParseArticleAsync(item.Link);
+                item.Html = article.Content;
+            }
+            else
+            {
+                item.Html = item.Content;
+            }
+
+            item.Html = Regex.Replace(item.Html ?? string.Empty, "<(a)([^>]+)>", @"<$1 target=""_blank""$2>");
+
             return this.feedItemTemplate.Invoke(new { FeedListItem = feedListItem, FeedItem = item, Image = Convert.ToBase64String(feedListItem.ImageCache ?? new byte[0]) });
         }
 

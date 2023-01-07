@@ -169,11 +169,65 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Mark All As Unread に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MarkAllAsUnrealLabel {
+            get {
+                return ResourceManager.GetString("MarkAllAsUnrealLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Mark As Read に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MarkAsReadLabel {
+            get {
+                return ResourceManager.GetString("MarkAsReadLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Add As Favorite に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MarkAsStarLabel {
+            get {
+                return ResourceManager.GetString("MarkAsStarLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Mark As Unread に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MarkAsUnreadLabel {
+            get {
+                return ResourceManager.GetString("MarkAsUnreadLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Open In Browser に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OpenInBrowserLabel {
+            get {
+                return ResourceManager.GetString("OpenInBrowserLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Refresh に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RefreshButton {
             get {
                 return ResourceManager.GetString("RefreshButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Remove From Favorites に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RemoveStarLabel {
+            get {
+                return ResourceManager.GetString("RemoveStarLabel", resourceCulture);
             }
         }
         
@@ -187,7 +241,7 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
-        ///   Starred に類似しているローカライズされた文字列を検索します。
+        ///   Favorites に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string StarredLabel {
             get {
