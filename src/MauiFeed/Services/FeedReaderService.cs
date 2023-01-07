@@ -3,6 +3,7 @@
 // </copyright>
 
 using AngleSharp.Html.Parser;
+using AngleSharp.Io;
 using CodeHollow.FeedReader;
 using MauiFeed.Models;
 
@@ -35,11 +36,28 @@ namespace MauiFeed.Services
                 var item = feed.ToFeedListItem(feedUri);
                 item.Type = type;
 
-                if (item.ImageCache is null && item.ImageUri is not null)
+                if (item.ImageCache is null)
                 {
-                    item.ImageCache = await this.client.GetByteArrayAsync(item.ImageUri);
+                    if (item.ImageUri is not null)
+                    {
+                        item.ImageCache = await this.client.GetByteArrayAsync(item.ImageUri);
+                    }
+                    else if (item.Uri is not null)
+                    {
+                        try
+                        {
+                            // If ImageUri is null, try to get the favicon from the site itself.
+                            item.ImageCache = await this.client.GetByteArrayAsync($"{item.Uri.Scheme}://{item.Uri.Host}/favicon.ico");
+                        }
+                        catch (Exception)
+                        {
+                            // If it fails to work for whatever reason, ignore it for now, use the placeholder.
+                        }
+                    }
                 }
-                else if (item.ImageCache is null)
+
+                // If still null, use the placeholder.
+                if (item.ImageCache is null)
                 {
                     item.ImageCache = Utilities.GetPlaceholderIcon();
                 }
