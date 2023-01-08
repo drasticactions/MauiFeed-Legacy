@@ -21,5 +21,7 @@
     <PackageReference Include="Drastic.PureLayout" Version="1.0.4" />
     <PackageReference Include="Drastic.Tray" Version="1.0.9" />
     <PackageReference Include="Drastic.TrayWindow" Version="1.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
   </ItemGroup>
 </Project>
