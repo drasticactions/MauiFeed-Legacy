@@ -3,8 +3,12 @@
 // </copyright>
 
 using System;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.PureLayout;
 using MauiFeed.Models;
+using MauiFeed.Services;
+using ObjCRuntime;
+using Drastic.Tools;
 
 namespace MauiFeed.Apple
 {
@@ -15,20 +19,21 @@ namespace MauiFeed.Apple
         private UICollectionView collectionView;
         private UICollectionViewDiffableDataSource<NSString, MacFeedItem> dataSource;
         private RootSplitViewController controller;
+        private EFCoreDatabaseContext database;
 
         public TimelineCollectionViewController(RootSplitViewController controller)
         {
+            this.database = (EFCoreDatabaseContext)Ioc.Default.GetService<IDatabaseService>()!;
             this.controller = controller;
             this.items = new List<FeedItem>();
             this.collectionView = new UICollectionView(this.View!.Bounds, this.CreateLayout());
 
-            var rowRegistration = UICollectionViewCellRegistration.GetRegistration(typeof(UICollectionViewListCell),
+            var rowRegistration = UICollectionViewCellRegistration.GetRegistration(typeof(FeedListCell),
                 new UICollectionViewCellRegistrationConfigurationHandler((cell, indexpath, item) =>
                     {
-                        var listCell = (UICollectionViewListCell)cell;
+                        var listCell = (FeedListCell)cell;
                         var sidebarItem = (MacFeedItem)item;
-                        var contentConfiguration = UIListContentConfiguration.CellConfiguration;
-                        cell.ContentConfiguration = contentConfiguration;
+                        listCell.SetupCell(sidebarItem.Item);
                 }));
 
             this.dataSource = new UICollectionViewDiffableDataSource<NSString, MacFeedItem>(collectionView!,
@@ -57,7 +62,10 @@ namespace MauiFeed.Apple
         [Export("collectionView:didSelectItemAtIndexPath:")]
         protected void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
-            var sidebarItem = this.dataSource?.GetItemIdentifier(indexPath);
+            var sidebarItem = this.dataSource.GetItemIdentifier(indexPath)!;
+            sidebarItem!.Item.IsRead = true;
+
+            this.database.AddOrUpdateFeedItem(sidebarItem!.Item).FireAndForgetSafeAsync();
             this.controller.FeedWebViewController.SetFeedItem(sidebarItem!.Item);
 #if IOS
             this.controller.ShowColumn(UISplitViewControllerColumn.Secondary);
@@ -89,6 +97,59 @@ namespace MauiFeed.Apple
                 configuration.HeaderMode = UICollectionLayoutListHeaderMode.None;
                 return NSCollectionLayoutSection.GetSection(configuration, layoutEnvironment);
             });
+        }
+
+        private class FeedListCell : UICollectionViewListCell
+        {
+            private FeedItem? item;
+            private UILabel contentLabel = new UILabel();
+            private UIView hasSeenHolder = new UIView();
+            private UIImageView hasSeenIcon = new UIImageView();
+
+            protected internal FeedListCell(NativeHandle handle)
+                : base(handle)
+            {
+                this.ContentView.AddSubview(this.hasSeenHolder);
+                this.hasSeenHolder.AddSubview(this.hasSeenIcon);
+
+                this.hasSeenHolder.AutoPinEdgesToSuperviewEdgesExcludingEdge(UIEdgeInsets.Zero, ALEdge.Right);
+                this.hasSeenHolder.AutoSetDimension(ALDimension.Width, 25f);
+
+                this.hasSeenIcon.AutoCenterInSuperview();
+                this.hasSeenIcon.AutoSetDimensionsToSize(new CGSize(12, 12));
+            }
+
+            public void SetupCell(FeedItem item)
+            {
+                if (this.item is not null)
+                {
+                    this.item.PropertyChanged -= this.Item_PropertyChanged;
+                }
+
+                this.item = item;
+                this.item.PropertyChanged += this.Item_PropertyChanged;
+
+                //this.contentLabel.Text = item.Title;
+
+                this.UpdateIsRead();
+            }
+
+            private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+            {
+                this.UpdateIsRead();
+            }
+
+            public void UpdateIsRead()
+            {
+                if (this.item?.IsFavorite ?? false)
+                {
+                    this.hasSeenIcon.Image = UIImage.GetSystemImage("circle.fill")!.ApplyTintColor(UIColor.Yellow);
+                }
+                else
+                {
+                    this.hasSeenIcon.Image = this.item?.IsRead ?? false ? UIImage.GetSystemImage("circle") : UIImage.GetSystemImage("circle.fill");
+                }
+            }
         }
 
         private class MacFeedItem : NSObject

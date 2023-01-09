@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.PureLayout;
 using MauiFeed.Models;
 using MauiFeed.Services;
+using Microsoft.EntityFrameworkCore;
 using ObjCRuntime;
 
 namespace MauiFeed.Apple
@@ -67,12 +68,12 @@ namespace MauiFeed.Apple
         private NSDiffableDataSourceSectionSnapshot<SidebarItem> ConfigureSmartFeedSnapshot()
         {
             var snapshot = new NSDiffableDataSourceSectionSnapshot<SidebarItem>();
-            var header = SidebarItem.Header(this.databaseContext, "Smart Feeds");
+            var header = SidebarItem.Header(this.databaseContext, "Smart Feeds", this.smartFilterRowIdentifier);
             var items = new SidebarItem[]
             {
                 SidebarItem.Row(this.databaseContext, "Today", null, UIImage.GetSystemImage("sun.max"), filter: this.databaseContext.CreateFilter<FeedItem, DateTime?>(o => o.PublishingDate, DateTime.UtcNow.Date, EFCoreDatabaseContext.FilterType.GreaterThanOrEqual)),
                 SidebarItem.Row(this.databaseContext, "All Unread", null, UIImage.GetSystemImage("circle.inset.filled"), filter: this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsRead, false, EFCoreDatabaseContext.FilterType.Equals)),
-                SidebarItem.Row(this.databaseContext, "Starred", null, UIImage.GetSystemImage("star.fill")),
+                SidebarItem.Row(this.databaseContext, "Starred", null, UIImage.GetSystemImage("star.fill"), filter: this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsFavorite, true, EFCoreDatabaseContext.FilterType.Equals)),
             };
 
             snapshot.AppendItems(new[] { header });
@@ -84,7 +85,7 @@ namespace MauiFeed.Apple
         private NSDiffableDataSourceSectionSnapshot<SidebarItem> ConfigureLocalSnapshot()
         {
             var snapshot = new NSDiffableDataSourceSectionSnapshot<SidebarItem>();
-            var header = SidebarItem.Header(this.databaseContext, "Local");
+            var header = SidebarItem.Header(this.databaseContext, "Local", this.localRowIdentifier);
 
             var items = new List<SidebarItem>();
 
@@ -103,7 +104,7 @@ namespace MauiFeed.Apple
         private void ApplyInitialSnapshot()
         {
             this.dataSource!.ApplySnapshot(this.ConfigureSmartFeedSnapshot(), new NSString(SidebarSection.SmartFeeds.ToString()), false);
-            this.dataSource!.ApplySnapshot(this.ConfigureLocalSnapshot(), new NSString(SidebarSection.Local.ToString()), false);
+           // this.dataSource!.ApplySnapshot(this.ConfigureLocalSnapshot(), new NSString(SidebarSection.Local.ToString()), false);
         }
 
         private UICollectionViewLayout CreateLayout()
@@ -268,7 +269,7 @@ namespace MauiFeed.Apple
                 {
                     if (this.Filter is not null)
                     {
-                        return this.context.FeedItems!.Where(this.Filter).OrderByDescending(n => n.PublishingDate).ToList();
+                        return this.context.FeedItems!.Include(n => n.Feed).Where(this.Filter).OrderByDescending(n => n.PublishingDate).ToList();
                     }
 
                     return new List<FeedItem>();
