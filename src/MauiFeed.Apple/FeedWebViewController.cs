@@ -4,10 +4,11 @@ using Drastic.PureLayout;
 using Drastic.Tools;
 using MauiFeed.Models;
 using MauiFeed.Services;
+using MauiFeed.Views;
 
 namespace MauiFeed.Apple
 {
-    public class FeedWebViewController : UIViewController
+    public class FeedWebViewController : UIViewController, IArticleView
     {
         private ITemplateService templateService;
 
@@ -24,7 +25,7 @@ namespace MauiFeed.Apple
             this.webview.AutoPinEdgesToSuperviewSafeArea();
         }
 
-        public void Update(FeedItem item)
+        public void SetFeedItem(FeedItem item)
         {
             Task.Run(async () => {
                 var result = await this.templateService.RenderFeedItemAsync(item.Feed!, item);

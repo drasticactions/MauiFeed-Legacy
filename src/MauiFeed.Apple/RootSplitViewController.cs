@@ -5,14 +5,15 @@
 #if !TVOS
 
 using System;
+using MauiFeed.Views;
 
 namespace MauiFeed.Apple
 {
     public class RootSplitViewController : UISplitViewController, IUISplitViewControllerDelegate
     {
-        private SidebarViewController sidebar;
-        private FeedTableViewController feedCollection;
-        private FeedWebViewController webview;
+        private ISidebarView sidebar;
+        private ITimelineView feedCollection;
+        private IArticleView webview;
 
         public RootSplitViewController()
             : base(UISplitViewControllerStyle.TripleColumn)
@@ -21,9 +22,9 @@ namespace MauiFeed.Apple
             this.sidebar = new SidebarViewController(this);
             this.webview = new FeedWebViewController(this);
 
-            this.SetViewController(this.sidebar, UISplitViewControllerColumn.Primary);
-            this.SetViewController(this.webview, UISplitViewControllerColumn.Secondary);
-            this.SetViewController(this.feedCollection, UISplitViewControllerColumn.Supplementary);
+            this.SetViewController((UIViewController)this.sidebar, UISplitViewControllerColumn.Primary);
+            this.SetViewController((UIViewController)this.webview, UISplitViewControllerColumn.Secondary);
+            this.SetViewController((UIViewController)this.feedCollection, UISplitViewControllerColumn.Supplementary);
             this.PreferredDisplayMode = UISplitViewControllerDisplayMode.TwoBesideSecondary;
 
             // HOW THE F WOULD YOU GUESS THAT THIS MAKES THE SIDEBAR NOT LOOK LIKE TOTAL CRAP.
@@ -37,11 +38,11 @@ namespace MauiFeed.Apple
 #endif
         }
 
-        public SidebarViewController SidebarViewController => this.sidebar;
+        public ISidebarView SidebarViewController => this.sidebar;
 
-        public FeedTableViewController FeedTableViewController => this.feedCollection;
+        public ITimelineView FeedTableViewController => this.feedCollection;
 
-        public FeedWebViewController FeedWebViewController => this.webview;
+        public IArticleView FeedWebViewController => this.webview;
 
         public override void ViewWillAppear(bool animated)
         {

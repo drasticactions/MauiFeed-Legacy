@@ -9,7 +9,7 @@ using MauiFeed.Services;
 
 namespace MauiFeed.Apple
 {
-    public class FeedCollectionViewController : UIViewController, IUICollectionViewDelegate
+    public class FeedCollectionViewController : UIViewController, IUICollectionViewDelegate, Views.ITimelineView
     {
         private IList<FeedItem>? selectedItem;
 
@@ -20,9 +20,9 @@ namespace MauiFeed.Apple
         {
         }
 
-        public void Update(IList<FeedItem> item)
+        public void SetFeedItems(IList<FeedItem> items)
         {
-            this.selectedItem = item;
+            this.selectedItem = items;
             this.ApplyInitialSnapshot();
         }
 

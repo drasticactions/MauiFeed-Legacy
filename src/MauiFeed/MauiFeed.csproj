@@ -11,6 +11,7 @@
 	  <None Remove="Icon\dotnet_bot.png" />
 	  <None Remove="Icon\favicon.ico" />
 	  <None Remove="Templates\feeditem.html.hbs" />
+	  <None Remove="Views\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -46,4 +47,7 @@
 	  </EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Views\" />
+	</ItemGroup>
 </Project>

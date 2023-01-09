@@ -3,10 +3,11 @@ using System.Text.RegularExpressions;
 using Drastic.PureLayout;
 using Humanizer;
 using MauiFeed.Models;
+using MauiFeed.Views;
 
 namespace MauiFeed.Apple
 {
-    public class FeedTableViewController : UIViewController
+    public class FeedTableViewController : UIViewController, ITimelineView
     {
         private RssTableView table;
         private RootSplitViewController rootSplitViewController;
@@ -20,9 +21,9 @@ namespace MauiFeed.Apple
             this.View.DirectionalLayoutMargins = NSDirectionalEdgeInsets.Zero;
         }
 
-        public void Update(FeedItem[] items)
+        public void SetFeedItems(IList<FeedItem> items)
         {
-            this.table.Update(items);
+            this.table.Update(items.ToArray());
         }
 
         public class RssTableView : UITableView
@@ -96,7 +97,7 @@ namespace MauiFeed.Apple
                 var cell = (RssItemViewCell)tableView.CellAt(indexPath)!;
                 cell.UpdateHasSeen(item.IsRead);
 
-                this.controller.FeedWebViewController.Update(item);
+                this.controller.FeedWebViewController.SetFeedItem(item);
 #if IOS
                 this.controller.ShowColumn(UISplitViewControllerColumn.Secondary);
 #endif

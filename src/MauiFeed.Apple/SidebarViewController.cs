@@ -13,7 +13,7 @@ using ObjCRuntime;
 
 namespace MauiFeed.Apple
 {
-    public class SidebarViewController : UIViewController, IUICollectionViewDelegate
+    public class SidebarViewController : UIViewController, IUICollectionViewDelegate, Views.ISidebarView
     {
         private RootSplitViewController rootSplitViewController;
         private EFCoreDatabaseContext databaseContext;
@@ -48,7 +48,7 @@ namespace MauiFeed.Apple
         protected void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
             var sidebarItem = this.dataSource?.GetItemIdentifier(indexPath);
-            this.rootSplitViewController.FeedTableViewController.Update(sidebarItem!.Items.ToArray());
+            this.rootSplitViewController.FeedTableViewController.SetFeedItems(sidebarItem!.Items);
 #if IOS
             this.rootSplitViewController.ShowColumn(UISplitViewControllerColumn.Supplementary);
 #endif
