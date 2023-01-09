@@ -18,7 +18,7 @@ namespace MauiFeed.Apple
         public RootSplitViewController()
             : base(UISplitViewControllerStyle.TripleColumn)
         {
-            this.feedCollection = new FeedTableViewController(this);
+            this.feedCollection = new TimelineTableViewController(this);
             this.sidebar = new SidebarViewController(this);
             this.webview = new FeedWebViewController(this);
 
