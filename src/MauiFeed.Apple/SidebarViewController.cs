@@ -4,6 +4,7 @@
 // </copyright>
 
 using System;
+using System.ComponentModel;
 using System.Linq.Expressions;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.PureLayout;
@@ -11,6 +12,7 @@ using MauiFeed.Models;
 using MauiFeed.Services;
 using Microsoft.EntityFrameworkCore;
 using ObjCRuntime;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MauiFeed.Apple
 {
@@ -23,9 +25,11 @@ namespace MauiFeed.Apple
 
         private UICollectionViewDiffableDataSource<NSString, SidebarItem>? dataSource;
         private UICollectionView? collectionView;
+        private List<SidebarItem> SidebarItems;
 
         public SidebarViewController(RootSplitViewController controller)
         {
+            this.SidebarItems = new List<SidebarItem>();
             this.rootSplitViewController = controller;
             this.databaseContext = (EFCoreDatabaseContext)Ioc.Default.GetService<IDatabaseService>()!;
             this.databaseContext.OnDatabaseUpdated += this.DatabaseContext_OnDatabaseUpdated;
@@ -33,7 +37,6 @@ namespace MauiFeed.Apple
 
         private void DatabaseContext_OnDatabaseUpdated(object? sender, EventArgs e)
         {
-            this.ApplyInitialSnapshot();
         }
 
         public override void ViewDidLoad()
@@ -79,6 +82,8 @@ namespace MauiFeed.Apple
             snapshot.AppendItems(new[] { header });
             snapshot.ExpandItems(new[] { header });
             snapshot.AppendItems(items, header);
+
+            this.SidebarItems.AddRange(items);
             return snapshot;
         }
 
@@ -98,13 +103,14 @@ namespace MauiFeed.Apple
             snapshot.AppendItems(new[] { header });
             snapshot.ExpandItems(new[] { header });
             snapshot.AppendItems(items.ToArray(), header);
+            this.SidebarItems.AddRange(items);
             return snapshot;
         }
 
         private void ApplyInitialSnapshot()
         {
             this.dataSource!.ApplySnapshot(this.ConfigureSmartFeedSnapshot(), new NSString(SidebarSection.SmartFeeds.ToString()), false);
-           // this.dataSource!.ApplySnapshot(this.ConfigureLocalSnapshot(), new NSString(SidebarSection.Local.ToString()), false);
+            this.dataSource!.ApplySnapshot(this.ConfigureLocalSnapshot(), new NSString(SidebarSection.Local.ToString()), false);
         }
 
         private UICollectionViewLayout CreateLayout()
@@ -184,7 +190,6 @@ namespace MauiFeed.Apple
                      var sidebarItem = (SidebarItem)item;
                      var contentConfiguration = UIListContentConfiguration.SidebarSubtitleCellConfiguration;
                      contentConfiguration.Text = sidebarItem.Title;
-                     contentConfiguration.SecondaryText = sidebarItem.Subtitle;
                      contentConfiguration.Image = sidebarItem.Image;
                      contentConfiguration.TextProperties.Font = UIFont.PreferredSubheadline;
                      contentConfiguration.TextProperties.Color = UIColor.SecondaryLabel;
@@ -193,25 +198,11 @@ namespace MauiFeed.Apple
                      ((UICollectionViewListCell)cell).Accessories = new[] { new UICellAccessoryOutlineDisclosure() };
                  }));
 
-            var rowRegistration = UICollectionViewCellRegistration.GetRegistration(typeof(UICollectionViewListCell),
+            var rowRegistration = UICollectionViewCellRegistration.GetRegistration(typeof(SidebarListCell),
                  new UICollectionViewCellRegistrationConfigurationHandler((cell, indexpath, item) =>
                  {
-                     var listCell = (UICollectionViewListCell)cell;
-                     var sidebarItem = (SidebarItem)item;
-                     var contentConfiguration = UIListContentConfiguration.SidebarSubtitleCellConfiguration;
-                     contentConfiguration.Text = sidebarItem.Title;
-                     contentConfiguration.SecondaryText = sidebarItem.Subtitle;
-                     contentConfiguration.Image = sidebarItem.Image;
-                     contentConfiguration.TextProperties.Font = UIFont.PreferredSubheadline;
-                     contentConfiguration.TextProperties.Color = UIColor.SecondaryLabel;
-                     if (sidebarItem.UnreadCount > 0)
-                     {
-                         var holder = new PaddingLabel() { Text = sidebarItem.UnreadCount.ToString() };
-                         holder.TextEdgeInsets = new UIEdgeInsets(2, 5, 2, 5);
-                         var test2 = new UICellAccessoryCustomView(holder, UICellAccessoryPlacement.Trailing);
-                         ((UICollectionViewListCell)cell).Accessories = new UICellAccessory[] { test2 };
-                     }
-                     cell.ContentConfiguration = contentConfiguration;
+                     var listCell = (SidebarListCell)cell;
+                     listCell.SetupCell((SidebarItem)item);
                  }));
 
             this.dataSource = new UICollectionViewDiffableDataSource<NSString, SidebarItem>(collectionView!,
@@ -232,7 +223,7 @@ namespace MauiFeed.Apple
             );
         }
 
-        private class SidebarItem : NSObject
+        private class SidebarItem : NSObject, INotifyPropertyChanged
         {
             private EFCoreDatabaseContext context;
 
@@ -242,20 +233,20 @@ namespace MauiFeed.Apple
 
             public string Title { get; }
 
-            public string? Subtitle { get; }
-
             public UIImage? Image { get; }
 
-            public SidebarItem(Guid id, EFCoreDatabaseContext context, SidebarItemType type, string title, string? subtitle = default, UIImage? image = default, Expression<Func<FeedItem, bool>>? filter = default)
+            public SidebarItem(Guid id, EFCoreDatabaseContext context, SidebarItemType type, string title, UIImage? image = default, Expression<Func<FeedItem, bool>>? filter = default)
             {
                 this.Id = id;
                 this.Type = type;
                 this.Title = title;
-                this.Subtitle = subtitle;
                 this.Image = image;
                 this.Filter = filter;
                 this.context = context;
             }
+
+            /// <inheritdoc/>
+            public event PropertyChangedEventHandler? PropertyChanged;
 
             public int ItemsCount => this.Items.Count;
 
@@ -276,19 +267,19 @@ namespace MauiFeed.Apple
                 }
             }
 
-            public async Task Update()
+            public void Update()
             {
-
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SidebarItem"));
             }
 
             public static SidebarItem Header(EFCoreDatabaseContext context, string title, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default)
                 => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemType.Header, title, filter: filter);
 
-            public static SidebarItem ExpandableRow(EFCoreDatabaseContext context, string title, string? subtitle = default, UIImage? image = default, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default)
-             => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemType.ExpandableRow, title, subtitle, image, filter);
+            public static SidebarItem ExpandableRow(EFCoreDatabaseContext context, string title, UIImage? image = default, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default)
+             => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemType.ExpandableRow, title, image, filter);
 
-            public static SidebarItem Row(EFCoreDatabaseContext context, string title, string? subtitle = default, UIImage? image = default, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default)
-                => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemType.Row, title, subtitle, image, filter);
+            public static SidebarItem Row(EFCoreDatabaseContext context, string title, FeedListItem? subtitle = default, UIImage? image = default, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default)
+                => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemType.Row, title, image, filter);
         }
 
         private enum SidebarItemType
@@ -302,6 +293,58 @@ namespace MauiFeed.Apple
         {
             SmartFeeds,
             Local,
+        }
+
+        private class SidebarListCell : UICollectionViewListCell
+        {
+            private SidebarItem? item;
+            private PaddingLabel unreadLabel;
+            private UIListContentConfiguration config;
+
+            protected internal SidebarListCell(NativeHandle handle)
+               : base(handle)
+            {
+                this.unreadLabel = new PaddingLabel() { };
+                this.unreadLabel.TextEdgeInsets = new UIEdgeInsets(2, 5, 2, 5);
+                this.ContentConfiguration = this.config = UIListContentConfiguration.SidebarSubtitleCellConfiguration;
+            }
+
+            public void SetupCell(SidebarItem item)
+            {
+                if (this.item is not null)
+                {
+                    this.item.PropertyChanged -= Item_PropertyChanged;
+                }
+
+                this.item = item;
+                this.item.PropertyChanged += Item_PropertyChanged;
+                this.config.Text = this.item.Title;
+                this.config.SecondaryText = this.item.Subtitle;
+                this.config.Image = this.item.Image;
+                this.config.TextProperties.Font = UIFont.PreferredSubheadline;
+                this.config.TextProperties.Color = UIColor.SecondaryLabel;
+                this.UpdateIsRead();
+                this.ContentConfiguration = this.config;
+            }
+
+            private void UpdateIsRead()
+            {
+                if (this.item?.UnreadCount > 0)
+                {
+                    this.unreadLabel.Text = this.item?.UnreadCount.ToString();
+                    var test2 = new UICellAccessoryCustomView(this.unreadLabel, UICellAccessoryPlacement.Trailing);
+                    ((UICollectionViewListCell)this).Accessories = new UICellAccessory[] { test2 };
+                }
+                else
+                {
+                    ((UICollectionViewListCell)this).Accessories = new UICellAccessory[] { };
+                }
+            }
+
+            private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+            {
+                this.InvokeOnMainThread(this.UpdateIsRead);
+            }
         }
     }
 }

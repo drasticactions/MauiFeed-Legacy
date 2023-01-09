@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
 namespace MauiFeed.Models
@@ -28,6 +29,7 @@ namespace MauiFeed.Models
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>

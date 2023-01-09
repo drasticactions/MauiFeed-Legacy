@@ -29,6 +29,7 @@ namespace MauiFeed.Models
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>

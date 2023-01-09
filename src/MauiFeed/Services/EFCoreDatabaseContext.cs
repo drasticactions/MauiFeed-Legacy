@@ -2,18 +2,20 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using HandlebarsDotNet;
 using MauiFeed.Events;
 using MauiFeed.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Collections;
 using System.Linq.Expressions;
+using static System.Environment;
 
 namespace MauiFeed.Services
 {
     public class EFCoreDatabaseContext : DbContext, IDatabaseService
     {
-        private string databasePath = "database.db";
+        private string databasePath = System.IO.Path.Combine(Environment.GetFolderPath(SpecialFolder.LocalApplicationData), "MauiFeed", "database.db");
 
         public EFCoreDatabaseContext(string databasePath = "")
         {
@@ -63,38 +65,41 @@ namespace MauiFeed.Services
             return result;
         }
 
-        public async Task<FeedListItem> AddOrUpdateFeedListItem(FeedListItem feedListItem)
+        public async Task<int> AddFeedItems(IList<FeedItem> feedItems)
         {
-            var ogItem = await this.FeedListItems!.AsNoTracking().FirstOrDefaultAsync(n => n.Uri == feedListItem.Uri);
-            if (ogItem != null)
+            await this.FeedItems!.AddRangeAsync(feedItems);
+            var result = await this.SaveChangesAsync();
+            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            return result;
+        }
+
+        public async Task<FeedListItem> AddFeedListItem(FeedListItem feedListItem)
+        {
+            if (feedListItem.Id > 0)
             {
-                feedListItem.Id = ogItem.Id;
-                await this.FeedListItems!.Upsert(feedListItem).On(n => new { n.Uri }).RunAsync();
-            }
-            else
-            {
-                await this.FeedListItems!.AddAsync(feedListItem);
+                throw new ArgumentException("Id Must Be 0");
             }
 
+            await this.FeedListItems!.AddAsync(feedListItem);
             await this.SaveChangesAsync();
             this.OnFeedListItemUpdated?.Invoke(this, new FeedListItemUpdatedEventArgs(feedListItem));
             this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
             return feedListItem;
         }
 
-        public async Task<FeedItem> AddOrUpdateFeedItem(FeedItem item)
+        public async Task<FeedItem> AddFeedItem(FeedItem item)
         {
-            var ogItem = await this.FeedItems!.AsNoTracking().FirstOrDefaultAsync(n => n.RssId == item.RssId);
-            if (ogItem != null)
+            if (item.Id > 0)
             {
-                item.Id = ogItem.Id;
-                await this.FeedItems!.Upsert(item).On(n => new { n.RssId }).RunAsync();
-            }
-            else
-            {
-                await this.FeedItems!.AddAsync(item);
+                throw new ArgumentException("Id Must Be 0");
             }
 
+            if (item.FeedListItemId <= 0)
+            {
+                throw new ArgumentException("FeedListItemId Must Not Be 0");
+            }
+
+            await this.FeedItems!.AddAsync(item);
             await this.SaveChangesAsync();
             this.OnFeedItemUpdated?.Invoke(this, new FeedItemUpdatedEventArgs(item));
             this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
@@ -157,9 +162,9 @@ namespace MauiFeed.Services
             modelBuilder.Entity<FeedItem>().HasIndex(n => n.RssId).IsUnique();
         }
 
-        public Task<List<FeedListItem>> GetAllFeedListAsync()
+        public async Task<List<FeedListItem>> GetAllFeedListAsync()
         {
-            throw new NotImplementedException();
+            return await this.FeedListItems!.ToListAsync();
         }
 
         public Expression<Func<TData, bool>> CreateFilter<TData, TKey>(Expression<Func<TData, TKey>> selector, TKey valueToCompare, FilterType type)
@@ -207,6 +212,22 @@ namespace MauiFeed.Services
             }
 
             return memberExpression.ToString().Substring(2);
+        }
+
+        public async Task<FeedItem?> GetFeedItemViaRssId(string? rssId)
+        {
+            if (rssId is null)
+                return null;
+
+            return await this.FeedItems!.FirstOrDefaultAsync(n => n.RssId == rssId);
+        }
+
+        public async Task<FeedListItem?> GetFeedListItem(Uri? rssId)
+        {
+            if (rssId is null)
+                return null;
+
+            return await this.FeedListItems!.FirstOrDefaultAsync(n => n.Uri == rssId);
         }
 
         public enum FilterType

@@ -65,7 +65,7 @@ namespace MauiFeed.Apple
             var sidebarItem = this.dataSource.GetItemIdentifier(indexPath)!;
             sidebarItem!.Item.IsRead = true;
 
-            this.database.AddOrUpdateFeedItem(sidebarItem!.Item).FireAndForgetSafeAsync();
+            this.database.UpdateFeedItem(sidebarItem!.Item).FireAndForgetSafeAsync();
             this.controller.FeedWebViewController.SetFeedItem(sidebarItem!.Item);
 #if IOS
             this.controller.ShowColumn(UISplitViewControllerColumn.Secondary);

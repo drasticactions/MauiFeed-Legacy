@@ -6,6 +6,7 @@ using System;
 using UIKit;
 using MauiFeed.Services;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Drastic.Tools;
 
 #if MACCATALYST
 using AppKit;
@@ -16,11 +17,13 @@ namespace MauiFeed.Apple
     public class MainWindow : UIWindow
     {
         private EFCoreDatabaseContext databaseContext;
+        private RssFeedCacheService cache;
 
         public MainWindow(CGRect frame)
             : base(frame)
         {
             this.databaseContext = (EFCoreDatabaseContext)Ioc.Default.GetService<IDatabaseService>()!;
+            this.cache = (RssFeedCacheService)Ioc.Default.GetService<RssFeedCacheService>()!;
             var test = this.WindowScene;
 
 #if MACCATALYST
@@ -48,6 +51,7 @@ namespace MauiFeed.Apple
 #if MACCATALYST
         public class MainToolbarDelegate : AppKit.NSToolbarDelegate
         {
+            private RssFeedCacheService cache;
             public const string Refresh = "Refresh";
             public const string Plus = "Plus";
             public const string MarkAllAsRead = "MarkAllAsRead";
@@ -58,6 +62,11 @@ namespace MauiFeed.Apple
             public const string ReaderView = "ReaderView";
             public const string Share = "Share";
             public const string OpenInBrowser = "OpenInBrowser";
+
+            public MainToolbarDelegate()
+            {
+                this.cache = (RssFeedCacheService)Ioc.Default.GetService<RssFeedCacheService>()!;
+            }
 
             public override string[] DefaultItemIdentifiers(NSToolbar toolbar)
             {
@@ -148,6 +157,14 @@ namespace MauiFeed.Apple
 
             private void ToolbarItem_Activated(object? sender, EventArgs e)
             {
+                var toolbarItem = (NSToolbarItem)sender!;
+
+                switch (toolbarItem.Identifier)
+                {
+                    case Refresh:
+                        Task.Run(async () => await this.cache.RefreshFeedsAsync());
+                        break;
+                }
             }
         }
 #endif

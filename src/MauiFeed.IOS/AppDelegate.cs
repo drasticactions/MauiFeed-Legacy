@@ -35,6 +35,7 @@ public class AppDelegate : UIApplicationDelegate
         .AddSingleton<IErrorHandlerService, ErrorHandlerService>()
         .AddSingleton<ITemplateService, HandlebarsTemplateService>()
         .AddSingleton<IRssService, FeedReaderService>()
+        .AddSingleton<RssFeedCacheService>()
         .BuildServiceProvider());
 
         // create a new window instance based on the screen size
