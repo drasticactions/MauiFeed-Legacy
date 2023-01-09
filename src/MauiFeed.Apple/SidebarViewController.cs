@@ -15,7 +15,7 @@ namespace MauiFeed.Apple
 {
     public class SidebarViewController : UIViewController, IUICollectionViewDelegate
     {
-        private FeedTableViewController feedCollection;
+        private RootSplitViewController rootSplitViewController;
         private EFCoreDatabaseContext databaseContext;
         private Guid smartFilterRowIdentifier = Guid.NewGuid();
         private Guid localRowIdentifier = Guid.NewGuid();
@@ -23,9 +23,9 @@ namespace MauiFeed.Apple
         private UICollectionViewDiffableDataSource<NSString, SidebarItem>? dataSource;
         private UICollectionView? collectionView;
 
-        public SidebarViewController(FeedTableViewController controller)
+        public SidebarViewController(RootSplitViewController controller)
         {
-            this.feedCollection = controller;
+            this.rootSplitViewController = controller;
             this.databaseContext = (EFCoreDatabaseContext)Ioc.Default.GetService<IDatabaseService>()!;
             this.databaseContext.OnDatabaseUpdated += this.DatabaseContext_OnDatabaseUpdated;
         }
@@ -48,7 +48,10 @@ namespace MauiFeed.Apple
         protected void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
             var sidebarItem = this.dataSource?.GetItemIdentifier(indexPath);
-            this.feedCollection.Update(sidebarItem!.Items.ToArray());
+            this.rootSplitViewController.FeedTableViewController.Update(sidebarItem!.Items.ToArray());
+#if IOS
+            this.rootSplitViewController.ShowColumn(UISplitViewControllerColumn.Supplementary);
+#endif
         }
 
         private void ConfigureCollectionView()

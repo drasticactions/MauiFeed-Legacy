@@ -8,19 +8,21 @@ using System;
 
 namespace MauiFeed.Apple
 {
-    public class RootSplitViewController : UISplitViewController
+    public class RootSplitViewController : UISplitViewController, IUISplitViewControllerDelegate
     {
         private SidebarViewController sidebar;
         private FeedTableViewController feedCollection;
+        private FeedWebViewController webview;
 
         public RootSplitViewController()
             : base(UISplitViewControllerStyle.TripleColumn)
         {
-            this.feedCollection = new FeedTableViewController();
-            this.sidebar = new SidebarViewController(this.feedCollection);
+            this.feedCollection = new FeedTableViewController(this);
+            this.sidebar = new SidebarViewController(this);
+            this.webview = new FeedWebViewController(this);
 
             this.SetViewController(this.sidebar, UISplitViewControllerColumn.Primary);
-            this.SetViewController(new UIViewController(), UISplitViewControllerColumn.Secondary);
+            this.SetViewController(this.webview, UISplitViewControllerColumn.Secondary);
             this.SetViewController(this.feedCollection, UISplitViewControllerColumn.Supplementary);
             this.PreferredDisplayMode = UISplitViewControllerDisplayMode.TwoBesideSecondary;
 
@@ -29,6 +31,41 @@ namespace MauiFeed.Apple
             this.PrimaryBackgroundStyle = UISplitViewControllerBackgroundStyle.Sidebar;
 
             this.PreferredPrimaryColumnWidth = 200f;
+
+#if IOS
+            this.PreferredSplitBehavior = UISplitViewControllerSplitBehavior.Tile;
+#endif
+        }
+
+        public SidebarViewController SidebarViewController => this.sidebar;
+
+        public FeedTableViewController FeedTableViewController => this.feedCollection;
+
+        public FeedWebViewController FeedWebViewController => this.webview;
+
+        public override void ViewWillAppear(bool animated)
+        {
+            base.ViewWillAppear(animated);
+            this.Delegate = this;
+        }
+
+#if IOS
+        [Export("splitViewController:topColumnForCollapsingToProposedTopColumn:")]
+        public UISplitViewControllerColumn GetTopColumnForCollapsing(UISplitViewController splitViewController, UISplitViewControllerColumn proposedTopColumn)
+        {
+            return UISplitViewControllerColumn.Primary;
+        }
+
+        [Export("splitViewController:collapseSecondaryViewController:ontoPrimaryViewController:")]
+        public bool CollapseSecondViewController(UISplitViewController splitViewController, UIViewController secondaryViewController, UIViewController primaryViewController)
+        {
+            return true;
+        }
+#endif
+
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
         }
     }
 }

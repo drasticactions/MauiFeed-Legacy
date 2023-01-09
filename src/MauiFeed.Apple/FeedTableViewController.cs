@@ -9,10 +9,12 @@ namespace MauiFeed.Apple
     public class FeedTableViewController : UIViewController
     {
         private RssTableView table;
+        private RootSplitViewController rootSplitViewController;
 
-        public FeedTableViewController()
+        public FeedTableViewController(RootSplitViewController rootSplitViewController)
         {
-            this.View = this.table = new RssTableView();
+            this.rootSplitViewController = rootSplitViewController;
+            this.View = this.table = new RssTableView(this.rootSplitViewController);
             this.ViewRespectsSystemMinimumLayoutMargins = false;
             this.View.PreservesSuperviewLayoutMargins = true;
             this.View.DirectionalLayoutMargins = NSDirectionalEdgeInsets.Zero;
@@ -26,11 +28,13 @@ namespace MauiFeed.Apple
         public class RssTableView : UITableView
         {
             private FeedItem[] items;
+            private RootSplitViewController controller;
 
-            public RssTableView()
+            public RssTableView(RootSplitViewController controller)
             {
+                this.controller = controller;
                 this.items = new FeedItem[0];
-                this.Source = new TableSource(this.items);
+                this.Source = new TableSource(controller, this.items);
 #if !TVOS
                 this.SeparatorStyle = UITableViewCellSeparatorStyle.None;
                 this.SeparatorColor = UIColor.Clear;
@@ -40,10 +44,13 @@ namespace MauiFeed.Apple
             public void Update(FeedItem[] items)
             {
                 this.items = items;
-                this.Source = new TableSource(this.items);
+                this.Source = new TableSource(this.controller, this.items);
                 this.ReloadData();
 #if !TVOS
-                this.ScrollToRow(NSIndexPath.FromRowSection(0, 0), UITableViewScrollPosition.Top, false);
+                if (this.items.Count() > 1)
+                {
+                    this.ScrollToRow(NSIndexPath.FromRowSection(0, 0), UITableViewScrollPosition.Top, false);
+                }
 #endif
             }
         }
@@ -52,9 +59,11 @@ namespace MauiFeed.Apple
         {
             FeedItem[] TableItems;
             string CellIdentifier = RssItemViewCell.ReuseIdentifier;
+            private RootSplitViewController controller;
 
-            public TableSource(FeedItem[] items)
+            public TableSource(RootSplitViewController controller, FeedItem[] items)
             {
+                this.controller = controller;
                 TableItems = items;
             }
 
@@ -86,6 +95,11 @@ namespace MauiFeed.Apple
                 item.IsRead = true;
                 var cell = (RssItemViewCell)tableView.CellAt(indexPath)!;
                 cell.UpdateHasSeen(item.IsRead);
+
+                this.controller.FeedWebViewController.Update(item);
+#if IOS
+                this.controller.ShowColumn(UISplitViewControllerColumn.Secondary);
+#endif
             }
         }
 
