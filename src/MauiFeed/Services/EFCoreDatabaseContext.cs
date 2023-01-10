@@ -15,7 +15,7 @@ namespace MauiFeed.Services
 {
     public class EFCoreDatabaseContext : DbContext, IDatabaseService
     {
-        private string databasePath = System.IO.Path.Combine(Environment.GetFolderPath(SpecialFolder.LocalApplicationData), "MauiFeed", "database.db");
+        private string databasePath = "database.db";
 
         public EFCoreDatabaseContext(string databasePath = "")
         {
@@ -30,17 +30,7 @@ namespace MauiFeed.Services
         /// <summary>
         /// Fired when a feed item updates.
         /// </summary>
-        public event EventHandler<FeedItemUpdatedEventArgs>? OnFeedItemUpdated;
-
-        /// <summary>
-        /// Fired when a feed item updates.
-        /// </summary>
-        public event EventHandler<FeedListItemUpdatedEventArgs>? OnFeedListItemUpdated;
-
-        /// <summary>
-        /// Fired when a feed item updates.
-        /// </summary>
-        public event EventHandler<EventArgs>? OnDatabaseUpdated;
+        public event EventHandler<FeedListItemsUpdatedEventArgs>? OnFeedListItemsUpdated;
 
         public DbSet<FeedListItem>? FeedListItems { get; set; }
 
@@ -53,7 +43,7 @@ namespace MauiFeed.Services
         {
             this.FeedListItems!.UpdateRange(feedListItems);
             var result = await this.SaveChangesAsync();
-            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            this.OnFeedListItemsUpdated?.Invoke(this, new FeedListItemsUpdatedEventArgs(feedListItems));
             return result;
         }
 
@@ -61,7 +51,7 @@ namespace MauiFeed.Services
         {
             this.FeedItems!.UpdateRange(feedItems);
             var result = await this.SaveChangesAsync();
-            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            this.OnFeedListItemsUpdated?.Invoke(this, new FeedListItemsUpdatedEventArgs(feedItems));
             return result;
         }
 
@@ -69,7 +59,7 @@ namespace MauiFeed.Services
         {
             await this.FeedItems!.AddRangeAsync(feedItems);
             var result = await this.SaveChangesAsync();
-            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            this.OnFeedListItemsUpdated?.Invoke(this, new FeedListItemsUpdatedEventArgs(feedItems));
             return result;
         }
 
@@ -82,8 +72,7 @@ namespace MauiFeed.Services
 
             await this.FeedListItems!.AddAsync(feedListItem);
             await this.SaveChangesAsync();
-            this.OnFeedListItemUpdated?.Invoke(this, new FeedListItemUpdatedEventArgs(feedListItem));
-            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            this.OnFeedListItemsUpdated?.Invoke(this, new FeedListItemsUpdatedEventArgs(feedListItem));
             return feedListItem;
         }
 
@@ -101,8 +90,7 @@ namespace MauiFeed.Services
 
             await this.FeedItems!.AddAsync(item);
             await this.SaveChangesAsync();
-            this.OnFeedItemUpdated?.Invoke(this, new FeedItemUpdatedEventArgs(item));
-            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            this.OnFeedListItemsUpdated?.Invoke(this, new FeedListItemsUpdatedEventArgs(item));
             return item;
         }
 
@@ -110,8 +98,7 @@ namespace MauiFeed.Services
         {
             await this.FeedListItems!.Upsert(feedListItem).On(n => new { n.Uri }).RunAsync();
             await this.SaveChangesAsync();
-            this.OnFeedListItemUpdated?.Invoke(this, new FeedListItemUpdatedEventArgs(feedListItem));
-            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            this.OnFeedListItemsUpdated?.Invoke(this, new FeedListItemsUpdatedEventArgs(feedListItem));
             return feedListItem;
         }
 
@@ -119,8 +106,7 @@ namespace MauiFeed.Services
         {
             await this.FeedItems!.Upsert(item).On(n => new { n.RssId }).RunAsync();
             await this.SaveChangesAsync();
-            this.OnFeedItemUpdated?.Invoke(this, new FeedItemUpdatedEventArgs(item));
-            this.OnDatabaseUpdated?.Invoke(this, EventArgs.Empty);
+            this.OnFeedListItemsUpdated?.Invoke(this, new FeedListItemsUpdatedEventArgs(item));
             return item;
         }
 

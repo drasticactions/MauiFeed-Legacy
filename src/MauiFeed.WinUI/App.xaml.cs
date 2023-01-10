@@ -71,8 +71,8 @@ namespace MauiFeed.WinUI
             var realPath = System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db");
             if (File.Exists(realPath))
             {
-                return;
-               // File.Delete(realPath);
+               return;
+               //File.Delete(realPath);
             }
 
             var db = MauiFeed.Utilities.GetResourceFileContent("DebugFiles.database_test.db")!;

@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using MauiFeed.Events;
 using MauiFeed.Models;
 
 namespace MauiFeed.Services
@@ -25,5 +26,7 @@ namespace MauiFeed.Services
         public Task<FeedItem?> GetFeedItemViaRssId(string? rssId);
 
         public Task<FeedListItem?> GetFeedListItem(Uri? rssId);
+
+        public event EventHandler<FeedListItemsUpdatedEventArgs>? OnFeedListItemsUpdated;
     }
 }

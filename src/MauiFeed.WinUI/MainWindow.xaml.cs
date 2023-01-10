@@ -52,7 +52,6 @@ namespace MauiFeed.WinUI
             this.dispatcher = Ioc.Default.GetService<IAppDispatcher>()!;
             this.templateService = Ioc.Default.GetService<ITemplateService>()!;
 
-            this.databaseContext.OnDatabaseUpdated += DatabaseContext_OnDatabaseUpdated;
             this.InitializeComponent();
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(this.AppTitleBar);
@@ -101,48 +100,38 @@ namespace MauiFeed.WinUI
 
         public AsyncCommand<FeedItem> OpenInBrowserCommand { get; private set; }
 
-        private void DatabaseContext_OnDatabaseUpdated(object? sender, EventArgs e)
-        {
-            foreach (var item in this.Items)
-            {
-                item.Update();
-                foreach (var childItem in item.MenuItems)
-                {
+        private FeedNavigationViewItem? smartFilters;
 
-                    ((FeedNavigationViewItem)childItem).Update();
-                }
-            }
-        }
+        public FeedNavigationViewItem? SelectedItem { get; set; }
 
         public void GenerateSmartFeeds()
         {
-            var smartFilters = new FeedNavigationViewItem(this.databaseContext);
-            smartFilters.Content = Translations.Common.SmartFeedsLabel;
-            smartFilters.Icon = new SymbolIcon(Symbol.Filter);
+            this.smartFilters = new FeedNavigationViewItem(this.databaseContext);
+            this.smartFilters.Content = Translations.Common.SmartFeedsLabel;
+            this.smartFilters.Icon = new SymbolIcon(Symbol.Filter);
 
             var all = new FeedNavigationViewItem(this.databaseContext, this.databaseContext.CreateFilter<FeedItem, int>(o => o.Id, 0, EFCoreDatabaseContext.FilterType.GreaterThan));
             all.Content = Translations.Common.AllLabel;
             all.Icon = new SymbolIcon(Symbol.Bookmarks);
-
-            smartFilters.MenuItems.Add(all);
+            this.smartFilters.MenuItems.Add(all);
 
             var today = new FeedNavigationViewItem(this.databaseContext, this.databaseContext.CreateFilter<FeedItem, DateTime?>(o => o.PublishingDate, DateTime.UtcNow.Date, EFCoreDatabaseContext.FilterType.GreaterThanOrEqual));
             today.Content = Translations.Common.TodayLabel;
             today.Icon = new SymbolIcon(Symbol.GoToToday);
 
-            smartFilters.MenuItems.Add(today);
+            this.smartFilters.MenuItems.Add(today);
 
             var unread = new FeedNavigationViewItem(this.databaseContext, this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsRead, false, EFCoreDatabaseContext.FilterType.Equals));
             unread.Content = Translations.Common.AllUnreadLabel;
             unread.Icon = new SymbolIcon(Symbol.Filter);
 
-            smartFilters.MenuItems.Add(unread);
+            this.smartFilters.MenuItems.Add(unread);
 
             var star = new FeedNavigationViewItem(this.databaseContext, this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsFavorite, true, EFCoreDatabaseContext.FilterType.Equals));
             star.Content = Translations.Common.StarredLabel;
             star.Icon = new SymbolIcon(Symbol.Favorite);
 
-            smartFilters.MenuItems.Add(star);
+            this.smartFilters.MenuItems.Add(star);
 
             this.Items.Add(smartFilters);
         }
@@ -210,7 +199,7 @@ namespace MauiFeed.WinUI
             {
                 Tag = item.Id,
                 Content = item.Name,
-                Icon = new ImageIcon() { Source = icon, Width = 30, Height = 30 },
+                Icon = new ImageIcon() { Source = icon, Width = 30, Height = 30, },
             };
         }
 
@@ -235,7 +224,13 @@ namespace MauiFeed.WinUI
             }
 
             selected.IsRead = true;
-            this.databaseContext.UpdateFeedItem(selected).FireAndForgetSafeAsync();
+
+            Task.Run(async () =>
+            {
+                await this.databaseContext.UpdateFeedItem(selected);
+                this.dispatcher.Dispatch(this.UpdateMenuItems);
+            }).FireAndForgetSafeAsync();
+
 
             Task.Run(async () => {
                 var result = await this.templateService.RenderFeedItemAsync(selected.Feed!, selected);
@@ -256,13 +251,29 @@ namespace MauiFeed.WinUI
                 feedItem.IsRead = true;
             }
 
-            this.databaseContext.UpdateFeedItems(items).FireAndForgetSafeAsync();
+            Task.Run(async () =>
+            {
+
+                await this.databaseContext.UpdateFeedItems(items);
+                this.dispatcher.Dispatch(this.UpdateMenuItems);
+
+            }).FireAndForgetSafeAsync();
         }
 
         private void FeedSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             this.SelectedNavigationViewItem = new SearchFeedNavigationViewItem(args.QueryText, this.databaseContext) { Content = args.QueryText };
             var test = this.SelectedNavigationViewItem.Items;
+        }
+
+        private void UpdateMenuItems()
+        {
+            foreach (var item in this.smartFilters!.MenuItems.Cast<FeedNavigationViewItem>())
+            {
+                item?.Update();
+            }
+
+            this.SelectedItem?.Update();
         }
     }
 }

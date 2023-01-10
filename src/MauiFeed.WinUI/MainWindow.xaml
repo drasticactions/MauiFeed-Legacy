@@ -12,22 +12,22 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="34"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" x:Name="AppTitleBar" Grid.Row="0" Height="34">
-            <Image  Margin="8,0,0,0" Width="16" Height="16" Source="Assets/SmallTile.scale-125.png" x:Name="AppIcon" />
+        <StackPanel VerticalAlignment="Top" Orientation="Horizontal" x:Name="AppTitleBar" Margin="50,0,0,0" Height="34">
+            <Border Margin="7,14,0,0" CornerRadius="7">
+                <Image  Width="20" Height="20" Source="Assets/SmallTile.scale-125.png" x:Name="AppIcon" />
+            </Border>
             <TextBlock x:Name="AppTitleTextBlock" Text="{x:Bind common:Common.AppTitle}"
                        Style="{StaticResource CaptionTextBlockStyle}"
-                       Margin="12,0,0,0" VerticalAlignment="Center" />
+                       Margin="12,14,0,0" VerticalAlignment="Center" />
         </StackPanel>
         <NavigationView 
             IsBackButtonVisible="Collapsed"
             IsSettingsVisible="False"
             MenuItemsSource="{x:Bind Items, Mode=OneWay}" 
             SelectionChanged="NavView_SelectionChanged"
-            Grid.Row="1"
-            IsTitleBarAutoPaddingEnabled="True"
+            IsTitleBarAutoPaddingEnabled="False"
             x:Name="NavView">
             <NavigationView.AutoSuggestBox>
                 <AutoSuggestBox x:Name="FeedSuggestBox" QuerySubmitted="FeedSuggestBox_QuerySubmitted" HorizontalAlignment="Stretch" QueryIcon="Find"/>
@@ -47,10 +47,15 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" FontWeight="Bold" MaxLines="1" TextTrimming="WordEllipsis" Text="{x:Bind SelectedNavigationViewItem.Content, Mode=OneWay}"/>
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <StackPanel Margin="0,33,0,0" Grid.Column="1" Orientation="Horizontal">
+                                    <Button Margin="0,0,20,0">
+                                        <Grid>
+                                            <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
+                                        </Grid>
+                                    </Button>
                                     <Button Click="Button_Click" Margin="0,0,20,0">
                                         <Grid>
-                                            <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
+                                            <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                         </Grid>
                                     </Button>
                                 </StackPanel>
