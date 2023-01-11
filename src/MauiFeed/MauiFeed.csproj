@@ -12,6 +12,7 @@
 	  <None Remove="Icon\favicon.ico" />
 	  <None Remove="Templates\feeditem.html.hbs" />
 	  <None Remove="Views\" />
+	  <None Remove="NewsService\FeedReader\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -49,5 +50,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Views\" />
+	  <Folder Include="NewsService\FeedReader\" />
 	</ItemGroup>
 </Project>

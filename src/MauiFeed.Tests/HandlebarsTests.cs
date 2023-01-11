@@ -42,8 +42,9 @@ namespace MauiFeed.Tests
             feedItem.Author = "Test Author";
             feedItem.Content = @"<b>Test</b>";
             feedItem.Description = "Test Description";
+            feedItem.Feed = feedListItem;
             feedItem.Link = "https://devblogs.microsoft.com/dotnet/dotnet-maui-preview-14/";
-            var html = await this.templates.RenderFeedItemAsync(feedListItem, feedItem);
+            var html = await this.templates.RenderFeedItemAsync(feedItem);
             Assert.IsNotNull(html);
             Assert.IsNotNull(feedItem.Html);
         }

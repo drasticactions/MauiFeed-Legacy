@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using MauiFeed.NewsService;
 using MauiFeed.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -28,7 +29,7 @@ namespace MauiFeed.Tests
             }
 
             var rssService = new FeedReaderService();
-            var databaseContext = new EFCoreDatabaseContext(dbFile);
+            var databaseContext = new DatabaseContext(dbFile);
             var rssCache = new RssFeedCacheService(rssService, databaseContext);
 
             // First, add the initial feed.

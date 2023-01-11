@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.1" />
+    <PackageReference Include="Sharprompt" Version="2.4.5" />
   </ItemGroup>
 
   <ItemGroup>

@@ -25,7 +25,7 @@ namespace MauiFeed.Services
         }
 
         /// <inheritdoc/>
-        public async Task<string> RenderFeedItemAsync(FeedListItem feedListItem, FeedItem item)
+        public async Task<string> RenderFeedItemAsync(FeedItem item)
         {
             if (item.Link is null)
             {
@@ -44,9 +44,10 @@ namespace MauiFeed.Services
                 item.Html = item.Content;
             }
 
+            // Replace all links with blank targets, to force them to open in new tabs.
             item.Html = Regex.Replace(item.Html ?? string.Empty, "<(a)([^>]+)>", @"<$1 target=""_blank""$2>");
 
-            return this.feedItemTemplate.Invoke(new { FeedListItem = feedListItem, FeedItem = item, Image = Convert.ToBase64String(feedListItem.ImageCache ?? new byte[0]) });
+            return this.feedItemTemplate.Invoke(new { FeedListItem = item.Feed, FeedItem = item, Image = Convert.ToBase64String(item.Feed?.ImageCache ?? new byte[0]) });
         }
 
         private static string GetResourceFileContentAsString(string fileName)

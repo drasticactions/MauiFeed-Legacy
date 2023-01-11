@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="FeedListItem.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -87,8 +91,6 @@ namespace MauiFeed.Models
         /// This helps organize where in the list it goes.
         /// </summary>
         public FeedListItemType Type { get; set; }
-
-        [NotMapped]
 
         public virtual IEnumerable<FeedItem>? Items { get; set; }
 

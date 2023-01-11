@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using MauiFeed.NewsService;
 using MauiFeed.Services;
 
 namespace MauiFeed.Tests

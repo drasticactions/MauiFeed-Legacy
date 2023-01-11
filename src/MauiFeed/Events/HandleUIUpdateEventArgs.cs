@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace MauiFeed.Events
 {
+    public enum HandleUIUpdate
+    {
+        Unknown,
+    }
+
+
     public class HandleUIUpdateEventArgs : EventArgs
     {
         public HandleUIUpdateEventArgs(HandleUIUpdate update = HandleUIUpdate.Unknown)
@@ -18,10 +24,5 @@ namespace MauiFeed.Events
         }
 
         public HandleUIUpdate HandleUIUpdate { get; }
-    }
-
-    public enum HandleUIUpdate
-    {
-        Unknown,
     }
 }

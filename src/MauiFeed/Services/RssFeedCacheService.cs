@@ -11,9 +11,9 @@ namespace MauiFeed.Services
     public class RssFeedCacheService
     {
         private IRssService rssService;
-        private IDatabaseService databaseContext;
+        private DatabaseContext databaseContext;
 
-        public RssFeedCacheService(IRssService rssService, IDatabaseService databaseContext)
+        public RssFeedCacheService(IRssService rssService, DatabaseContext databaseContext)
         {
             this.rssService = rssService;
             this.databaseContext = databaseContext;
@@ -22,12 +22,14 @@ namespace MauiFeed.Services
         public Task<FeedListItem> RetrieveFeedAsync(Uri feedUri)
             => this.RetrieveFeedAsync(feedUri.ToString());
 
-        public async Task RefreshFeedsAsync()
+        public async Task RefreshFeedsAsync(IProgress<RssCacheFeedUpdate>? progress = default)
         {
             var feeds = await this.databaseContext.GetAllFeedListAsync();
-            foreach (var feed in feeds)
+            for (int i = 0; i < feeds.Count; i++)
             {
-                await this.RetrieveFeedAsync(feed.Uri!.ToString());
+                FeedListItem? feed = feeds[i];
+                var updatedItem = await this.RetrieveFeedAsync(feed.Uri!.ToString());
+                progress?.Report(new RssCacheFeedUpdate(i + 1, feeds.Count, updatedItem));
             }
         }
 
@@ -60,5 +62,23 @@ namespace MauiFeed.Services
 
             return feed;
         }
+    }
+
+    public class RssCacheFeedUpdate
+    {
+        public RssCacheFeedUpdate(int feedsCompleted, int totalFeeds, FeedListItem lastUpdated)
+        {
+            this.LastUpdated = lastUpdated;
+            this.TotalFeeds = totalFeeds;
+            this.FeedsCompleted = feedsCompleted;
+        }
+
+        public FeedListItem LastUpdated { get; }
+
+        public int TotalFeeds { get; }
+
+        public int FeedsCompleted { get; }
+
+        public bool IsDone => this.FeedsCompleted >= this.TotalFeeds;
     }
 }
