@@ -153,6 +153,9 @@
   <data name="LocalLabel" xml:space="preserve">
     <value>Local</value>
   </data>
+  <data name="MarkAllAsReadLabel" xml:space="preserve">
+    <value>Mark All As Read</value>
+  </data>
   <data name="MarkAllAsUnrealLabel" xml:space="preserve">
     <value>Mark All As Unread</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="RefreshButton" xml:space="preserve">
     <value>Refresh</value>
+  </data>
+  <data name="RemoveFeedLabel" xml:space="preserve">
+    <value>Remove Feed</value>
   </data>
   <data name="RemoveStarLabel" xml:space="preserve">
     <value>Remove From Favorites</value>

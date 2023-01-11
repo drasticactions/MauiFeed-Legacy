@@ -15,5 +15,10 @@ namespace MauiFeed.Views
         /// Update the sidebar UI.
         /// </summary>
         void UpdateSidebar();
+
+        /// <summary>
+        /// Generate Sidebar Items.
+        /// </summary>
+        void GenerateSidebar();
     }
 }

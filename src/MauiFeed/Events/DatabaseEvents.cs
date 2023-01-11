@@ -50,6 +50,28 @@ namespace MauiFeed.Events
         public IEnumerable<FeedListItem> Feeds => this.feeds;
     }
 
+    public class FeedItemsRemovedEventArgs : EventArgs
+    {
+        private readonly IEnumerable<FeedItem> feedItem;
+        private readonly IEnumerable<FeedListItem> feeds;
+
+        public FeedItemsRemovedEventArgs(IEnumerable<FeedItem> item)
+        {
+            this.feedItem = item;
+            this.feeds = this.feedItem.Where(n => n.Feed is not null).Select(n => n.Feed).Distinct()!;
+        }
+
+        public FeedItemsRemovedEventArgs(FeedItem item)
+        {
+            this.feedItem = new List<FeedItem>() { item };
+            this.feeds = this.feedItem.Where(n => n.Feed is not null).Select(n => n.Feed).Distinct()!;
+        }
+
+        public IEnumerable<FeedItem> FeedItems => this.feedItem;
+
+        public IEnumerable<FeedListItem> Feeds => this.feeds;
+    }
+
     public class FeedListItemsUpdatedEventArgs : EventArgs
     {
         private readonly IEnumerable<FeedListItem> feeds;
@@ -77,6 +99,23 @@ namespace MauiFeed.Events
         }
 
         public FeedListItemsAddedEventArgs(FeedListItem item)
+        {
+            this.feeds = new List<FeedListItem>() { item };
+        }
+
+        public IEnumerable<FeedListItem> Feeds => this.feeds;
+    }
+
+    public class FeedListItemsRemovedEventArgs : EventArgs
+    {
+        private readonly IEnumerable<FeedListItem> feeds;
+
+        public FeedListItemsRemovedEventArgs(IEnumerable<FeedListItem> item)
+        {
+            this.feeds = item;
+        }
+
+        public FeedListItemsRemovedEventArgs(FeedListItem item)
         {
             this.feeds = new List<FeedListItem>() { item };
         }

@@ -35,6 +35,11 @@ namespace MauiFeed.Services
         /// <summary>
         /// Fired when a feed item updates.
         /// </summary>
+        public event EventHandler<FeedItemsRemovedEventArgs>? OnFeedItemsRemoved;
+
+        /// <summary>
+        /// Fired when a feed item updates.
+        /// </summary>
         public event EventHandler<FeedItemsUpdatedEventArgs>? OnFeedItemsUpdated;
 
         /// <summary>
@@ -46,6 +51,11 @@ namespace MauiFeed.Services
         /// Fired when a feed item updates.
         /// </summary>
         public event EventHandler<FeedListItemsUpdatedEventArgs>? OnFeedListItemsUpdated;
+
+        /// <summary>
+        /// Fired when a feed item updates.
+        /// </summary>
+        public event EventHandler<FeedListItemsRemovedEventArgs>? OnFeedListItemsRemoved;
 
         /// <summary>
         /// Filter Type.
@@ -133,6 +143,19 @@ namespace MauiFeed.Services
             return feedListItem;
         }
 
+        public async Task<FeedListItem> RemovedFeedListItem(FeedListItem feedListItem)
+        {
+            if (feedListItem.Id > 0)
+            {
+                throw new ArgumentException("Id Must Be 0");
+            }
+
+            this.FeedListItems!.Remove(feedListItem);
+            await this.SaveChangesAsync();
+            this.OnFeedListItemsRemoved?.Invoke(this, new FeedListItemsRemovedEventArgs(feedListItem));
+            return feedListItem;
+        }
+
         public async Task<FeedItem> AddFeedItem(FeedItem item)
         {
             if (item.Id > 0)
@@ -148,6 +171,19 @@ namespace MauiFeed.Services
             await this.FeedItems!.AddAsync(item);
             await this.SaveChangesAsync();
             this.OnFeedItemsAdded?.Invoke(this, new FeedItemsAddedEventArgs(item));
+            return item;
+        }
+
+        public async Task<FeedItem> RemoveFeedItem(FeedItem item)
+        {
+            if (item.Id > 0)
+            {
+                throw new ArgumentException("Id Must Be 0");
+            }
+
+            this.FeedItems!.Remove(item);
+            await this.SaveChangesAsync();
+            this.OnFeedItemsRemoved?.Invoke(this, new FeedItemsRemovedEventArgs(item));
             return item;
         }
 

@@ -169,6 +169,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Mark All As Read に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MarkAllAsReadLabel {
+            get {
+                return ResourceManager.GetString("MarkAllAsReadLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Mark All As Unread に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string MarkAllAsUnrealLabel {
@@ -219,6 +228,15 @@ namespace MauiFeed.Translations {
         public static string RefreshButton {
             get {
                 return ResourceManager.GetString("RefreshButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Remove Feed に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RemoveFeedLabel {
+            get {
+                return ResourceManager.GetString("RemoveFeedLabel", resourceCulture);
             }
         }
         
