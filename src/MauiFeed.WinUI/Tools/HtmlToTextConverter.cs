@@ -2,8 +2,8 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
-using MauiFeed.Models;
 using System.Text.RegularExpressions;
+using MauiFeed.Models;
 
 namespace MauiFeed.WinUI
 {

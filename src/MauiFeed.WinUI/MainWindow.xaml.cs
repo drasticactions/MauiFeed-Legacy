@@ -47,11 +47,11 @@ namespace MauiFeed.WinUI
             var manager = WinUIEx.WindowManager.Get(this);
             manager.Backdrop = new WinUIEx.MicaSystemBackdrop();
 
-            this.AddNewFeedCommand = new AsyncCommand<string>(AddNewFeed, (x) => true, this.errorHandler);
-            this.RemoveFeedCommand = new AsyncCommand<FeedListItem>(RemoveFeed, (x) => true, this.errorHandler);
-            this.MarkAsReadCommand = new AsyncCommand<FeedItem>(MarkAsRead, (x) => true, this.errorHandler);
-            this.MarkAsFavoriteCommand = new AsyncCommand<FeedItem>(MarkAsFavorite, (x) => true, this.errorHandler);
-            this.OpenInBrowserCommand = new AsyncCommand<FeedItem>(OpenInBrowser, (x) => true, this.errorHandler);
+            this.AddNewFeedCommand = new AsyncCommand<string>(this.AddNewFeed, (x) => true, this.errorHandler);
+            this.RemoveFeedCommand = new AsyncCommand<FeedListItem>(this.RemoveFeed, (x) => true, this.errorHandler);
+            this.MarkAsReadCommand = new AsyncCommand<FeedItem>(this.MarkAsRead, (x) => true, this.errorHandler);
+            this.MarkAsFavoriteCommand = new AsyncCommand<FeedItem>(this.MarkAsFavorite, (x) => true, this.errorHandler);
+            this.OpenInBrowserCommand = new AsyncCommand<FeedItem>(this.OpenInBrowser, (x) => true, this.errorHandler);
             this.MarkAllAsReadCommand = new AsyncCommand<FeedNavigationViewItem>((x) => this.MarkAllAsRead(x.Items.ToList()), (x) => true, this.errorHandler);
 
             this.GenerateSidebar();
@@ -117,6 +117,17 @@ namespace MauiFeed.WinUI
             this.Items.Add(smartFilters);
         }
 
+        public async Task AddNewFeed(string feedUri)
+        {
+            Uri.TryCreate(feedUri, UriKind.Absolute, out Uri? uri);
+            if (uri is null)
+            {
+                return;
+            }
+
+            this.UpdateSidebar();
+        }
+
         /// <summary>
         /// On Property Changed.
         /// </summary>
@@ -169,17 +180,6 @@ namespace MauiFeed.WinUI
 
             var test = this.databaseContext.CreateFilter<FeedItem, int>(o => o.FeedListItemId, item.Id, DatabaseContext.FilterType.Equals);
             return new FeedNavigationViewItem(item.Name!, item, this.databaseContext, test);
-        }
-
-        public async Task AddNewFeed(string feedUri)
-        {
-            Uri.TryCreate(feedUri, UriKind.Absolute, out Uri? uri);
-            if (uri is null)
-            {
-                return;
-            }
-
-            this.UpdateSidebar();
         }
 
         /// <summary>
@@ -265,8 +265,8 @@ namespace MauiFeed.WinUI
                 this.dispatcher.Dispatch(this.UpdateSidebar);
             }).FireAndForgetSafeAsync();
 
-
-            Task.Run(async () => {
+            Task.Run(async () =>
+            {
                 var result = await this.templateService.RenderFeedItemAsync(selected);
                 this.LocalRssWebview.SetSource(result);
             }).FireAndForgetSafeAsync();

@@ -11,53 +11,53 @@ namespace MauiFeed.WinUI.Views
     {
         public PromptDialog()
         {
-            Title = Translations.Common.AddFeedButton;
-            PrimaryButtonText = "Ok";
-            SecondaryButtonText = "Cancel";
+            this.Title = Translations.Common.AddFeedButton;
+            this.PrimaryButtonText = "Ok";
+            this.SecondaryButtonText = "Cancel";
 
             var layout = new StackPanel();
 
-            TextBlockMessage = new TextBlock { Text = string.Empty, TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap };
-            TextBoxInput = new TextBox();
+            this.TextBlockMessage = new TextBlock { Text = string.Empty, TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap };
+            this.TextBoxInput = new TextBox();
 
-            layout.Children.Add(TextBlockMessage);
-            layout.Children.Add(TextBoxInput);
+            layout.Children.Add(this.TextBlockMessage);
+            layout.Children.Add(this.TextBoxInput);
 
-            Content = layout;
+            this.Content = layout;
+        }
+
+        public string Message
+        {
+            get => this.TextBlockMessage.Text;
+            set => this.TextBlockMessage.Text = value;
         }
 
         internal TextBlock TextBlockMessage { get; private set; }
 
         internal TextBox TextBoxInput { get; private set; }
 
-        public string Message
-        {
-            get => TextBlockMessage.Text;
-            set => TextBlockMessage.Text = value;
-        }
-
         public string Input
         {
-            get => TextBoxInput.Text;
-            set => TextBoxInput.Text = value;
+            get => this.TextBoxInput.Text;
+            set => this.TextBoxInput.Text = value;
         }
 
         public string Placeholder
         {
-            get => TextBoxInput.PlaceholderText;
-            set => TextBoxInput.PlaceholderText = value;
+            get => this.TextBoxInput.PlaceholderText;
+            set => this.TextBoxInput.PlaceholderText = value;
         }
 
         public int MaxLength
         {
-            get => TextBoxInput.MaxLength;
-            set => TextBoxInput.MaxLength = value;
+            get => this.TextBoxInput.MaxLength;
+            set => this.TextBoxInput.MaxLength = value;
         }
 
         public InputScope InputScope
         {
-            get => TextBoxInput.InputScope;
-            set => TextBoxInput.InputScope = value;
+            get => this.TextBoxInput.InputScope;
+            set => this.TextBoxInput.InputScope = value;
         }
     }
 }

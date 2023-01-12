@@ -53,7 +53,8 @@ namespace MauiFeed.WinUI
             if (File.Exists(realPath))
             {
                 return;
-                //File.Delete(realPath);
+
+                // File.Delete(realPath);
             }
 
             var db = MauiFeed.Utilities.GetResourceFileContent("DebugFiles.database_test.db")!;

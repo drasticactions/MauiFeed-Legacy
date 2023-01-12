@@ -13,7 +13,7 @@ namespace MauiFeed.Tests
     [TestClass]
     public class FeedReaderTests
     {
-        IRssService rss;
+        private IRssService rss;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedReaderTests"/> class.

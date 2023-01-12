@@ -15,7 +15,6 @@ namespace MauiFeed.Events
         Unknown,
     }
 
-
     public class HandleUIUpdateEventArgs : EventArgs
     {
         public HandleUIUpdateEventArgs(HandleUIUpdate update = HandleUIUpdate.Unknown)

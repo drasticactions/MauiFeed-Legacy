@@ -14,8 +14,8 @@ namespace MauiFeed.Tests
     [TestClass]
     public class GoogleNewsTests
     {
-        IRssService rss;
-        GoogleNewsService googleNews;
+        private IRssService rss;
+        private GoogleNewsService googleNews;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GoogleNewsTests"/> class.

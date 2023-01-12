@@ -2,10 +2,10 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using System.Reflection;
 using MauiFeed.NewsService;
 using MauiFeed.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace MauiFeed.Tests
 {

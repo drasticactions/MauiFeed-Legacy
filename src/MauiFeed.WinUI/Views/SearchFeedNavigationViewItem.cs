@@ -23,7 +23,7 @@ namespace MauiFeed.WinUI.Views
         {
             get
             {
-                return this.context.FeedItems!.Where(n => (n.Content ?? string.Empty).Contains(this.searchTerm)).OrderByDescending(n => n.PublishingDate).ToList();
+                return this.Context.FeedItems!.Where(n => (n.Content ?? string.Empty).Contains(this.searchTerm)).OrderByDescending(n => n.PublishingDate).ToList();
             }
         }
     }

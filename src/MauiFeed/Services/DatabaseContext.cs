@@ -218,34 +218,6 @@ namespace MauiFeed.Services
             return await this.FeedListItems!.Include(n => n.Items).ToListAsync();
         }
 
-        /// <summary>
-        /// Run when configuring the database.
-        /// </summary>
-        /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/>.</param>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite($"Filename={this.databasePath}");
-            optionsBuilder.EnableSensitiveDataLogging();
-        }
-
-        /// <summary>
-        /// Run when building the model.
-        /// </summary>
-        /// <param name="modelBuilder"><see cref="ModelBuilder"/>.</param>
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            if (modelBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(modelBuilder));
-            }
-
-            modelBuilder.Entity<FeedFolder>().HasKey(n => n.Id);
-            modelBuilder.Entity<FeedListItem>().HasKey(n => n.Id);
-            modelBuilder.Entity<FeedListItem>().HasIndex(n => n.Uri).IsUnique();
-            modelBuilder.Entity<FeedItem>().HasKey(n => n.Id);
-            modelBuilder.Entity<FeedItem>().HasIndex(n => n.RssId).IsUnique();
-        }
-
         public Expression<Func<TData, bool>> CreateFilter<TData, TKey>(Expression<Func<TData, TKey>> selector, TKey valueToCompare, FilterType type)
         {
             var parameter = Expression.Parameter(typeof(TData));
@@ -277,6 +249,34 @@ namespace MauiFeed.Services
             return Expression.Lambda<Func<TData, bool>>(body, parameter);
         }
 
+        /// <summary>
+        /// Run when configuring the database.
+        /// </summary>
+        /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/>.</param>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlite($"Filename={this.databasePath}");
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+
+        /// <summary>
+        /// Run when building the model.
+        /// </summary>
+        /// <param name="modelBuilder"><see cref="ModelBuilder"/>.</param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
+
+            modelBuilder.Entity<FeedFolder>().HasKey(n => n.Id);
+            modelBuilder.Entity<FeedListItem>().HasKey(n => n.Id);
+            modelBuilder.Entity<FeedListItem>().HasIndex(n => n.Uri).IsUnique();
+            modelBuilder.Entity<FeedItem>().HasKey(n => n.Id);
+            modelBuilder.Entity<FeedItem>().HasIndex(n => n.RssId).IsUnique();
+        }
+
         public async Task<FeedItem?> GetFeedItemViaRssId(string? rssId)
         {
             if (rssId is null)
@@ -285,6 +285,16 @@ namespace MauiFeed.Services
             }
 
             return await this.FeedItems!.FirstOrDefaultAsync(n => n.RssId == rssId);
+        }
+
+        public async Task<FeedListItem?> GetFeedListItem(Uri? rssId)
+        {
+            if (rssId is null)
+            {
+                return null;
+            }
+
+            return await this.FeedListItems!.FirstOrDefaultAsync(n => n.Uri == rssId);
         }
 
         private string GetParameterName<TData, TKey>(Expression<Func<TData, TKey>> expression)
@@ -301,16 +311,6 @@ namespace MauiFeed.Services
             }
 
             return memberExpression.ToString().Substring(2);
-        }
-
-        public async Task<FeedListItem?> GetFeedListItem(Uri? rssId)
-        {
-            if (rssId is null)
-            {
-                return null;
-            }
-
-            return await this.FeedListItems!.FirstOrDefaultAsync(n => n.Uri == rssId);
         }
     }
 }

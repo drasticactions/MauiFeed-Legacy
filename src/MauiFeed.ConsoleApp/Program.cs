@@ -104,7 +104,7 @@ async Task AddRssFeed()
     }
 }
 
-enum MainMenu
+internal enum MainMenu
 {
     [Display(Name = "List Feeds")]
     ListFeeds,

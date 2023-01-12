@@ -13,13 +13,13 @@ namespace MauiFeed.WinUI.Views
 {
     public class FeedNavigationViewItem : NavigationViewItem, ISidebarItem
     {
-        internal DatabaseContext context;
+        internal DatabaseContext Context;
 
         public FeedNavigationViewItem(string title, IconElement icon, DatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default)
         {
             this.Content = title;
             this.Icon = icon;
-            this.context = context;
+            this.Context = context;
             this.Filter = filter;
             this.Update();
         }
@@ -38,7 +38,7 @@ namespace MauiFeed.WinUI.Views
             this.Content = title;
             this.Icon = new ImageIcon() { Source = icon, Width = 30, Height = 30, };
 
-            this.context = context;
+            this.Context = context;
             this.Filter = filter;
             this.Update();
         }
@@ -57,7 +57,7 @@ namespace MauiFeed.WinUI.Views
             {
                 if (this.Filter is not null)
                 {
-                    return this.context.FeedItems!.Where(this.Filter).OrderByDescending(n => n.PublishingDate).ToList();
+                    return this.Context.FeedItems!.Where(this.Filter).OrderByDescending(n => n.PublishingDate).ToList();
                 }
 
                 return new List<FeedItem>();
