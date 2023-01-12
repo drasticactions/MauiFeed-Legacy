@@ -16,12 +16,12 @@ namespace MauiFeed.Views
         /// Set and replace the feed items in a given timeline.
         /// </summary>
         /// <param name="feedItems">Feed items.</param>
-        void SetFeedItems(IList<FeedItem> feedItems);
+        void SetFeed(ISidebarItem sidebar);
 
         /// <summary>
         /// Mark all feed items in the given timeline view as read.
         /// </summary>
         /// <returns>Task.</returns>
-        Task MarkAllFeedItemsAsReadAsync();
+        Task MarkAllAsRead(List<FeedItem> items);
     }
 }

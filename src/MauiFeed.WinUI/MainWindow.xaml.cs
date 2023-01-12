@@ -23,13 +23,11 @@ namespace MauiFeed.WinUI
     /// <summary>
     /// The main window of the app.
     /// </summary>
-    public sealed partial class MainWindow : Window, ISidebarView, INotifyPropertyChanged
+    public sealed partial class MainWindow : Window, ISidebarView
     {
-        private FeedNavigationViewItem? selectedNavItem;
         private DatabaseContext databaseContext;
         private IErrorHandlerService errorHandler;
-        private IAppDispatcher dispatcher;
-        private ITemplateService templateService;
+        private FeedTimelineSplitView timelineSplitView;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -38,8 +36,8 @@ namespace MauiFeed.WinUI
         {
             this.databaseContext = Ioc.Default.ResolveWith<DatabaseContext>();
             this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
-            this.dispatcher = Ioc.Default.GetService<IAppDispatcher>()!;
-            this.templateService = Ioc.Default.GetService<ITemplateService>()!;
+
+            this.timelineSplitView = new FeedTimelineSplitView(this);
 
             this.InitializeComponent();
             this.ExtendsContentIntoTitleBar = true;
@@ -49,23 +47,10 @@ namespace MauiFeed.WinUI
 
             this.AddNewFeedCommand = new AsyncCommand<string>(this.AddNewFeed, (x) => true, this.errorHandler);
             this.RemoveFeedCommand = new AsyncCommand<FeedListItem>(this.RemoveFeed, (x) => true, this.errorHandler);
-            this.MarkAsReadCommand = new AsyncCommand<FeedItem>(this.MarkAsRead, (x) => true, this.errorHandler);
-            this.MarkAsFavoriteCommand = new AsyncCommand<FeedItem>(this.MarkAsFavorite, (x) => true, this.errorHandler);
-            this.OpenInBrowserCommand = new AsyncCommand<FeedItem>(this.OpenInBrowser, (x) => true, this.errorHandler);
-            this.MarkAllAsReadCommand = new AsyncCommand<FeedNavigationViewItem>((x) => this.MarkAllAsRead(x.Items.ToList()), (x) => true, this.errorHandler);
 
             this.GenerateSidebar();
 
-            this.ArticleList.DataContext = this;
-        }
-
-        /// <inheritdoc/>
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public FeedNavigationViewItem? SelectedNavigationViewItem
-        {
-            get { return this.selectedNavItem; }
-            set { this.SetProperty(ref this.selectedNavItem, value); }
+            this.NavigationFrame.Content = this.timelineSplitView;
         }
 
         public ObservableCollection<FeedNavigationViewItem> Items { get; set; } = new ObservableCollection<FeedNavigationViewItem>();
@@ -73,14 +58,6 @@ namespace MauiFeed.WinUI
         public AsyncCommand<string> AddNewFeedCommand { get; private set; }
 
         public AsyncCommand<FeedListItem> RemoveFeedCommand { get; private set; }
-
-        public AsyncCommand<FeedItem> MarkAsReadCommand { get; private set; }
-
-        public AsyncCommand<FeedNavigationViewItem> MarkAllAsReadCommand { get; private set; }
-
-        public AsyncCommand<FeedItem> MarkAsFavoriteCommand { get; private set; }
-
-        public AsyncCommand<FeedItem> OpenInBrowserCommand { get; private set; }
 
         /// <inheritdoc/>
         public void UpdateSidebar()
@@ -128,39 +105,6 @@ namespace MauiFeed.WinUI
             this.UpdateSidebar();
         }
 
-        /// <summary>
-        /// On Property Changed.
-        /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            this.dispatcher.Dispatch(() =>
-            {
-                var changed = this.PropertyChanged;
-                if (changed == null)
-                {
-                    return;
-                }
-
-                changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            });
-        }
-
-#pragma warning disable SA1600 // Elements should be documented
-        protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "", Action? onChanged = null)
-#pragma warning restore SA1600 // Elements should be documented
-        {
-            if (EqualityComparer<T>.Default.Equals(backingStore, value))
-            {
-                return false;
-            }
-
-            backingStore = value;
-            onChanged?.Invoke();
-            this.OnPropertyChanged(propertyName);
-            return true;
-        }
-
         private async Task GenerateNavItems()
         {
             var feedItems = await this.databaseContext.GetAllFeedListAsync();
@@ -192,53 +136,6 @@ namespace MauiFeed.WinUI
             this.UpdateSidebar();
         }
 
-        /// <summary>
-        /// Mark the feed item as read or unread.
-        /// </summary>
-        /// <param name="item">The feed item to mark.</param>
-        /// <returns>Task.</returns>
-        public Task MarkAsRead(FeedItem item)
-            => this.MarkAllAsRead(new List<FeedItem> { item });
-
-        /// <summary>
-        /// Mark the feed item as read or unread.
-        /// </summary>
-        /// <param name="item">The feed item to mark.</param>
-        /// <returns>Task.</returns>
-        public async Task MarkAllAsRead(List<FeedItem> items)
-        {
-            var allRead = items.All(n => n.IsRead);
-
-            foreach (var item in items)
-            {
-                item.IsRead = !allRead;
-            }
-
-            this.databaseContext.UpdateFeedItems(items).FireAndForgetSafeAsync();
-            this.UpdateSidebar();
-        }
-
-        /// <summary>
-        /// Open the feed item in a browser.
-        /// </summary>
-        /// <param name="item">The Feed Item to open.</param>
-        /// <returns>Task.</returns>
-        public async Task OpenInBrowser(FeedItem item)
-        {
-            await Windows.System.Launcher.LaunchUriAsync(new Uri(item.Link!));
-        }
-
-        /// <summary>
-        /// Mark the feed item as a favorite.
-        /// </summary>
-        /// <param name="item">Feed item to mark.</param>
-        /// <returns>Task.</returns>
-        public async Task MarkAsFavorite(FeedItem item)
-        {
-            item.IsFavorite = !item.IsFavorite;
-            this.databaseContext.UpdateFeedItem(item).FireAndForgetSafeAsync();
-        }
-
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItem is not FeedNavigationViewItem item)
@@ -246,30 +143,7 @@ namespace MauiFeed.WinUI
                 return;
             }
 
-            this.SelectedNavigationViewItem = item;
-        }
-
-        private void ArticleList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selected = e.AddedItems.FirstOrDefault() as FeedItem;
-            if (selected is null)
-            {
-                return;
-            }
-
-            selected.IsRead = true;
-
-            Task.Run(async () =>
-            {
-                await this.databaseContext.UpdateFeedItem(selected);
-                this.dispatcher.Dispatch(this.UpdateSidebar);
-            }).FireAndForgetSafeAsync();
-
-            Task.Run(async () =>
-            {
-                var result = await this.templateService.RenderFeedItemAsync(selected);
-                this.LocalRssWebview.SetSource(result);
-            }).FireAndForgetSafeAsync();
+            this.timelineSplitView.SetFeed(item);
         }
     }
 }

@@ -51,6 +51,8 @@ namespace MauiFeed.WinUI.Views
 
         public FeedListItem? FeedListItem { get; }
 
+        public string Title => this.Content as string ?? string.Empty;
+
         public virtual IList<FeedItem> Items
         {
             get

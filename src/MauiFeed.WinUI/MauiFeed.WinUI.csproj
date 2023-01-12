@@ -12,6 +12,9 @@
 		<EnableMsixTooling>true</EnableMsixTooling>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="Views\FeedTimelineSplitView.xaml" />
+	</ItemGroup>
+	<ItemGroup>
 		<Content Include="Assets\LargeTile.scale-100.png" />
 		<Content Include="Assets\LargeTile.scale-125.png" />
 		<Content Include="Assets\LargeTile.scale-150.png" />
@@ -123,6 +126,12 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\FeedTimelineSplitView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 	<!-- 
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
