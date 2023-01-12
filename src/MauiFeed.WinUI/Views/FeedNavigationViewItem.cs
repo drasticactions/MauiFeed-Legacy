@@ -7,6 +7,7 @@ using MauiFeed.Models;
 using MauiFeed.Services;
 using MauiFeed.Views;
 using MauiFeed.WinUI.Tools;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml.Controls;
 
 namespace MauiFeed.WinUI.Views
@@ -59,7 +60,7 @@ namespace MauiFeed.WinUI.Views
             {
                 if (this.Filter is not null)
                 {
-                    return this.Context.FeedItems!.Where(this.Filter).OrderByDescending(n => n.PublishingDate).ToList();
+                    return this.Context.FeedItems!.Include(n => n.Feed).Where(this.Filter).OrderByDescending(n => n.PublishingDate).ToList();
                 }
 
                 return new List<FeedItem>();

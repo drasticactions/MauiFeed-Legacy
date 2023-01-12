@@ -12,6 +12,7 @@
 		<EnableMsixTooling>true</EnableMsixTooling>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="Views\AddNewFeedFlyout.xaml" />
 	  <None Remove="Views\FeedTimelineSplitView.xaml" />
 	</ItemGroup>
 	<ItemGroup>
@@ -126,6 +127,12 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\AddNewFeedFlyout.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 
 	<ItemGroup>

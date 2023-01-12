@@ -129,6 +129,9 @@
   <data name="AppTitle" xml:space="preserve">
     <value>MauiFeed</value>
   </data>
+  <data name="FeedUrlLabel" xml:space="preserve">
+    <value>Feed URL</value>
+  </data>
   <data name="GoogleNewsService" xml:space="preserve">
     <value>Google News</value>
   </data>

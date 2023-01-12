@@ -97,6 +97,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Feed URL に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FeedUrlLabel {
+            get {
+                return ResourceManager.GetString("FeedUrlLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Google News に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string GoogleNewsService {

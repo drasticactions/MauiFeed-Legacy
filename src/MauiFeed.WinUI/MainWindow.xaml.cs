@@ -17,6 +17,7 @@ using MauiFeed.WinUI.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MauiFeed.WinUI
 {
@@ -28,6 +29,7 @@ namespace MauiFeed.WinUI
         private DatabaseContext databaseContext;
         private IErrorHandlerService errorHandler;
         private FeedTimelineSplitView timelineSplitView;
+        private FeedNavigationViewItem? addFeedButton;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -45,7 +47,6 @@ namespace MauiFeed.WinUI
             var manager = WinUIEx.WindowManager.Get(this);
             manager.Backdrop = new WinUIEx.MicaSystemBackdrop();
 
-            this.AddNewFeedCommand = new AsyncCommand<string>(this.AddNewFeed, (x) => true, this.errorHandler);
             this.RemoveFeedCommand = new AsyncCommand<FeedListItem>(this.RemoveFeed, (x) => true, this.errorHandler);
 
             this.GenerateSidebar();
@@ -54,8 +55,6 @@ namespace MauiFeed.WinUI
         }
 
         public ObservableCollection<FeedNavigationViewItem> Items { get; set; } = new ObservableCollection<FeedNavigationViewItem>();
-
-        public AsyncCommand<string> AddNewFeedCommand { get; private set; }
 
         public AsyncCommand<FeedListItem> RemoveFeedCommand { get; private set; }
 
@@ -69,6 +68,23 @@ namespace MauiFeed.WinUI
         }
 
         /// <inheritdoc/>
+        public void AddItemToSidebar(FeedListItem item)
+        {
+            var oldItem = this.Items.FirstOrDefault(n => n.FeedListItem?.Id == item.Id);
+
+            // If we don't have this item already in the list, add it.
+            // Then, update the sidebar. If you tried adding an existing item,
+            // It would have updated the feed, so we can show the new items.
+            if (oldItem is null)
+            {
+                var navItem = this.GenerateNavItem(item);
+                this.Items.Add(navItem);
+            }
+
+            this.UpdateSidebar();
+        }
+
+        /// <inheritdoc/>
         public void GenerateSidebar()
         {
             this.GenerateSmartFeeds();
@@ -77,7 +93,15 @@ namespace MauiFeed.WinUI
 
         public void GenerateSmartFeeds()
         {
+            this.addFeedButton = new FeedNavigationViewItem(Translations.Common.AddFeedButton, new SymbolIcon(Symbol.Add), this.databaseContext);
+            this.addFeedButton.SelectsOnInvoked = false;
+            this.addFeedButton.Tapped += this.AddFeedButton_Tapped;
+            this.addFeedButton.ContextFlyout = new Flyout() { Content = new AddNewFeedFlyout(this) };
+
+            this.Items.Add(this.addFeedButton);
+
             var smartFilters = new FeedNavigationViewItem(Translations.Common.SmartFeedsLabel, new SymbolIcon(Symbol.Filter), this.databaseContext);
+            smartFilters.SelectsOnInvoked = false;
 
             var all = new FeedNavigationViewItem(Translations.Common.AllLabel, new SymbolIcon(Symbol.Bookmarks), this.databaseContext, this.databaseContext.CreateFilter<FeedItem, int>(o => o.Id, 0, DatabaseContext.FilterType.GreaterThan));
             smartFilters.MenuItems.Add(all);
@@ -92,17 +116,6 @@ namespace MauiFeed.WinUI
             smartFilters.MenuItems.Add(star);
 
             this.Items.Add(smartFilters);
-        }
-
-        public async Task AddNewFeed(string feedUri)
-        {
-            Uri.TryCreate(feedUri, UriKind.Absolute, out Uri? uri);
-            if (uri is null)
-            {
-                return;
-            }
-
-            this.UpdateSidebar();
         }
 
         private async Task GenerateNavItems()
@@ -144,6 +157,11 @@ namespace MauiFeed.WinUI
             }
 
             this.timelineSplitView.SetFeed(item);
+        }
+
+        private void AddFeedButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            ((FrameworkElement)sender)!.ContextFlyout.ShowAt((FrameworkElement)sender!);
         }
     }
 }

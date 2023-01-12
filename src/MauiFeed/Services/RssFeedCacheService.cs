@@ -55,6 +55,7 @@ namespace MauiFeed.Services
                 }
 
                 item.FeedListItemId = oldFeed.Id;
+                item.Feed = oldFeed;
                 await this.databaseContext.AddFeedItem(item);
             }
 

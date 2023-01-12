@@ -34,6 +34,7 @@ namespace MauiFeed.WinUI
                 .AddSingleton<IErrorHandlerService, ErrorHandlerService>()
                 .AddSingleton<ITemplateService, HandlebarsTemplateService>()
                 .AddSingleton<IRssService, FeedReaderService>()
+                .AddSingleton<RssFeedCacheService>()
                 .BuildServiceProvider());
         }
 

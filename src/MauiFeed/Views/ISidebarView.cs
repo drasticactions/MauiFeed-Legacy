@@ -2,7 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
-using System;
+using MauiFeed.Models;
 
 namespace MauiFeed.Views
 {
@@ -15,6 +15,12 @@ namespace MauiFeed.Views
         /// Update the sidebar UI.
         /// </summary>
         void UpdateSidebar();
+
+        /// <summary>
+        /// Add an item to the sidebar.
+        /// </summary>
+        /// <param name="item">Feed List Item.</param>
+        void AddItemToSidebar(FeedListItem item);
 
         /// <summary>
         /// Generate Sidebar Items.
