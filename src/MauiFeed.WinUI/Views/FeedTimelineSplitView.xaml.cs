@@ -7,6 +7,7 @@ using Drastic.Tools;
 using MauiFeed.Models;
 using MauiFeed.Services;
 using MauiFeed.Views;
+using MauiFeed.WinUI.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -16,6 +17,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -39,10 +41,11 @@ namespace MauiFeed.WinUI.Views
         private IErrorHandlerService errorHandler;
         private IAppDispatcher dispatcher;
         private ITemplateService templateService;
+        private ThemeSelectorService themeSelectorService;
 
         private DatabaseContext databaseContext;
 
-        public FeedTimelineSplitView(ISidebarView window)
+        public FeedTimelineSplitView(ISidebarView window, ThemeSelectorService themeSelectorService)
         {
             this.InitializeComponent();
 
@@ -57,10 +60,21 @@ namespace MauiFeed.WinUI.Views
             this.MarkAllAsReadCommand = new AsyncCommand<FeedNavigationViewItem>((x) => this.MarkAllAsRead(x.Items.ToList()), (x) => true, this.errorHandler);
 
             this.ArticleList.DataContext = this;
+            this.themeSelectorService = themeSelectorService;
+            this.themeSelectorService.ThemeChanged += ThemeSelectorService_ThemeChanged;
+        }
+
+        private void ThemeSelectorService_ThemeChanged(object? sender, EventArgs e)
+        {
+            this.RenderFeedItem(this.SelectedItem);
         }
 
         /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public ObservableCollection<FeedItem> Items { get; private set; } = new ObservableCollection<FeedItem>();
+
+        public FeedItem? SelectedItem { get; set; }
 
         public AsyncCommand<FeedItem> MarkAsReadCommand { get; private set; }
 
@@ -159,6 +173,7 @@ namespace MauiFeed.WinUI.Views
         public void SetFeed(ISidebarItem sidebar)
         {
             this.SelectedNavigationViewItem = sidebar;
+            this.RefreshFeed();
         }
 
         private void ArticleList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -169,6 +184,8 @@ namespace MauiFeed.WinUI.Views
                 return;
             }
 
+            this.SelectedItem = selected;
+
             selected.IsRead = true;
 
             Task.Run(async () =>
@@ -177,11 +194,33 @@ namespace MauiFeed.WinUI.Views
                 this.dispatcher.Dispatch(this.sidebar.UpdateSidebar);
             }).FireAndForgetSafeAsync();
 
+            this.RenderFeedItem(selected);
+        }
+
+        private void RenderFeedItem(FeedItem? item)
+        {
+            if (item is null)
+            {
+                return;
+            }
+
             Task.Run(async () =>
             {
-                var result = await this.templateService.RenderFeedItemAsync(selected);
+                var result = await this.templateService.RenderFeedItemAsync(item, this.themeSelectorService.IsDark);
                 this.LocalRssWebview.SetSource(result);
             }).FireAndForgetSafeAsync();
+        }
+
+        private void RefreshFeed()
+        {
+            this.Items.Clear();
+
+            var items = this.selectedNavItem?.Items ?? new List<FeedItem>();
+
+            foreach (var item in items)
+            {
+                this.Items.Add(item);
+            }
         }
     }
 }

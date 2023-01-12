@@ -97,6 +97,24 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Dark に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DarkThemeLabel {
+            get {
+                return ResourceManager.GetString("DarkThemeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Default に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DefaultThemeLabel {
+            get {
+                return ResourceManager.GetString("DefaultThemeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Feed URL に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string FeedUrlLabel {
@@ -165,6 +183,24 @@ namespace MauiFeed.Translations {
         public static string GoogleSectionWorld {
             get {
                 return ResourceManager.GetString("GoogleSectionWorld", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Hide Read Articles に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string HideAllReadLabel {
+            get {
+                return ResourceManager.GetString("HideAllReadLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Light に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string LightThemeLabel {
+            get {
+                return ResourceManager.GetString("LightThemeLabel", resourceCulture);
             }
         }
         
@@ -259,6 +295,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Settings に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SettingsLabel {
+            get {
+                return ResourceManager.GetString("SettingsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Smart Feeds に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SmartFeedsLabel {
@@ -273,6 +318,15 @@ namespace MauiFeed.Translations {
         public static string StarredLabel {
             get {
                 return ResourceManager.GetString("StarredLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Theme に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ThemeLabel {
+            get {
+                return ResourceManager.GetString("ThemeLabel", resourceCulture);
             }
         }
         

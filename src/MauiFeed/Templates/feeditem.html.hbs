@@ -2,6 +2,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 <head>
+    {{#if IsDarkMode }}
+    <style>
+        :root {
+            color-scheme: dark;
+        }
+    </style>
+    {{else}}
+    <style>
+        :root {
+            color-scheme: light;
+        }
+    </style>
+    {{/if}}
     <style>
         body {
             font-family: "Segoe UI", Helvetica, sans-serif;
@@ -13,10 +26,6 @@
             padding-right: 50px;
             padding-top: 10px;
             padding-bottom: 10px;
-        }
-
-        :root {
-            color-scheme: light dark;
         }
 
         img {

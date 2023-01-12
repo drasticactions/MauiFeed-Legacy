@@ -16,6 +16,6 @@ namespace MauiFeed.Services
         /// </summary>
         /// <param name="item">FeedItem.</param>
         /// <returns>Html String.</returns>
-        public Task<string> RenderFeedItemAsync(FeedItem item);
+        public Task<string> RenderFeedItemAsync(FeedItem item, bool darkMode);
     }
 }

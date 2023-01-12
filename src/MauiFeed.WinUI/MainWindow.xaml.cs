@@ -13,6 +13,7 @@ using Force.DeepCloner;
 using MauiFeed.Models;
 using MauiFeed.Services;
 using MauiFeed.Views;
+using MauiFeed.WinUI.Services;
 using MauiFeed.WinUI.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -24,12 +25,16 @@ namespace MauiFeed.WinUI
     /// <summary>
     /// The main window of the app.
     /// </summary>
-    public sealed partial class MainWindow : Window, ISidebarView
+    public sealed partial class MainWindow : WinUIEx.WindowEx, ISidebarView
     {
         private DatabaseContext databaseContext;
         private IErrorHandlerService errorHandler;
         private FeedTimelineSplitView timelineSplitView;
         private FeedNavigationViewItem? addFeedButton;
+        private RssFeedCacheService rssFeedCacheService;
+        private Progress<RssCacheFeedUpdate> progressUpdate;
+        private SettingsPage settingsPage;
+        private ThemeSelectorService themeSelector;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -38,9 +43,12 @@ namespace MauiFeed.WinUI
         {
             this.databaseContext = Ioc.Default.ResolveWith<DatabaseContext>();
             this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
-
-            this.timelineSplitView = new FeedTimelineSplitView(this);
-
+            this.rssFeedCacheService = Ioc.Default.GetService<RssFeedCacheService>()!;
+            this.progressUpdate = new Progress<RssCacheFeedUpdate>();
+            this.progressUpdate.ProgressChanged += ProgressUpdate_ProgressChanged;
+            this.themeSelector = new ThemeSelectorService(this);
+            this.timelineSplitView = new FeedTimelineSplitView(this, this.themeSelector);
+            this.settingsPage = new SettingsPage(this.themeSelector);
             this.InitializeComponent();
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(this.AppTitleBar);
@@ -52,6 +60,7 @@ namespace MauiFeed.WinUI
             this.GenerateSidebar();
 
             this.NavigationFrame.Content = this.timelineSplitView;
+            this.themeSelector.SetRequestedTheme();
         }
 
         public ObservableCollection<FeedNavigationViewItem> Items { get; set; } = new ObservableCollection<FeedNavigationViewItem>();
@@ -93,6 +102,11 @@ namespace MauiFeed.WinUI
 
         public void GenerateSmartFeeds()
         {
+            var refreshButton = new FeedNavigationViewItem(Translations.Common.RefreshButton, new SymbolIcon(Symbol.Refresh), this.databaseContext);
+            refreshButton.SelectsOnInvoked = false;
+            refreshButton.Tapped += this.RefreshButton_Tapped;
+            this.Items.Add(refreshButton);
+
             this.addFeedButton = new FeedNavigationViewItem(Translations.Common.AddFeedButton, new SymbolIcon(Symbol.Add), this.databaseContext);
             this.addFeedButton.SelectsOnInvoked = false;
             this.addFeedButton.Tapped += this.AddFeedButton_Tapped;
@@ -153,15 +167,41 @@ namespace MauiFeed.WinUI
         {
             if (args.SelectedItem is not FeedNavigationViewItem item)
             {
+                if (args.SelectedItem is NavigationViewItem nav)
+                {
+                    if (nav.Tag.ToString() == "Settings")
+                    {
+                        this.NavigationFrame.Content = this.settingsPage;
+                    }
+
+                    return;
+                }
+
                 return;
             }
 
+            this.NavigationFrame.Content = this.timelineSplitView;
             this.timelineSplitView.SetFeed(item);
         }
 
         private void AddFeedButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             ((FrameworkElement)sender)!.ContextFlyout.ShowAt((FrameworkElement)sender!);
+        }
+
+        private void RefreshButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            this.rssFeedCacheService.RefreshFeedsAsync(this.progressUpdate).FireAndForgetSafeAsync();
+        }
+
+        private void ProgressUpdate_ProgressChanged(object? sender, RssCacheFeedUpdate e)
+        {
+            // TODO: Show UI for updating each item.
+            // This is contained in RssCacheFeedUpdate.
+            if (e.IsDone)
+            {
+                this.UpdateSidebar();
+            }
         }
     }
 }

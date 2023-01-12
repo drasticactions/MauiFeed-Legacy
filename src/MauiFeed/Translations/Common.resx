@@ -129,6 +129,12 @@
   <data name="AppTitle" xml:space="preserve">
     <value>MauiFeed</value>
   </data>
+  <data name="DarkThemeLabel" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="DefaultThemeLabel" xml:space="preserve">
+    <value>Default</value>
+  </data>
   <data name="FeedUrlLabel" xml:space="preserve">
     <value>Feed URL</value>
   </data>
@@ -152,6 +158,12 @@
   </data>
   <data name="GoogleSectionWorld" xml:space="preserve">
     <value>World</value>
+  </data>
+  <data name="HideAllReadLabel" xml:space="preserve">
+    <value>Hide Read Articles</value>
+  </data>
+  <data name="LightThemeLabel" xml:space="preserve">
+    <value>Light</value>
   </data>
   <data name="LocalLabel" xml:space="preserve">
     <value>Local</value>
@@ -183,11 +195,17 @@
   <data name="RemoveStarLabel" xml:space="preserve">
     <value>Remove From Favorites</value>
   </data>
+  <data name="SettingsLabel" xml:space="preserve">
+    <value>Settings</value>
+  </data>
   <data name="SmartFeedsLabel" xml:space="preserve">
     <value>Smart Feeds</value>
   </data>
   <data name="StarredLabel" xml:space="preserve">
     <value>Favorites</value>
+  </data>
+  <data name="ThemeLabel" xml:space="preserve">
+    <value>Theme</value>
   </data>
   <data name="TodayLabel" xml:space="preserve">
     <value>Today</value>
