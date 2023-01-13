@@ -203,6 +203,19 @@ namespace MauiFeed.Services
             return item;
         }
 
+        public async Task<FeedListItem> RemoveFeedListItem(FeedListItem item)
+        {
+            if (item.Id <= 0)
+            {
+                throw new ArgumentException("Id Must Not Be 0");
+            }
+
+            this.FeedListItems!.Remove(item);
+            await this.SaveChangesAsync();
+            this.OnFeedListItemsRemoved?.Invoke(this, new FeedListItemsRemovedEventArgs(item));
+            return item;
+        }
+
         /// <summary>
         /// Resets the local database.
         /// </summary>

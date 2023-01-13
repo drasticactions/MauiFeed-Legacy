@@ -173,7 +173,7 @@ namespace MauiFeed.WinUI.Views
         public void SetFeed(ISidebarItem sidebar)
         {
             this.SelectedNavigationViewItem = sidebar;
-            this.RefreshFeed();
+            this.UpdateFeed();
         }
 
         private void ArticleList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -211,7 +211,7 @@ namespace MauiFeed.WinUI.Views
             }).FireAndForgetSafeAsync();
         }
 
-        private void RefreshFeed()
+        public void UpdateFeed()
         {
             this.Items.Clear();
 

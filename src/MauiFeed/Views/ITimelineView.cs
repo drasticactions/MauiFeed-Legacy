@@ -23,5 +23,10 @@ namespace MauiFeed.Views
         /// </summary>
         /// <returns>Task.</returns>
         Task MarkAllAsRead(List<FeedItem> items);
+
+        /// <summary>
+        /// Update the existing feed.
+        /// </summary>
+        void UpdateFeed();
     }
 }

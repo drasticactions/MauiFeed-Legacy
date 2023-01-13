@@ -31,10 +31,12 @@ namespace MauiFeed.WinUI
         private IErrorHandlerService errorHandler;
         private FeedTimelineSplitView timelineSplitView;
         private FeedNavigationViewItem? addFeedButton;
+        private FeedNavigationViewItem? allButton;
         private RssFeedCacheService rssFeedCacheService;
         private Progress<RssCacheFeedUpdate> progressUpdate;
         private SettingsPage settingsPage;
         private ThemeSelectorService themeSelector;
+        private FeedNavigationViewItem? selectedNavItem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -55,8 +57,6 @@ namespace MauiFeed.WinUI
             var manager = WinUIEx.WindowManager.Get(this);
             manager.Backdrop = new WinUIEx.MicaSystemBackdrop();
 
-            this.RemoveFeedCommand = new AsyncCommand<FeedListItem>(this.RemoveFeed, (x) => true, this.errorHandler);
-
             this.GenerateSidebar();
 
             this.NavigationFrame.Content = this.timelineSplitView;
@@ -64,8 +64,6 @@ namespace MauiFeed.WinUI
         }
 
         public ObservableCollection<FeedNavigationViewItem> Items { get; set; } = new ObservableCollection<FeedNavigationViewItem>();
-
-        public AsyncCommand<FeedListItem> RemoveFeedCommand { get; private set; }
 
         /// <inheritdoc/>
         public void UpdateSidebar()
@@ -117,8 +115,8 @@ namespace MauiFeed.WinUI
             var smartFilters = new FeedNavigationViewItem(Translations.Common.SmartFeedsLabel, new SymbolIcon(Symbol.Filter), this.databaseContext);
             smartFilters.SelectsOnInvoked = false;
 
-            var all = new FeedNavigationViewItem(Translations.Common.AllLabel, new SymbolIcon(Symbol.Bookmarks), this.databaseContext, this.databaseContext.CreateFilter<FeedItem, int>(o => o.Id, 0, DatabaseContext.FilterType.GreaterThan));
-            smartFilters.MenuItems.Add(all);
+            this.allButton = new FeedNavigationViewItem(Translations.Common.AllLabel, new SymbolIcon(Symbol.Bookmarks), this.databaseContext, this.databaseContext.CreateFilter<FeedItem, int>(o => o.Id, 0, DatabaseContext.FilterType.GreaterThan));
+            smartFilters.MenuItems.Add(this.allButton);
 
             var today = new FeedNavigationViewItem(Translations.Common.TodayLabel, new SymbolIcon(Symbol.GoToToday), this.databaseContext, this.databaseContext.CreateFilter<FeedItem, DateTime?>(o => o.PublishingDate, DateTime.UtcNow.Date, DatabaseContext.FilterType.GreaterThanOrEqual));
             smartFilters.MenuItems.Add(today);
@@ -150,7 +148,14 @@ namespace MauiFeed.WinUI
             }
 
             var test = this.databaseContext.CreateFilter<FeedItem, int>(o => o.FeedListItemId, item.Id, DatabaseContext.FilterType.Equals);
-            return new FeedNavigationViewItem(item.Name!, item, this.databaseContext, test);
+            var navItem = new FeedNavigationViewItem(item.Name!, item, this.databaseContext, test);
+            var command = new AsyncCommand<FeedNavigationViewItem>(this.RemoveFeed, (item) => true, this.errorHandler);
+            navItem.ContextFlyout = new Flyout() { Content = new RemoveFeedFlyout(command, navItem) };
+            navItem.RightTapped += (sender, args) =>
+            {
+                ((FrameworkElement)sender)!.ContextFlyout.ShowAt((FrameworkElement)sender!);
+            };
+            return navItem;
         }
 
         /// <summary>
@@ -158,9 +163,18 @@ namespace MauiFeed.WinUI
         /// </summary>
         /// <param name="item">The feed item to mark.</param>
         /// <returns>Task.</returns>
-        public async Task RemoveFeed(FeedListItem item)
+        public async Task RemoveFeed(FeedNavigationViewItem item)
         {
+            // If you're removing the item you have selected, reset the feed to All.
+            if (this.NavView.SelectedItem == item)
+            {
+                this.NavView.SelectedItem = this.allButton;
+            }
+
+            this.Items.Remove(item);
+            await this.databaseContext.RemoveFeedListItem(item.FeedListItem!);
             this.UpdateSidebar();
+            this.timelineSplitView.UpdateFeed();
         }
 
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -189,9 +203,10 @@ namespace MauiFeed.WinUI
             ((FrameworkElement)sender)!.ContextFlyout.ShowAt((FrameworkElement)sender!);
         }
 
-        private void RefreshButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private async void RefreshButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            this.rssFeedCacheService.RefreshFeedsAsync(this.progressUpdate).FireAndForgetSafeAsync();
+            await this.rssFeedCacheService.RefreshFeedsAsync(this.progressUpdate);
+            this.timelineSplitView.UpdateFeed();
         }
 
         private void ProgressUpdate_ProgressChanged(object? sender, RssCacheFeedUpdate e)
