@@ -23,6 +23,12 @@
     <Compile Remove="**\Mac\**\*.cs" />
     <None Include="**\Mac\**\*.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
   </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.Contains('-tvos')) != true ">
+    <Compile Remove="**\*.tvOS.cs" />
+    <None Include="**\*.tvOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <Compile Remove="**\tvOS\**\*.cs" />
+    <None Include="**\tvOS\**\*.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+  </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.Contains('-maccatalyst')) != true">
     <Compile Remove="**\*.Catalyst.cs" />
     <None Include="**\*.Catalyst.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />

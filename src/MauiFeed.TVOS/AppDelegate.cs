@@ -1,17 +1,60 @@
+// <copyright file="AppDelegate.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Drastic.Services;
+using MauiFeed.Apple;
+using MauiFeed.NewsService;
+using MauiFeed.Services;
+using Microsoft.Extensions.DependencyInjection;
+using static System.Environment;
+
 namespace MauiFeed.TVOS;
 
-[Register ("AppDelegate")]
-public class AppDelegate : UIApplicationDelegate {
-	public override UIWindow? Window {
-		get;
-		set;
-	}
+[Register("AppDelegate")]
+public class AppDelegate : UIApplicationDelegate
+{
+    public override UIWindow? Window
+    {
+        get;
+        set;
+    }
 
-	public override bool FinishedLaunching (UIApplication application, NSDictionary launchOptions)
-	{
-		// Override point for customization after application launch.
-		// If not required for your application you can safely delete this method
+    private string dbpath = System.IO.Path.Combine(Environment.GetFolderPath(SpecialFolder.LocalApplicationData), "MauiFeed", "database.db");
 
-		return true;
-	}
+    public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
+    {
+        this.SetupDebugDatabase();
+
+        Ioc.Default.ConfigureServices(
+        new ServiceCollection()
+        .AddSingleton<IAppDispatcher>(new AppDispatcher())
+        .AddSingleton(new DatabaseContext(dbpath))
+        .AddSingleton<IErrorHandlerService, ErrorHandlerService>()
+        .AddSingleton<ITemplateService, HandlebarsTemplateService>()
+        .AddSingleton<IRssService, FeedReaderService>()
+        .AddSingleton<RssFeedCacheService>()
+        .BuildServiceProvider());
+
+        this.Window = new MainWindow(UIScreen.MainScreen.Bounds);
+
+        this.Window.MakeKeyAndVisible();
+
+        return true;
+    }
+
+    private void SetupDebugDatabase()
+    {
+        if (File.Exists(dbpath))
+        {
+            return;
+            //File.Delete(dbpath);
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(dbpath)!);
+        var db = MauiFeed.Utilities.GetResourceFileContent("DebugFiles.database_test.db")!;
+        using var feed = File.OpenWrite(dbpath);
+        db.CopyTo(feed);
+    }
 }

@@ -1,30 +1,62 @@
+// <copyright file="AppDelegate.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Drastic.Services;
+using MauiFeed.Apple;
+using MauiFeed.NewsService;
+using MauiFeed.Services;
+using Microsoft.Extensions.DependencyInjection;
+using static System.Environment;
+
 namespace MauiFeed.IOS;
 
-[Register ("AppDelegate")]
-public class AppDelegate : UIApplicationDelegate {
-	public override UIWindow? Window {
-		get;
-		set;
-	}
+[Register("AppDelegate")]
+public class AppDelegate : UIApplicationDelegate
+{
+    public override UIWindow? Window
+    {
+        get;
+        set;
+    }
 
-	public override bool FinishedLaunching (UIApplication application, NSDictionary launchOptions)
-	{
-		// create a new window instance based on the screen size
-		Window = new UIWindow (UIScreen.MainScreen.Bounds);
+    private string dbpath = System.IO.Path.Combine(Environment.GetFolderPath(SpecialFolder.LocalApplicationData), "MauiFeed", "database.db");
 
-		// create a UIViewController with a single UILabel
-		var vc = new UIViewController ();
-		vc.View!.AddSubview (new UILabel (Window!.Frame) {
-			BackgroundColor = UIColor.SystemBackground,
-			TextAlignment = UITextAlignment.Center,
-			Text = "Hello, iOS!",
-			AutoresizingMask = UIViewAutoresizing.All,
-		});
-		Window.RootViewController = vc;
+    public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
+    {
+        this.SetupDebugDatabase();
 
-		// make the window visible
-		Window.MakeKeyAndVisible ();
+        Ioc.Default.ConfigureServices(
+        new ServiceCollection()
+        .AddSingleton<IAppDispatcher>(new AppDispatcher())
+        .AddSingleton(new DatabaseContext(dbpath))
+        .AddSingleton<IErrorHandlerService, ErrorHandlerService>()
+        .AddSingleton<ITemplateService, HandlebarsTemplateService>()
+        .AddSingleton<IRssService, FeedReaderService>()
+        .AddSingleton<RssFeedCacheService>()
+        .BuildServiceProvider());
 
-		return true;
-	}
+        // create a new window instance based on the screen size
+        this.Window = new MainWindow(UIScreen.MainScreen.Bounds);
+
+        // make the window visible
+        this.Window.MakeKeyAndVisible();
+
+        return true;
+    }
+
+    private void SetupDebugDatabase()
+    {
+        if (File.Exists(dbpath))
+        {
+            return;
+            //File.Delete(dbpath);
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(dbpath)!);
+        var db = MauiFeed.Utilities.GetResourceFileContent("DebugFiles.database_test.db")!;
+        using var feed = File.OpenWrite(dbpath);
+        db.CopyTo(feed);
+    }
 }

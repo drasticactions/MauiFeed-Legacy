@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="../MultiTargeting.targets" />
 	<PropertyGroup>
@@ -5,5 +6,34 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	  <CreatePackage>false</CreatePackage>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	  <CreatePackage>false</CreatePackage>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Drastic.PureLayout" Version="1.0.4" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+		<PackageReference Include="Humanizer" Version="2.14.1" />
+		<PackageReference Include="Drastic.Utilities" Version="1.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="MaciOS\" />
+	  <None Remove="tvOS\" />
+	  <None Remove="Catalyst\" />
+	  <None Remove="Views\" />
+	  <None Remove="MaciOS\Sidebar\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="MaciOS\" />
+	  <Folder Include="tvOS\" />
+	  <Folder Include="Catalyst\" />
+	  <Folder Include="Views\" />
+	  <Folder Include="MaciOS\Sidebar\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
+	</ItemGroup>
 </Project>

@@ -11,4 +11,9 @@
     <ProjectReference Include="..\MauiFeed.Apple\MauiFeed.Apple.csproj" />
     <ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Drastic.PureLayout" Version="1.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+  </ItemGroup>
 </Project>
