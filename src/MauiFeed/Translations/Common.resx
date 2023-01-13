@@ -120,6 +120,12 @@
   <data name="AddFeedButton" xml:space="preserve">
     <value>Add Feed</value>
   </data>
+  <data name="AddFolderLabel" xml:space="preserve">
+    <value>Add Folder</value>
+  </data>
+  <data name="AddLabel" xml:space="preserve">
+    <value>Add...</value>
+  </data>
   <data name="AllLabel" xml:space="preserve">
     <value>All</value>
   </data>

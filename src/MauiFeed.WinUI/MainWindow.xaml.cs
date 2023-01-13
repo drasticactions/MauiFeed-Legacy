@@ -30,7 +30,6 @@ namespace MauiFeed.WinUI
         private DatabaseContext databaseContext;
         private IErrorHandlerService errorHandler;
         private FeedTimelineSplitView timelineSplitView;
-        private FeedNavigationViewItem? addFeedButton;
         private FeedNavigationViewItem? allButton;
         private RssFeedCacheService rssFeedCacheService;
         private Progress<RssCacheFeedUpdate> progressUpdate;
@@ -105,12 +104,22 @@ namespace MauiFeed.WinUI
             refreshButton.Tapped += this.RefreshButton_Tapped;
             this.Items.Add(refreshButton);
 
-            this.addFeedButton = new FeedNavigationViewItem(Translations.Common.AddFeedButton, new SymbolIcon(Symbol.Add), this.databaseContext);
-            this.addFeedButton.SelectsOnInvoked = false;
-            this.addFeedButton.Tapped += this.AddFeedButton_Tapped;
-            this.addFeedButton.ContextFlyout = new Flyout() { Content = new AddNewFeedFlyout(this) };
+            var addButton = new FeedNavigationViewItem(Translations.Common.AddLabel, new SymbolIcon(Symbol.Add), this.databaseContext);
+            addButton.SelectsOnInvoked = false;
 
-            this.Items.Add(this.addFeedButton);
+            var addFeedButton = new FeedNavigationViewItem(Translations.Common.AddFeedButton, new SymbolIcon(Symbol.Library), this.databaseContext);
+            addFeedButton.SelectsOnInvoked = false;
+            addFeedButton.Tapped += this.AddFeedButton_Tapped;
+            addFeedButton.ContextFlyout = new Flyout() { Content = new AddNewFeedFlyout(this) };
+
+            addButton.MenuItems.Add(addFeedButton);
+
+            var addFolderButton = new FeedNavigationViewItem(Translations.Common.AddFolderLabel, new SymbolIcon(Symbol.NewFolder), this.databaseContext);
+            addFolderButton.SelectsOnInvoked = false;
+
+            addButton.MenuItems.Add(addFolderButton);
+
+            this.Items.Add(addButton);
 
             var smartFilters = new FeedNavigationViewItem(Translations.Common.SmartFeedsLabel, new SymbolIcon(Symbol.Filter), this.databaseContext);
             smartFilters.SelectsOnInvoked = false;
@@ -136,6 +145,7 @@ namespace MauiFeed.WinUI
             foreach (var feed in feedItems)
             {
                 var test = this.GenerateNavItem(feed);
+                test.CanDrag = true;
                 this.Items.Add(test);
             }
         }
