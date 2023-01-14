@@ -5,6 +5,7 @@
 using CodeHollow.FeedReader;
 using MauiFeed.Events;
 using MauiFeed.Models;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MauiFeed.Services
 {
@@ -25,6 +26,16 @@ namespace MauiFeed.Services
         public async Task RefreshFeedsAsync(IProgress<RssCacheFeedUpdate>? progress = default)
         {
             var feeds = await this.databaseContext.GetAllFeedListAsync();
+            await this.RefreshFeedsAsync(feeds, progress);
+        }
+
+        public async Task RefreshFeedAsync(FeedListItem item, IProgress<RssCacheFeedUpdate>? progress = default)
+        {
+            await this.RefreshFeedsAsync(new List<FeedListItem>() { item }, progress);
+        }
+
+        public async Task RefreshFeedsAsync(List<FeedListItem> feeds, IProgress<RssCacheFeedUpdate>? progress = default)
+        {
             for (int i = 0; i < feeds.Count; i++)
             {
                 FeedListItem? feed = feeds[i];

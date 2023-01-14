@@ -24,6 +24,11 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" FontWeight="Bold" MaxLines="1" TextTrimming="WordEllipsis" Text="{x:Bind SelectedNavigationViewItem.Title, Mode=OneWay}"/>
                     <StackPanel Margin="0,33,0,0" Grid.Column="1" Orientation="Horizontal">
+                        <Button Command="{x:Bind RefreshCommand}" Margin="0,0,20,0">
+                            <Grid>
+                                <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
+                            </Grid>
+                        </Button>
                         <Button Command="{x:Bind MarkAllAsReadCommand}" CommandParameter="{x:Bind SelectedNavigationViewItem, Mode=TwoWay}" Margin="0,0,20,0">
                             <Grid>
                                 <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />

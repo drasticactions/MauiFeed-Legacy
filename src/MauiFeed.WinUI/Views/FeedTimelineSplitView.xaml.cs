@@ -45,6 +45,7 @@ namespace MauiFeed.WinUI.Views
         private FeedItem? selectedItem;
         private DatabaseContext databaseContext;
         private WindowsPlatformService windowsService;
+        private RssFeedCacheService rssFeedCacheService;
 
         public FeedTimelineSplitView(ISidebarView window, ThemeSelectorService themeSelectorService)
         {
@@ -55,12 +56,14 @@ namespace MauiFeed.WinUI.Views
             this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
             this.dispatcher = Ioc.Default.GetService<IAppDispatcher>()!;
             this.templateService = Ioc.Default.GetService<ITemplateService>()!;
+            this.rssFeedCacheService = Ioc.Default.GetService<RssFeedCacheService>()!;
             this.sidebar = window;
             this.MarkAsReadCommand = new AsyncCommand<FeedItem>(this.MarkAsRead, (x) => true, this.errorHandler);
             this.MarkAsFavoriteCommand = new AsyncCommand<FeedItem>(this.MarkAsFavorite, (x) => true, this.errorHandler);
             this.OpenInBrowserCommand = new AsyncCommand<FeedItem>(this.OpenInBrowser, (x) => true, this.errorHandler);
             this.MarkAllAsReadCommand = new AsyncCommand<FeedNavigationViewItem>((x) => this.MarkAllAsRead(x.Items.ToList()), (x) => true, this.errorHandler);
             this.OpenShareCommand = new AsyncCommand<FeedItem>(this.OpenShare, (x) => true, this.errorHandler);
+            this.RefreshCommand = new AsyncCommand(this.Refresh, null, this.dispatcher, this.errorHandler);
             this.ArticleList.DataContext = this;
             this.themeSelectorService = themeSelectorService;
             this.themeSelectorService.ThemeChanged += ThemeSelectorService_ThemeChanged;
@@ -83,6 +86,8 @@ namespace MauiFeed.WinUI.Views
         }
 
         public AsyncCommand<FeedItem> MarkAsReadCommand { get; private set; }
+
+        public AsyncCommand RefreshCommand { get; private set; }
 
         public AsyncCommand<FeedNavigationViewItem> MarkAllAsReadCommand { get; private set; }
 
@@ -230,6 +235,16 @@ namespace MauiFeed.WinUI.Views
 
         private async Task OpenShare(FeedItem item)
             => await this.windowsService.ShareUrlAsync(item.Link!);
+
+        public async Task Refresh()
+        {
+            if (this.selectedNavItem?.FeedListItem is not null)
+            {
+                await this.rssFeedCacheService.RefreshFeedAsync(this.selectedNavItem.FeedListItem);
+                this.UpdateFeed();
+                this.sidebar.UpdateSidebar();
+            }
+        }
 
         public void UpdateFeed()
         {
