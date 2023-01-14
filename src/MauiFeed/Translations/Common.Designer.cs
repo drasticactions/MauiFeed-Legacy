@@ -295,6 +295,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Share Link に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OpenShareLabel {
+            get {
+                return ResourceManager.GetString("OpenShareLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Refresh に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RefreshButton {

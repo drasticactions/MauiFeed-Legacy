@@ -42,13 +42,15 @@ namespace MauiFeed.WinUI.Views
         private IAppDispatcher dispatcher;
         private ITemplateService templateService;
         private ThemeSelectorService themeSelectorService;
-
+        private FeedItem? selectedItem;
         private DatabaseContext databaseContext;
+        private WindowsPlatformService windowsService;
 
         public FeedTimelineSplitView(ISidebarView window, ThemeSelectorService themeSelectorService)
         {
             this.InitializeComponent();
 
+            this.windowsService = new WindowsPlatformService();
             this.databaseContext = Ioc.Default.ResolveWith<DatabaseContext>();
             this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
             this.dispatcher = Ioc.Default.GetService<IAppDispatcher>()!;
@@ -58,7 +60,7 @@ namespace MauiFeed.WinUI.Views
             this.MarkAsFavoriteCommand = new AsyncCommand<FeedItem>(this.MarkAsFavorite, (x) => true, this.errorHandler);
             this.OpenInBrowserCommand = new AsyncCommand<FeedItem>(this.OpenInBrowser, (x) => true, this.errorHandler);
             this.MarkAllAsReadCommand = new AsyncCommand<FeedNavigationViewItem>((x) => this.MarkAllAsRead(x.Items.ToList()), (x) => true, this.errorHandler);
-
+            this.OpenShareCommand = new AsyncCommand<FeedItem>(this.OpenShare, (x) => true, this.errorHandler);
             this.ArticleList.DataContext = this;
             this.themeSelectorService = themeSelectorService;
             this.themeSelectorService.ThemeChanged += ThemeSelectorService_ThemeChanged;
@@ -74,7 +76,11 @@ namespace MauiFeed.WinUI.Views
 
         public ObservableCollection<FeedItem> Items { get; private set; } = new ObservableCollection<FeedItem>();
 
-        public FeedItem? SelectedItem { get; set; }
+        public FeedItem? SelectedItem
+        {
+            get { return this.selectedItem; }
+            set { this.SetProperty(ref this.selectedItem, value); }
+        }
 
         public AsyncCommand<FeedItem> MarkAsReadCommand { get; private set; }
 
@@ -83,6 +89,8 @@ namespace MauiFeed.WinUI.Views
         public AsyncCommand<FeedItem> MarkAsFavoriteCommand { get; private set; }
 
         public AsyncCommand<FeedItem> OpenInBrowserCommand { get; private set; }
+
+        public AsyncCommand<FeedItem> OpenShareCommand { get; private set; }
 
         public ISidebarItem? SelectedNavigationViewItem
         {
@@ -219,6 +227,9 @@ namespace MauiFeed.WinUI.Views
                 this.LocalRssWebview.SetSource(result);
             }).FireAndForgetSafeAsync();
         }
+
+        private async Task OpenShare(FeedItem item)
+            => await this.windowsService.ShareUrlAsync(item.Link!);
 
         public void UpdateFeed()
         {
