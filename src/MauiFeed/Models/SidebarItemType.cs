@@ -9,6 +9,7 @@ namespace MauiFeed.Models
     public enum SidebarItemType
     {
         SmartFilter,
+        Folder,
         FeedListItem,
     }
 }

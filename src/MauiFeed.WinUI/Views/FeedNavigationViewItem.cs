@@ -16,16 +16,17 @@ namespace MauiFeed.WinUI.Views
     {
         internal DatabaseContext Context;
 
-        public FeedNavigationViewItem(string title, IconElement icon, DatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default)
+        public FeedNavigationViewItem(string title, IconElement icon, DatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default, SidebarItemType itemType = SidebarItemType.FeedListItem)
         {
             this.Content = title;
             this.Icon = icon;
             this.Context = context;
             this.Filter = filter;
             this.Update();
+            ItemType = itemType;
         }
 
-        public FeedNavigationViewItem(string title, FeedListItem item, DatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default)
+        public FeedNavigationViewItem(string title, FeedListItem item, DatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default, SidebarItemType type = SidebarItemType.FeedListItem)
         {
             if (item.ImageCache is not byte[] cache)
             {
@@ -66,6 +67,8 @@ namespace MauiFeed.WinUI.Views
                 return new List<FeedItem>();
             }
         }
+
+        public SidebarItemType ItemType { get; }
 
         public void Update()
         {

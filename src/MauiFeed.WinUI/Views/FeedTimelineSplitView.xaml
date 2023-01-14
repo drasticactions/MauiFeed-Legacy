@@ -42,6 +42,7 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid VerticalAlignment="Top" Margin="0,10,0,0" Grid.Column="0">
@@ -49,7 +50,10 @@
                                     <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Visibility="{Binding IsFavorite, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Yellow" Glyph="" />
                                     <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
-                                <StackPanel Grid.Column="1" Margin="5" Orientation="Vertical">
+                                <Border Visibility="{Binding ElementName=ArticleList, Path=DataContext.ShowIcon, Converter={StaticResource BooleanToVisibilityConverter}}" CornerRadius="5" Grid.Column="1" Margin="5" VerticalAlignment="Top">
+                                    <Image  Width="50" Height="50" Margin="2" Source="{x:Bind Feed.ImageCache, Converter={StaticResource ImageByteConverter}}" />
+                                </Border>
+                                <StackPanel Grid.Column="2" Margin="5" Orientation="Vertical">
                                     <TextBlock TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis" FontWeight="Bold" Text="{Binding Title}"></TextBlock>
                                     <TextBlock TextWrapping="Wrap" MaxLines="2" TextTrimming="WordEllipsis" Text="{Binding Converter={StaticResource HtmlToTextConverter}}"></TextBlock>
                                     <TextBlock MaxLines="1" FontWeight="Bold" FontSize="12" TextAlignment="End" Text="{Binding PublishingDate}"/>

@@ -18,5 +18,7 @@ namespace MauiFeed.Views
         IList<FeedItem> Items { get; }
 
         string Title { get; }
+
+        SidebarItemType ItemType { get; }
     }
 }

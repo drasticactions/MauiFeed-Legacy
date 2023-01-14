@@ -1,16 +1,15 @@
-// <copyright file="RemoveFeedFlyout.xaml.cs" company="Drastic Actions">
+// <copyright file="FeedOptionsFlyout.xaml.cs" company="Drastic Actions">
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
 using Drastic.Tools;
-using MauiFeed.Models;
 using Microsoft.UI.Xaml.Controls;
 
 namespace MauiFeed.WinUI.Views
 {
-    public sealed partial class RemoveFeedFlyout : UserControl
+    public sealed partial class FeedOptionsFlyout : UserControl
     {
-        public RemoveFeedFlyout(AsyncCommand<FeedNavigationViewItem> removeFeedListItemCommand, FeedNavigationViewItem item)
+        public FeedOptionsFlyout(AsyncCommand<FeedNavigationViewItem> removeFeedListItemCommand, FeedNavigationViewItem item)
         {
             this.FeedListItem = item;
             this.InitializeComponent();

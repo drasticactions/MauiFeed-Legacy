@@ -43,6 +43,8 @@
             <local:UnreadReadLabelConverter x:Key="UnreadReadLabelConverter"/>
             <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
             <local:HtmlToTextConverter x:Key="HtmlToTextConverter"/>
+            <local:ImageByteConverter x:Key="ImageByteConverter"/>
+            <local:AddUpdateFolderConverter x:Key="AddUpdateFolderConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

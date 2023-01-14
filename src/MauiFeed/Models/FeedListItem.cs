@@ -42,6 +42,11 @@ namespace MauiFeed.Models
         public int? FolderId { get; set; }
 
         /// <summary>
+        /// Gets or sets the folder.
+        /// </summary>
+        public virtual FeedFolder? Folder { get; set; }
+
+        /// <summary>
         /// Gets or sets the feed name.
         /// </summary>
         public string? Name { get; set; }

@@ -144,6 +144,9 @@
   <data name="FeedUrlLabel" xml:space="preserve">
     <value>Feed URL</value>
   </data>
+  <data name="FolderNameLabel" xml:space="preserve">
+    <value>Folder Name</value>
+  </data>
   <data name="GoogleNewsService" xml:space="preserve">
     <value>Google News</value>
   </data>
@@ -198,6 +201,9 @@
   <data name="RemoveFeedLabel" xml:space="preserve">
     <value>Remove Feed</value>
   </data>
+  <data name="RemoveFolderLabel" xml:space="preserve">
+    <value>Remove Folder</value>
+  </data>
   <data name="RemoveStarLabel" xml:space="preserve">
     <value>Remove From Favorites</value>
   </data>
@@ -215,5 +221,8 @@
   </data>
   <data name="TodayLabel" xml:space="preserve">
     <value>Today</value>
+  </data>
+  <data name="UpdateFolderLabel" xml:space="preserve">
+    <value>Update Folder</value>
   </data>
 </root>

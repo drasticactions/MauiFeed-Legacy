@@ -142,6 +142,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Folder Name に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string FolderNameLabel {
+            get {
+                return ResourceManager.GetString("FolderNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Google News に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string GoogleNewsService {
@@ -304,6 +313,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Remove Folder に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RemoveFolderLabel {
+            get {
+                return ResourceManager.GetString("RemoveFolderLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Remove From Favorites に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RemoveStarLabel {
@@ -354,6 +372,15 @@ namespace MauiFeed.Translations {
         public static string TodayLabel {
             get {
                 return ResourceManager.GetString("TodayLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Update Folder に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UpdateFolderLabel {
+            get {
+                return ResourceManager.GetString("UpdateFolderLabel", resourceCulture);
             }
         }
     }

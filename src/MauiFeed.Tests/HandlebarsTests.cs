@@ -44,7 +44,7 @@ namespace MauiFeed.Tests
             feedItem.Description = "Test Description";
             feedItem.Feed = feedListItem;
             feedItem.Link = "https://devblogs.microsoft.com/dotnet/dotnet-maui-preview-14/";
-            var html = await this.templates.RenderFeedItemAsync(feedItem);
+            var html = await this.templates.RenderFeedItemAsync(feedItem, true);
             Assert.IsNotNull(html);
             Assert.IsNotNull(feedItem.Html);
         }

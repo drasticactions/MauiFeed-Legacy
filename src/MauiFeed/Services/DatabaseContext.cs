@@ -58,6 +58,21 @@ namespace MauiFeed.Services
         public event EventHandler<FeedListItemsRemovedEventArgs>? OnFeedListItemsRemoved;
 
         /// <summary>
+        /// Fired when a feed item updates.
+        /// </summary>
+        public event EventHandler<FeedFoldersItemsAddedEventArgs>? OnFeedFoldersAdded;
+
+        /// <summary>
+        /// Fired when a feed item updates.
+        /// </summary>
+        public event EventHandler<FeedFoldersUpdatedEventArgs>? OnFeedFoldersUpdated;
+
+        /// <summary>
+        /// Fired when a feed item updates.
+        /// </summary>
+        public event EventHandler<FeedFoldersRemovedEventArgs>? OnFeedFoldersRemoved;
+
+        /// <summary>
         /// Filter Type.
         /// </summary>
         public enum FilterType
@@ -97,6 +112,11 @@ namespace MauiFeed.Services
         /// Gets or sets the list of feed items.
         /// </summary>
         public DbSet<FeedItem>? FeedItems { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of feed folders.
+        /// </summary>
+        public DbSet<FeedFolder>? FeedFolder { get; set; }
 
         /// <summary>
         /// Gets the unread count for a given feed list item.
@@ -145,14 +165,53 @@ namespace MauiFeed.Services
 
         public async Task<FeedListItem> RemovedFeedListItem(FeedListItem feedListItem)
         {
-            if (feedListItem.Id > 0)
+            if (feedListItem.Id <= 0)
             {
-                throw new ArgumentException("Id Must Be 0");
+                throw new ArgumentException("Id Must Not Be 0");
             }
 
             this.FeedListItems!.Remove(feedListItem);
             await this.SaveChangesAsync();
             this.OnFeedListItemsRemoved?.Invoke(this, new FeedListItemsRemovedEventArgs(feedListItem));
+            return feedListItem;
+        }
+
+        public async Task<FeedFolder> AddFeedFolder(FeedFolder item)
+        {
+            if (item.Id > 0)
+            {
+                throw new ArgumentException("Id Must Be 0");
+            }
+
+            await this.FeedFolder!.AddAsync(item);
+            await this.SaveChangesAsync();
+            this.OnFeedFoldersAdded?.Invoke(this, new FeedFoldersItemsAddedEventArgs(item));
+            return item;
+        }
+
+        public async Task<FeedFolder> RemovedFeedFolder(FeedFolder feedListItem)
+        {
+            if (feedListItem.Id <= 0)
+            {
+                throw new ArgumentException("Id Must Not Be 0");
+            }
+
+            this.FeedFolder!.Remove(feedListItem);
+            await this.SaveChangesAsync();
+            this.OnFeedFoldersRemoved?.Invoke(this, new FeedFoldersRemovedEventArgs(feedListItem));
+            return feedListItem;
+        }
+
+        public async Task<FeedFolder> UpdateFeedFolder(FeedFolder feedListItem)
+        {
+            if (feedListItem.Id <= 0)
+            {
+                throw new ArgumentException("Id Must Not Be 0");
+            }
+
+            this.FeedFolder!.Update(feedListItem);
+            await this.SaveChangesAsync();
+            this.OnFeedFoldersUpdated?.Invoke(this, new FeedFoldersUpdatedEventArgs(feedListItem));
             return feedListItem;
         }
 

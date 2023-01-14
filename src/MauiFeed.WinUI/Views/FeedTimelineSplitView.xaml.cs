@@ -90,6 +90,15 @@ namespace MauiFeed.WinUI.Views
             set { this.SetProperty(ref this.selectedNavItem, value); }
         }
 
+        public bool ShowIcon
+        {
+            get
+            {
+                var feed = this.Items.Select(n => n.Feed).Distinct();
+                return feed.Count() > 1;
+            }
+        }
+
         /// <summary>
         /// On Property Changed.
         /// </summary>
@@ -221,6 +230,8 @@ namespace MauiFeed.WinUI.Views
             {
                 this.Items.Add(item);
             }
+
+            this.OnPropertyChanged(nameof(ShowIcon));
         }
     }
 }

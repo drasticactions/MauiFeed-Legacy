@@ -122,4 +122,55 @@ namespace MauiFeed.Events
 
         public IEnumerable<FeedListItem> Feeds => this.feeds;
     }
+
+    public class FeedFoldersItemsAddedEventArgs : EventArgs
+    {
+        private readonly IEnumerable<FeedFolder> feeds;
+
+        public FeedFoldersItemsAddedEventArgs(IEnumerable<FeedFolder> item)
+        {
+            this.feeds = item;
+        }
+
+        public FeedFoldersItemsAddedEventArgs(FeedFolder item)
+        {
+            this.feeds = new List<FeedFolder>() { item };
+        }
+
+        public IEnumerable<FeedFolder> Feeds => this.feeds;
+    }
+
+    public class FeedFoldersRemovedEventArgs : EventArgs
+    {
+        private readonly IEnumerable<FeedFolder> feeds;
+
+        public FeedFoldersRemovedEventArgs(IEnumerable<FeedFolder> item)
+        {
+            this.feeds = item;
+        }
+
+        public FeedFoldersRemovedEventArgs(FeedFolder item)
+        {
+            this.feeds = new List<FeedFolder>() { item };
+        }
+
+        public IEnumerable<FeedFolder> Feeds => this.feeds;
+    }
+
+    public class FeedFoldersUpdatedEventArgs : EventArgs
+    {
+        private readonly IEnumerable<FeedFolder> feeds;
+
+        public FeedFoldersUpdatedEventArgs(IEnumerable<FeedFolder> item)
+        {
+            this.feeds = item;
+        }
+
+        public FeedFoldersUpdatedEventArgs(FeedFolder item)
+        {
+            this.feeds = new List<FeedFolder>() { item };
+        }
+
+        public IEnumerable<FeedFolder> Feeds => this.feeds;
+    }
 }
