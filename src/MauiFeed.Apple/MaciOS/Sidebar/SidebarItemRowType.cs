@@ -2,7 +2,7 @@
 
 namespace MauiFeed.Apple
 {
-    public enum SidebarItemType
+    public enum SidebarItemRowType
     {
         Header,
         ExpandableRow,

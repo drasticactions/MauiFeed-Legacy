@@ -18,6 +18,7 @@ namespace MauiFeed.Apple
         private List<SidebarItem> sidebarItems;
         private Guid smartFilterRowIdentifier = Guid.NewGuid();
         private Guid localRowIdentifier = Guid.NewGuid();
+        private SidebarItem? selectedItem;
 
         public SidebarViewController(RootSplitViewController controller)
         {
@@ -60,10 +61,7 @@ namespace MauiFeed.Apple
                 {
                     item.Update();
                 }
-            });
 
-            Task.Run(() =>
-            {
                 foreach (var item in this.sidebarItems)
                 {
                     item.Update();
@@ -96,6 +94,16 @@ namespace MauiFeed.Apple
             return new UIDragItem[] { new UIDragItem(itemProvider) };
         }
 
+        [Export("collectionView:didSelectItemAtIndexPath:")]
+        protected void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
+        {
+            this.selectedItem = this.dataSource?.GetItemIdentifier(indexPath);
+            this.rootSplitViewController.FeedViewController.SetFeed(this.selectedItem!);
+#if IOS
+            this.rootSplitViewController.ShowColumn(UISplitViewControllerColumn.Supplementary);
+#endif
+        }
+
         private void ConfigureCollectionView()
         {
             this.collectionView = new UICollectionView(this.View!.Bounds, this.CreateLayout());
@@ -113,10 +121,10 @@ namespace MauiFeed.Apple
             var header = SidebarItem.Header(this.databaseContext, "Smart Feeds", SidebarSection.SmartFeeds, this.smartFilterRowIdentifier);
             var items = new SidebarItem[]
             {
-                SidebarItem.Row(this.databaseContext, Translations.Common.AllLabel, SidebarSection.SmartFeeds, null, UIImage.GetSystemImage("newspaper.circle"), filter: this.databaseContext.CreateFilter<FeedItem, int>(o => o.Id, 0, DatabaseContext.FilterType.GreaterThan)),
-                SidebarItem.Row(this.databaseContext, Translations.Common.TodayLabel, SidebarSection.SmartFeeds, null, UIImage.GetSystemImage("sun.max"), filter: this.databaseContext.CreateFilter<FeedItem, DateTime?>(o => o.PublishingDate, DateTime.UtcNow.Date, DatabaseContext.FilterType.GreaterThanOrEqual)),
-                SidebarItem.Row(this.databaseContext, Translations.Common.AllUnreadLabel, SidebarSection.SmartFeeds, null, UIImage.GetSystemImage("circle.inset.filled"), filter: this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsRead, false, DatabaseContext.FilterType.Equals)),
-                SidebarItem.Row(this.databaseContext, Translations.Common.StarredLabel, SidebarSection.SmartFeeds, null, UIImage.GetSystemImage("star.fill"), filter: this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsFavorite, true, DatabaseContext.FilterType.Equals)),
+                SidebarItem.Row(this.databaseContext, Translations.Common.AllLabel, SidebarSection.SmartFeeds, null, UIImage.GetSystemImage("newspaper.circle"), filter: this.databaseContext.CreateFilter<FeedItem, int>(o => o.Id, 0, DatabaseContext.FilterType.GreaterThan), type: SidebarItemType.SmartFilter),
+                SidebarItem.Row(this.databaseContext, Translations.Common.TodayLabel, SidebarSection.SmartFeeds, null, UIImage.GetSystemImage("sun.max"), filter: this.databaseContext.CreateFilter<FeedItem, DateTime?>(o => o.PublishingDate, DateTime.UtcNow.Date, DatabaseContext.FilterType.GreaterThanOrEqual), type: SidebarItemType.SmartFilter),
+                SidebarItem.Row(this.databaseContext, Translations.Common.AllUnreadLabel, SidebarSection.SmartFeeds, null, UIImage.GetSystemImage("circle.inset.filled"), filter: this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsRead, false, DatabaseContext.FilterType.Equals), type: SidebarItemType.SmartFilter),
+                SidebarItem.Row(this.databaseContext, Translations.Common.StarredLabel, SidebarSection.SmartFeeds, null, UIImage.GetSystemImage("star.fill"), filter: this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsFavorite, true, DatabaseContext.FilterType.Equals), type: SidebarItemType.SmartFilter),
             };
 
             snapshot.AppendItems(new[] { header });
@@ -137,7 +145,7 @@ namespace MauiFeed.Apple
             foreach (var item in this.databaseContext.FeedListItems!)
             {
                 var test = this.databaseContext.CreateFilter<FeedItem, int>(o => o.FeedListItemId, item.Id, DatabaseContext.FilterType.Equals);
-                items.Add(SidebarItem.Row(this.databaseContext, item.Name!, SidebarSection.Local, null, UIImage.LoadFromData(NSData.FromArray(item.ImageCache!))!.Scale(new CGSize(16, 16), 2f), filter: test));
+                items.Add(SidebarItem.Row(this.databaseContext, item.Name!, SidebarSection.Local, null, UIImage.LoadFromData(NSData.FromArray(item.ImageCache!))!.Scale(new CGSize(16, 16), 2f), filter: test, type: SidebarItemType.FeedListItem));
             }
 
             snapshot.AppendItems(new[] { header });
@@ -204,9 +212,9 @@ namespace MauiFeed.Apple
 
                     switch (sidebarItem.Type)
                     {
-                        case SidebarItemType.Header:
+                        case SidebarItemRowType.Header:
                             return collectionView.DequeueConfiguredReusableCell(headerRegistration, indexPath, item);
-                        case SidebarItemType.ExpandableRow:
+                        case SidebarItemRowType.ExpandableRow:
                             return collectionView.DequeueConfiguredReusableCell(expandableRowRegistration, indexPath, item);
                         default:
                             return collectionView.DequeueConfiguredReusableCell(rowRegistration, indexPath, item);

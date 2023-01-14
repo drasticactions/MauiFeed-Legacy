@@ -6,13 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MauiFeed.Apple
 {
-    public class SidebarItem : NSObject
+    public class SidebarItem : NSObject, Views.ISidebarItem
     {
         private DatabaseContext context;
 
         public Guid Id { get; }
-
-        public SidebarItemType Type { get; }
 
         public string Title { get; }
 
@@ -20,17 +18,21 @@ namespace MauiFeed.Apple
 
         public SidebarSection Section { get; }
 
+        public SidebarItemRowType Type { get; }
+
         public SidebarListCell? Cell { get; set; }
 
-        public SidebarItem(Guid id, DatabaseContext context, SidebarItemType type, SidebarSection section, string title, UIImage? image = default, Expression<Func<FeedItem, bool>>? filter = default)
+        public SidebarItem(Guid id, DatabaseContext context, SidebarItemRowType rowType, SidebarSection section, string title, SidebarItemType type, UIImage? image = default, Expression<Func<FeedItem, bool>>? filter = default, FeedListItem? item = default)
         {
             this.Id = id;
-            this.Type = type;
+            this.Type = rowType;
+            this.ItemType = type;
             this.Section = section;
             this.Title = title;
             this.Image = image;
             this.Filter = filter;
             this.context = context;
+            this.FeedListItem = item;
         }
 
         public int ItemsCount => this.Items.Count;
@@ -52,18 +54,22 @@ namespace MauiFeed.Apple
             }
         }
 
+        public FeedListItem? FeedListItem { get; set; }
+
+        public SidebarItemType ItemType { get; }
+
         public void Update()
         {
             this.Cell?.UpdateIsRead();
         }
 
-        public static SidebarItem Header(DatabaseContext context, string title, SidebarSection section, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default)
-            => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemType.Header, section, title, filter: filter);
+        public static SidebarItem Header(DatabaseContext context, string title, SidebarSection section, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default, SidebarItemType type = SidebarItemType.FeedListItem)
+            => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemRowType.Header, section, title, type, filter: filter);
 
-        public static SidebarItem ExpandableRow(DatabaseContext context, string title, SidebarSection section, UIImage? image = default, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default)
-         => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemType.ExpandableRow, section, title, image, filter);
+        public static SidebarItem ExpandableRow(DatabaseContext context, string title, SidebarSection section, UIImage? image = default, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default, SidebarItemType type = SidebarItemType.FeedListItem)
+         => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemRowType.ExpandableRow, section, title, type, image, filter);
 
-        public static SidebarItem Row(DatabaseContext context, string title, SidebarSection section, FeedListItem? subtitle = default, UIImage? image = default, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default)
-            => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemType.Row, section, title, image, filter);
+        public static SidebarItem Row(DatabaseContext context, string title, SidebarSection section, FeedListItem? subtitle = default, UIImage? image = default, Guid? id = default, Expression<Func<FeedItem, bool>>? filter = default, SidebarItemType type = SidebarItemType.FeedListItem)
+            => new SidebarItem(id ?? Guid.NewGuid(), context, SidebarItemRowType.Row, section, title, type, image, filter);
     }
 }
