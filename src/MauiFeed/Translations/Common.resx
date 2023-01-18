@@ -126,6 +126,9 @@
   <data name="AddLabel" xml:space="preserve">
     <value>Add...</value>
   </data>
+  <data name="AddToFolderLabel" xml:space="preserve">
+    <value>Add To Folder</value>
+  </data>
   <data name="AllLabel" xml:space="preserve">
     <value>All</value>
   </data>
@@ -206,6 +209,9 @@
   </data>
   <data name="RemoveFolderLabel" xml:space="preserve">
     <value>Remove Folder</value>
+  </data>
+  <data name="RemoveFromFolderLabel" xml:space="preserve">
+    <value>Remove From Folder</value>
   </data>
   <data name="RemoveStarLabel" xml:space="preserve">
     <value>Remove From Favorites</value>

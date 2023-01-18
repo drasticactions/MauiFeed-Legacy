@@ -88,6 +88,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Add To Folder に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AddToFolderLabel {
+            get {
+                return ResourceManager.GetString("AddToFolderLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   All に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string AllLabel {
@@ -327,6 +336,15 @@ namespace MauiFeed.Translations {
         public static string RemoveFolderLabel {
             get {
                 return ResourceManager.GetString("RemoveFolderLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Remove From Folder に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RemoveFromFolderLabel {
+            get {
+                return ResourceManager.GetString("RemoveFromFolderLabel", resourceCulture);
             }
         }
         

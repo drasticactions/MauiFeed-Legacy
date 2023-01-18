@@ -26,5 +26,9 @@ namespace MauiFeed.Views
         /// Generate Sidebar Items.
         /// </summary>
         void GenerateSidebar();
+
+        void MoveItemToFolder(ISidebarItem item, ISidebarItem folder);
+
+        void RemoveFromFolder(ISidebarItem item, bool moveToRoot = false);
     }
 }

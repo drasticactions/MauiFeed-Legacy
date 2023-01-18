@@ -13,5 +13,13 @@
 
     <StackPanel Spacing="5">
         <Button Command="{x:Bind RemoveFeedListItemCommand}" CommandParameter="{x:Bind FeedListItem, Mode=TwoWay}" HorizontalAlignment="Stretch" Content="{x:Bind common:Common.RemoveFeedLabel}"/>
+        <Button Visibility="{x:Bind FeedListItem.FeedListItem.FolderId, Mode=OneWay, Converter={StaticResource IntVisibilityInverter}}" x:Name="AddToFolderButton" HorizontalAlignment="Stretch" Content="{x:Bind common:Common.AddToFolderLabel}">
+            <Button.Flyout>
+                <MenuFlyout x:Name="AddFolderMenuFlyout" />
+            </Button.Flyout>
+        </Button>
+        <Button Visibility="{x:Bind FeedListItem.FeedListItem.FolderId, Mode=OneWay, Converter={StaticResource IntVisibilityConverter}}" Command="{x:Bind RemoveFromFolderCommand}" CommandParameter="{x:Bind FeedListItem, Mode=TwoWay}" HorizontalAlignment="Stretch" Content="{x:Bind common:Common.RemoveFromFolderLabel}">
+
+        </Button>
     </StackPanel>
 </UserControl>

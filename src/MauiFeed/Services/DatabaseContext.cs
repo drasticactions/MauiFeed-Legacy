@@ -248,7 +248,7 @@ namespace MauiFeed.Services
 
         public async Task<FeedListItem> UpdateFeedListItem(FeedListItem feedListItem)
         {
-            await this.FeedListItems!.Upsert(feedListItem).On(n => new { n.Uri }).RunAsync();
+            this.FeedListItems!.Update(feedListItem);
             await this.SaveChangesAsync();
             this.OnFeedListItemsUpdated?.Invoke(this, new FeedListItemsUpdatedEventArgs(feedListItem));
             return feedListItem;
@@ -256,7 +256,7 @@ namespace MauiFeed.Services
 
         public async Task<FeedItem> UpdateFeedItem(FeedItem item)
         {
-            await this.FeedItems!.Upsert(item).On(n => new { n.RssId }).RunAsync();
+            this.FeedItems!.Update(item);
             await this.SaveChangesAsync();
             this.OnFeedItemsUpdated?.Invoke(this, new FeedItemsUpdatedEventArgs(item));
             return item;

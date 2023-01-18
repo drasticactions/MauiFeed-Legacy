@@ -45,6 +45,8 @@
             <local:HtmlToTextConverter x:Key="HtmlToTextConverter"/>
             <local:ImageByteConverter x:Key="ImageByteConverter"/>
             <local:AddUpdateFolderConverter x:Key="AddUpdateFolderConverter"/>
+            <local:IntVisibilityConverter x:Key="IntVisibilityConverter"/>
+            <local:IntVisibilityInverter x:Key="IntVisibilityInverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

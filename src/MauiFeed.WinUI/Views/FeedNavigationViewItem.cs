@@ -16,6 +16,12 @@ namespace MauiFeed.WinUI.Views
     {
         internal DatabaseContext Context;
 
+        public FeedNavigationViewItem(string title, FeedFolder folder, IconElement icon, DatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default, SidebarItemType itemType = SidebarItemType.FeedListItem)
+            : this(title, icon, context, filter, itemType)
+        {
+            this.Folder = folder;
+        }
+
         public FeedNavigationViewItem(string title, IconElement icon, DatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default, SidebarItemType itemType = SidebarItemType.FeedListItem)
         {
             this.Content = title;
@@ -52,6 +58,8 @@ namespace MauiFeed.WinUI.Views
         public int UnreadCount => this.Items.Where(n => !n.IsRead).Count();
 
         public FeedListItem? FeedListItem { get; }
+
+        public FeedFolder? Folder { get; }
 
         public string Title => this.Content as string ?? string.Empty;
 

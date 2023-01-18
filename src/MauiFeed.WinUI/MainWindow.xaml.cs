@@ -15,6 +15,7 @@ using MauiFeed.Services;
 using MauiFeed.Views;
 using MauiFeed.WinUI.Services;
 using MauiFeed.WinUI.Views;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -40,6 +41,8 @@ namespace MauiFeed.WinUI
         private AsyncCommand<FeedNavigationViewItem> removeFeedCommand;
         private AsyncCommand<FeedNavigationViewItem> addOrUpdateFeedFolderCommand;
         private AsyncCommand<FeedNavigationViewItem> removeFeedFolderCommand;
+        private AsyncCommand<FeedNavigationViewItem> moveFolderToRootCommand;
+
         private FeedNavigationViewItem? smartFilters;
 
         /// <summary>
@@ -58,6 +61,7 @@ namespace MauiFeed.WinUI
             this.removeFeedCommand = new AsyncCommand<FeedNavigationViewItem>(this.RemoveFeed, (item) => true, this.errorHandler);
             this.addOrUpdateFeedFolderCommand = new AsyncCommand<FeedNavigationViewItem>(this.AddOrUpdateFeedFolder, (item) => true, this.errorHandler);
             this.removeFeedFolderCommand = new AsyncCommand<FeedNavigationViewItem>(this.RemoveFeedFolder, (item) => true, this.errorHandler);
+            this.moveFolderToRootCommand = new AsyncCommand<FeedNavigationViewItem>(async (item) => this.RemoveFromFolder(item, true), (item) => true, this.errorHandler);
             this.InitializeComponent();
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(this.AppTitleBar);
@@ -101,6 +105,7 @@ namespace MauiFeed.WinUI
         /// <inheritdoc/>
         public void GenerateSidebar()
         {
+            this.Items.Clear();
             this.GenerateSmartFeeds();
             this.GenerateFolderItems();
             this.GenerateNavItems().FireAndForgetSafeAsync(this.errorHandler);
@@ -159,10 +164,13 @@ namespace MauiFeed.WinUI
 
         private FeedNavigationViewItem GenerateFolderItem(FeedFolder item)
         {
-            var folder = new FeedNavigationViewItem(item.Name!, new SymbolIcon(Symbol.Folder), this.databaseContext, itemType: SidebarItemType.Folder);
+            var folder = new FeedNavigationViewItem(item.Name!, item, new SymbolIcon(Symbol.Folder), this.databaseContext, itemType: SidebarItemType.Folder);
             folder.SelectsOnInvoked = false;
             folder.ContextFlyout = new Flyout() { Content = new FolderOptionsFlyout(this.addOrUpdateFeedFolderCommand, this.removeFeedFolderCommand, folder, item) };
-            folder.Tapped += this.AddFeedButton_Tapped;
+            foreach (var feeditem in item.Items ?? new List<FeedListItem>())
+            {
+                folder.MenuItems.Add(this.GenerateNavItem(feeditem));
+            }
             return folder;
         }
 
@@ -207,12 +215,10 @@ namespace MauiFeed.WinUI
 
         private async Task GenerateNavItems()
         {
-            var feedItems = await this.databaseContext.GetAllFeedListAsync();
+            var feedItems = await this.databaseContext.FeedListItems!.Where(n => n.FolderId == null).ToListAsync();
             foreach (var feed in feedItems)
             {
-                var test = this.GenerateNavItem(feed);
-                test.CanDrag = true;
-                this.Items.Add(test);
+                this.Items.Add(this.GenerateNavItem(feed));
             }
         }
 
@@ -225,10 +231,11 @@ namespace MauiFeed.WinUI
 
             var test = this.databaseContext.CreateFilter<FeedItem, int>(o => o.FeedListItemId, item.Id, DatabaseContext.FilterType.Equals);
             var navItem = new FeedNavigationViewItem(item.Name!, item, this.databaseContext, test);
-            var command = this.removeFeedCommand;
-            navItem.ContextFlyout = new Flyout() { Content = new FeedOptionsFlyout(command, navItem) };
+            navItem.ContextFlyout = new Flyout() { Content = new FeedOptionsFlyout(this, this.removeFeedCommand, this.moveFolderToRootCommand, navItem) };
             navItem.RightTapped += (sender, args) =>
             {
+                var feedOptionsFlyout = ((FeedOptionsFlyout)((Flyout)((FrameworkElement)sender)!.ContextFlyout).Content);
+                feedOptionsFlyout.SetFolders(this.Items.Where(n => n.ItemType == SidebarItemType.Folder).ToList());
                 ((FrameworkElement)sender)!.ContextFlyout.ShowAt((FrameworkElement)sender!);
             };
             return navItem;
@@ -301,6 +308,71 @@ namespace MauiFeed.WinUI
             if (e.IsDone)
             {
                 this.UpdateSidebar();
+            }
+        }
+
+        public void MoveItemToFolder(ISidebarItem item, ISidebarItem folderItem)
+        {
+            if (folderItem.ItemType is not SidebarItemType.Folder)
+            {
+                return;
+            }
+
+            if (item is not FeedNavigationViewItem navigationViewItem)
+            {
+                return;
+            }
+
+            if (folderItem is not FeedNavigationViewItem folderViewItem)
+            {
+                return;
+            }
+
+            var feedListItem = navigationViewItem.FeedListItem!;
+            var folder = folderViewItem.Folder!;
+
+            this.RemoveFromFolder(item);
+
+            feedListItem.Folder = folder;
+            feedListItem.FolderId = folder.Id;
+
+            // Remove existing item.
+            var index = this.Items.IndexOf(navigationViewItem);
+            if (index >= 0)
+            {
+                this.Items.RemoveAt(index);
+            }
+
+            // Move item under folder.
+            folderViewItem.MenuItems.Add(navigationViewItem);
+
+            // Update the database.
+            this.databaseContext.UpdateFeedListItem(feedListItem).FireAndForgetSafeAsync();
+        }
+
+        public void RemoveFromFolder(ISidebarItem item, bool moveToRoot = false)
+        {
+            if (item is not FeedNavigationViewItem navigationViewItem)
+            {
+                return;
+            }
+
+            if (item.FeedListItem?.FolderId > 0)
+            {
+                var oldFolder = this.Items.FirstOrDefault(n => n.ItemType is SidebarItemType.Folder && n.Folder?.Id == item.FeedListItem.FolderId);
+                if (oldFolder != null)
+                {
+                    oldFolder.MenuItems.Remove(navigationViewItem);
+                }
+            }
+
+            if (moveToRoot)
+            {
+                // Reset to null.
+                this.Items.Add(navigationViewItem);
+                item.FeedListItem!.FolderId = null;
+                item.FeedListItem!.Folder = null;
+                this.databaseContext.UpdateFeedListItem(item.FeedListItem).FireAndForgetSafeAsync();
             }
         }
     }
