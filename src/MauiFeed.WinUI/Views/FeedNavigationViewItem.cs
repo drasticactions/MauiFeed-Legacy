@@ -3,12 +3,16 @@
 // </copyright>
 
 using System.Linq.Expressions;
+using System.Reflection;
+using CommunityToolkit.WinUI.UI;
 using MauiFeed.Models;
 using MauiFeed.Services;
 using MauiFeed.Views;
 using MauiFeed.WinUI.Tools;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Media;
 
 namespace MauiFeed.WinUI.Views
 {
@@ -43,6 +47,32 @@ namespace MauiFeed.WinUI.Views
             this.Context = context;
             this.Filter = filter;
             this.Update();
+        }
+
+        public void SetDragAndDrop(bool canDrag, bool allowDrop)
+        {
+            this.CanDrag = canDrag;
+            this.AllowDrop = allowDrop;
+            this.Loaded += this.FeedNavigationViewItem_Loaded;
+        }
+
+        private void FeedNavigationViewItem_DragStarting(Microsoft.UI.Xaml.UIElement sender, Microsoft.UI.Xaml.DragStartingEventArgs args)
+        {
+            args.Data.RequestedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+            args.Data.SetData("FeedListItemId", this.FeedListItem?.Id);
+        }
+
+        private void FeedNavigationViewItem_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            var nav = (FeedNavigationViewItem)sender!;
+            nav.Loaded -= this.FeedNavigationViewItem_Loaded;
+            var presenter = nav.FindDescendant<NavigationViewItemPresenter>();
+            if (presenter is not null)
+            {
+                presenter.CanDrag = this.CanDrag;
+                presenter.AllowDrop = this.AllowDrop;
+                presenter.DragStarting += FeedNavigationViewItem_DragStarting;
+            }
         }
 
         public Expression<Func<FeedItem, bool>>? Filter { get; set; }

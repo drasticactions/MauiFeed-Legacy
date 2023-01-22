@@ -4,6 +4,7 @@
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.WinUI.UI;
@@ -163,7 +164,25 @@ namespace MauiFeed.WinUI
             folder.SelectsOnInvoked = false;
             folder.ContextFlyout = new Flyout() { Content = new FolderOptionsFlyout(this.addOrUpdateFeedFolderCommand, this.removeFeedFolderCommand, folder, item) };
             folder.Tapped += this.AddFeedButton_Tapped;
+            folder.DragOver += Folder_DragOver;
+            folder.Drop += this.Folder_Drop;
+            folder.SetDragAndDrop(false, true);
             return folder;
+        }
+
+        private void Folder_DragOver(object sender, DragEventArgs e)
+        {
+            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+        }
+
+        private async void Folder_Drop(object sender, DragEventArgs e)
+        {
+            var folder = (FeedNavigationViewItem)sender;
+            var feedIdObject = await e.DataView.GetDataAsync("FeedListItemId");
+            if (feedIdObject is int feedId)
+            {
+                var feed = this.Items.FirstOrDefault(n => n.FeedListItem is not null && n.FeedListItem.Id == feedId);
+            }
         }
 
         private async Task AddOrUpdateFeedFolder(FeedNavigationViewItem feedFolderFlyout)
@@ -211,7 +230,7 @@ namespace MauiFeed.WinUI
             foreach (var feed in feedItems)
             {
                 var test = this.GenerateNavItem(feed);
-                test.CanDrag = true;
+                test.SetDragAndDrop(true, false);
                 this.Items.Add(test);
             }
         }
