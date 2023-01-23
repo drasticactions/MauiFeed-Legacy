@@ -23,7 +23,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" FontWeight="Bold" MaxLines="1" TextTrimming="WordEllipsis" Text="{x:Bind SelectedNavigationViewItem.Title, Mode=OneWay}"/>
-                    <StackPanel Margin="0,33,0,0" Grid.Column="1" Orientation="Horizontal">
+                    <StackPanel Visibility="{x:Bind SelectedNavigationViewItem, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}" Margin="0,33,0,0" Grid.Column="1" Orientation="Horizontal">
                         <Button Command="{x:Bind RefreshCommand}" Margin="0,0,20,0">
                             <Grid>
                                 <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
@@ -96,7 +96,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,33,0,0" Grid.Column="1" Orientation="Horizontal">
+                    <StackPanel Visibility="{x:Bind SelectedItem, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}" Margin="0,33,0,0" Grid.Column="1" Orientation="Horizontal">
                         <Button  Command="{x:Bind MarkAsReadCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}" Margin="0,0,20,0">
                             <Grid>
                                 <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Visibility="{x:Bind SelectedItem.IsRead, Mode=OneWay, Converter={StaticResource BooleanToVisibilityInverter}}" Foreground="{ThemeResource SystemAccentColor}" Glyph="" />
