@@ -34,11 +34,11 @@
                                 <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                             </Grid>
                         </Button>
-                        <Button Margin="0,0,20,0">
+                        <ToggleButton IsChecked="{x:Bind SelectedNavigationViewItem.HideUnreadItems, Mode=OneWay}"  Command="{x:Bind SetHideUnreadItemsCommand}" CommandParameter="{x:Bind SelectedNavigationViewItem, Mode=TwoWay}" Margin="0,0,20,0" Visibility="{x:Bind SelectedNavigationViewItem.AlwaysHideUnread, Mode=OneWay, Converter={StaticResource BooleanToVisibilityInverter}}">
                             <Grid>
                                 <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                             </Grid>
-                        </Button>
+                        </ToggleButton>
                     </StackPanel>
                 </Grid>
                 <ListView x:Name="ArticleList" Grid.Row="1" ItemsSource="{x:Bind Items, Mode=OneWay}" SelectionMode="Single" SelectionChanged="ArticleList_SelectionChanged" Grid.Column="0">

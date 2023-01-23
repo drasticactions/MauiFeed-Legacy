@@ -36,7 +36,7 @@ namespace MauiFeed.WinUI.Views
     /// </summary>
     public sealed partial class FeedTimelineSplitView : Page, ITimelineView, INotifyPropertyChanged
     {
-        private ISidebarItem? selectedNavItem;
+        private FeedNavigationViewItem? selectedNavItem;
         private ISidebarView sidebar;
         private IErrorHandlerService errorHandler;
         private IAppDispatcher dispatcher;
@@ -64,6 +64,10 @@ namespace MauiFeed.WinUI.Views
             this.MarkAllAsReadCommand = new AsyncCommand<FeedNavigationViewItem>((x) => this.MarkAllAsRead(x.Items.ToList()), (x) => true, this.errorHandler);
             this.OpenShareCommand = new AsyncCommand<FeedItem>(this.OpenShare, (x) => true, this.errorHandler);
             this.RefreshCommand = new AsyncCommand(this.Refresh, null, this.dispatcher, this.errorHandler);
+            this.SetHideUnreadItemsCommand = new AsyncCommand<FeedNavigationViewItem>(async (t) => {
+                t.HideUnreadItems = !t.HideUnreadItems;
+                this.UpdateFeed();
+            }, (x) => true, this.errorHandler);
             this.ArticleList.DataContext = this;
             this.themeSelectorService = themeSelectorService;
             this.themeSelectorService.ThemeChanged += ThemeSelectorService_ThemeChanged;
@@ -89,6 +93,8 @@ namespace MauiFeed.WinUI.Views
 
         public AsyncCommand RefreshCommand { get; private set; }
 
+        public AsyncCommand<FeedNavigationViewItem> SetHideUnreadItemsCommand { get; private set; }
+
         public AsyncCommand<FeedNavigationViewItem> MarkAllAsReadCommand { get; private set; }
 
         public AsyncCommand<FeedItem> MarkAsFavoriteCommand { get; private set; }
@@ -97,7 +103,7 @@ namespace MauiFeed.WinUI.Views
 
         public AsyncCommand<FeedItem> OpenShareCommand { get; private set; }
 
-        public ISidebarItem? SelectedNavigationViewItem
+        public FeedNavigationViewItem? SelectedNavigationViewItem
         {
             get { return this.selectedNavItem; }
             set { this.SetProperty(ref this.selectedNavItem, value); }
@@ -107,6 +113,12 @@ namespace MauiFeed.WinUI.Views
         {
             get
             {
+                // If it's a smart filter or folder, always show the icon.
+                if (this.selectedNavItem?.ItemType != SidebarItemType.FeedListItem)
+                {
+                    return true;
+                }
+
                 var feed = this.Items.Select(n => n.Feed).Distinct();
                 return feed.Count() > 1;
             }
@@ -194,7 +206,7 @@ namespace MauiFeed.WinUI.Views
 
         public void SetFeed(ISidebarItem sidebar)
         {
-            this.SelectedNavigationViewItem = sidebar;
+            this.SelectedNavigationViewItem = (FeedNavigationViewItem)sidebar!;
             this.UpdateFeed();
         }
 

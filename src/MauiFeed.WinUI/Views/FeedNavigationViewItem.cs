@@ -2,7 +2,9 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using CommunityToolkit.WinUI.UI;
 using Drastic.Tools;
 using MauiFeed.Events;
@@ -16,8 +18,10 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace MauiFeed.WinUI.Views
 {
-    public class FeedNavigationViewItem : NavigationViewItem, ISidebarItem
+    public class FeedNavigationViewItem : NavigationViewItem, ISidebarItem, INotifyPropertyChanged
     {
+        private bool hideUnreadItems;
+
         internal DatabaseContext Context;
 
         public FeedNavigationViewItem(string title, FeedFolder folder, IconElement icon, DatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default, SidebarItemType itemType = SidebarItemType.FeedListItem)
@@ -33,7 +37,7 @@ namespace MauiFeed.WinUI.Views
             this.Context = context;
             this.Filter = filter;
             this.Update();
-            ItemType = itemType;
+            this.ItemType = itemType;
         }
 
         public FeedNavigationViewItem(string title, FeedListItem item, DatabaseContext context, Expression<Func<FeedItem, bool>>? filter = default, SidebarItemType type = SidebarItemType.FeedListItem)
@@ -52,8 +56,12 @@ namespace MauiFeed.WinUI.Views
 
             this.Context = context;
             this.Filter = filter;
+            this.ItemType = type;
             this.Update();
         }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public event EventHandler<FeedFolderDropEventArgs>? OnFolderDrop;
 
@@ -67,28 +75,76 @@ namespace MauiFeed.WinUI.Views
 
         public FeedFolder? Folder { get; }
 
+        public bool AlwaysHideUnread { get; set; }
+
+        public bool HideUnreadItems
+        {
+            get { return this.hideUnreadItems; }
+            set
+            {
+                this.SetProperty(ref this.hideUnreadItems, value);
+            }
+        }
+
         public string Title => this.Content as string ?? string.Empty;
 
         public virtual IList<FeedItem> Items
         {
             get
             {
+                IQueryable<FeedItem>? query = null;
+
                 if (this.ItemType == SidebarItemType.Folder)
                 {
                     var folderId = this.Folder?.Id ?? 0;
-                    return this.Context.FeedItems!.Include(n => n.Feed).Where(n => (n.Feed!.FolderId ?? 0) == folderId).OrderByDescending(n => n.PublishingDate).ToList();
+                    query = this.Context.FeedItems!.Include(n => n.Feed).Where(n => (n.Feed!.FolderId ?? 0) == folderId).OrderByDescending(n => n.PublishingDate);
                 }
 
                 if (this.Filter is not null)
                 {
-                    return this.Context.FeedItems!.Include(n => n.Feed).Where(this.Filter).OrderByDescending(n => n.PublishingDate).ToList();
+                    query = this.Context.FeedItems!.Include(n => n.Feed).Where(this.Filter).OrderByDescending(n => n.PublishingDate);
                 }
 
-                return new List<FeedItem>();
+                if (query is not null && this.HideUnreadItems)
+                {
+                    query = query.Where(n => !n.IsRead);
+                }
+
+                return query?.ToList() ?? new List<FeedItem>();
             }
         }
 
         public SidebarItemType ItemType { get; }
+
+        /// <summary>
+        /// On Property Changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            var changed = this.PropertyChanged;
+            if (changed == null)
+            {
+                return;
+            }
+
+            changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+#pragma warning disable SA1600 // Elements should be documented
+        protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "", Action? onChanged = null)
+#pragma warning restore SA1600 // Elements should be documented
+        {
+            if (EqualityComparer<T>.Default.Equals(backingStore, value))
+            {
+                return false;
+            }
+
+            backingStore = value;
+            onChanged?.Invoke();
+            this.OnPropertyChanged(propertyName);
+            return true;
+        }
 
         public void SetDragAndDrop(bool canDrag, bool allowDrop)
         {

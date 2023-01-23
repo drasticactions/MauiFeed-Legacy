@@ -146,6 +146,8 @@ namespace MauiFeed.WinUI
             smartFilters.MenuItems.Add(today);
 
             var unread = new FeedNavigationViewItem(Translations.Common.AllUnreadLabel, new SymbolIcon(Symbol.Filter), this.databaseContext, this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsRead, false, DatabaseContext.FilterType.Equals), SidebarItemType.SmartFilter);
+            unread.AlwaysHideUnread = true;
+
             smartFilters.MenuItems.Add(unread);
 
             var star = new FeedNavigationViewItem(Translations.Common.StarredLabel, new SymbolIcon(Symbol.Favorite), this.databaseContext, this.databaseContext.CreateFilter<FeedItem, bool>(o => o.IsFavorite, true, DatabaseContext.FilterType.Equals), SidebarItemType.SmartFilter);
