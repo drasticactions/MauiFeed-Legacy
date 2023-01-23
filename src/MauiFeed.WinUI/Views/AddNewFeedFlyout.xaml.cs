@@ -45,5 +45,18 @@ namespace MauiFeed.WinUI.Views
             var feed = await this.cache.RetrieveFeedAsync(uri);
             this.sidebar.AddItemToSidebar(feed);
         }
+
+        private void FeedUrlField_KeyUp(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                if (string.IsNullOrEmpty(this.FeedUrlField.Text))
+                {
+                    return;
+                }
+
+                this.AddNewFeedCommand.ExecuteAsync(this.FeedUrlField.Text).FireAndForgetSafeAsync();
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@
     mc:Ignorable="d">
 
     <StackPanel Spacing="5" HorizontalAlignment="Stretch" Orientation="Vertical" Width="200">
-        <TextBox x:Name="FeedUrlField" HorizontalAlignment="Stretch" Text="{x:Bind Folder.Name, Mode=TwoWay}" PlaceholderText="{x:Bind common:Common.FolderNameLabel}"/>
+        <TextBox x:Name="FeedUrlField" HorizontalAlignment="Stretch" Text="{x:Bind Folder.Name, Mode=TwoWay}" PlaceholderText="{x:Bind common:Common.FolderNameLabel}" KeyUp="FeedUrlField_KeyUp"/>
         <Button Command="{x:Bind AddOrUpdateFeedFolder}" CommandParameter="{x:Bind Item, Mode=TwoWay}" HorizontalAlignment="Stretch" Content="{x:Bind Folder, Mode=OneWay, Converter={StaticResource AddUpdateFolderConverter}}"/>
         <Button Command="{x:Bind RemoveFeedFolder}" CommandParameter="{x:Bind Item, Mode=TwoWay}" Visibility="{x:Bind IsExistingItem, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Stretch" Content="{x:Bind common:Common.RemoveFolderLabel}"/>
     </StackPanel>

@@ -29,6 +29,11 @@
             MenuItemsSource="{x:Bind Items, Mode=OneWay}"
             SelectionChanged="NavView_SelectionChanged"
             IsTitleBarAutoPaddingEnabled="False">
+            <NavigationView.AutoSuggestBox>
+                <AutoSuggestBox x:Name="FeedSearchBox" QuerySubmitted="FeedSearchBox_QuerySubmitted" QueryIcon="Find">
+                    
+                </AutoSuggestBox>
+            </NavigationView.AutoSuggestBox>
             <NavigationView.Content>
                 <Frame x:Name="NavigationFrame" />
             </NavigationView.Content>

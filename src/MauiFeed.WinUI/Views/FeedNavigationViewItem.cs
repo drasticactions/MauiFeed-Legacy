@@ -3,12 +3,16 @@
 // </copyright>
 
 using System.Linq.Expressions;
+using CommunityToolkit.WinUI.UI;
+using Drastic.Tools;
+using MauiFeed.Events;
 using MauiFeed.Models;
 using MauiFeed.Services;
 using MauiFeed.Views;
 using MauiFeed.WinUI.Tools;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace MauiFeed.WinUI.Views
 {
@@ -51,6 +55,8 @@ namespace MauiFeed.WinUI.Views
             this.Update();
         }
 
+        public event EventHandler<FeedFolderDropEventArgs>? OnFolderDrop;
+
         public Expression<Func<FeedItem, bool>>? Filter { get; set; }
 
         public int ItemsCount => this.Items.Count;
@@ -67,6 +73,12 @@ namespace MauiFeed.WinUI.Views
         {
             get
             {
+                if (this.ItemType == SidebarItemType.Folder)
+                {
+                    var folderId = this.Folder?.Id ?? 0;
+                    return this.Context.FeedItems!.Include(n => n.Feed).Where(n => (n.Feed!.FolderId ?? 0) == folderId).OrderByDescending(n => n.PublishingDate).ToList();
+                }
+
                 if (this.Filter is not null)
                 {
                     return this.Context.FeedItems!.Include(n => n.Feed).Where(this.Filter).OrderByDescending(n => n.PublishingDate).ToList();
@@ -77,6 +89,13 @@ namespace MauiFeed.WinUI.Views
         }
 
         public SidebarItemType ItemType { get; }
+
+        public void SetDragAndDrop(bool canDrag, bool allowDrop)
+        {
+            this.CanDrag = canDrag;
+            this.AllowDrop = allowDrop;
+            this.Loaded += this.FeedNavigationViewItem_Loaded;
+        }
 
         public void Update()
         {
@@ -94,6 +113,50 @@ namespace MauiFeed.WinUI.Views
             {
                 this.InfoBadge = null;
             }
+        }
+
+        private void FeedNavigationViewItem_DragStarting(Microsoft.UI.Xaml.UIElement sender, Microsoft.UI.Xaml.DragStartingEventArgs args)
+        {
+            args.Data.RequestedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+            args.Data.SetData(nameof(this.FeedListItem), this.FeedListItem?.Id);
+        }
+
+        private void FeedNavigationViewItem_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            var nav = (FeedNavigationViewItem)sender!;
+            nav.Loaded -= this.FeedNavigationViewItem_Loaded;
+            var presenter = nav.FindDescendant<NavigationViewItemPresenter>();
+            if (presenter is not null)
+            {
+                presenter.CanDrag = this.CanDrag;
+                presenter.AllowDrop = this.AllowDrop;
+                if (presenter.CanDrag)
+                {
+                    presenter.DragStarting += this.FeedNavigationViewItem_DragStarting;
+                }
+
+                if (presenter.AllowDrop)
+                {
+                    presenter.DragOver += Presenter_DragOver;
+                    presenter.Drop += this.FeedNavigationViewItem_Drop;
+                }
+            }
+        }
+
+        private void Presenter_DragOver(object sender, Microsoft.UI.Xaml.DragEventArgs e)
+        {
+            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+        }
+
+        private async void FeedNavigationViewItem_Drop(object sender, Microsoft.UI.Xaml.DragEventArgs e)
+        {
+            var feedIdObject = await e.DataView.GetDataAsync(nameof(this.FeedListItem));
+            if (feedIdObject is not int feedId)
+            {
+                return;
+            }
+
+            this.OnFolderDrop?.Invoke(this, new FeedFolderDropEventArgs(this, feedId));
         }
     }
 }

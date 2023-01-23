@@ -49,5 +49,19 @@ namespace MauiFeed.WinUI.Views
         public AsyncCommand<FeedNavigationViewItem> RemoveFeedFolder => this.removeCommand;
 
         public bool IsExistingItem => this.Folder?.Id > 0;
+
+        private async void FeedUrlField_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                if (string.IsNullOrEmpty(this.FeedUrlField.Text))
+                {
+                    return;
+                }
+
+                this.Folder.Name = this.FeedUrlField.Text;
+                await this.command.ExecuteAsync(this.Item);
+            }
+        }
     }
 }
