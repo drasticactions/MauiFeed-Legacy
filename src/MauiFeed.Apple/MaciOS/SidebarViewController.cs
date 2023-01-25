@@ -1,8 +1,13 @@
-﻿using System;
+﻿// <copyright file="SidebarViewController.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using System;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.PureLayout;
 using MauiFeed.Models;
 using MauiFeed.Services;
+using MauiFeed.Views;
 using MobileCoreServices;
 
 namespace MauiFeed.Apple
@@ -94,6 +99,42 @@ namespace MauiFeed.Apple
             return new UIDragItem[] { new UIDragItem(itemProvider) };
         }
 
+/* プロジェクト 'MauiFeed.Apple(net7.0-maccatalyst)' からのマージされていない変更
+追加済み:
+        public Task MoveItemToFolder(ISidebarItem item, ISidebarItem folder)
+        {
+            throw new NotImplementedException();
+        }
+*/
+
+/* プロジェクト 'MauiFeed.Apple(net7.0-maccatalyst)' からのマージされていない変更
+前:
+            this.collectionView.DragDelegate = this; 
+後:
+            this.collectionView.DragDelegate = this;
+*/
+
+/* プロジェクト 'MauiFeed.Apple(net7.0-maccatalyst)' からのマージされていない変更
+前:
+                })
+            );
+後:
+                }));
+*/
+
+/* プロジェクト 'MauiFeed.Apple(net7.0-maccatalyst)' からのマージされていない変更
+削除済み:
+        public Task MoveItemToFolder(ISidebarItem item, ISidebarItem folder)
+        {
+            throw new NotImplementedException();
+        }
+*/
+
+        public Task MoveItemToFolder(ISidebarItem item, ISidebarItem folder)
+        {
+            throw new NotImplementedException();
+        }
+
         [Export("collectionView:didSelectItemAtIndexPath:")]
         protected void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
@@ -108,7 +149,7 @@ namespace MauiFeed.Apple
         {
             this.collectionView = new UICollectionView(this.View!.Bounds, this.CreateLayout());
             this.collectionView.Delegate = this;
-            this.collectionView.DragDelegate = this; 
+            this.collectionView.DragDelegate = this;
             this.collectionView.BackgroundColor = UIColor.SystemBackground;
             this.View.AddSubview(this.collectionView);
             this.collectionView.TranslatesAutoresizingMaskIntoConstraints = false;
@@ -219,8 +260,12 @@ namespace MauiFeed.Apple
                         default:
                             return collectionView.DequeueConfiguredReusableCell(rowRegistration, indexPath, item);
                     }
-                })
-            );
+                }));
+        }
+
+        public Task RemoveFromFolder(ISidebarItem item, bool moveToRoot = false)
+        {
+            throw new NotImplementedException();
         }
     }
 }

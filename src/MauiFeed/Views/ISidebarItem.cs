@@ -8,12 +8,12 @@ namespace MauiFeed.Views
 {
     public interface ISidebarItem
     {
+        FeedListItem? FeedListItem { get; }
+
         /// <summary>
         /// Update the inner sidebar item.
         /// </summary>
         void Update();
-
-        FeedListItem? FeedListItem { get; }
 
         IList<FeedItem> Items { get; }
 

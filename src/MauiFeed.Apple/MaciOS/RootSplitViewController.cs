@@ -20,7 +20,7 @@ namespace MauiFeed.Apple
             : base(UISplitViewControllerStyle.TripleColumn)
         {
             this.progressUpdate = new Progress<RssCacheFeedUpdate>();
-            this.progressUpdate.ProgressChanged += ProgressUpdate_ProgressChanged;
+            this.progressUpdate.ProgressChanged += this.ProgressUpdate_ProgressChanged;
             this.feedCollection = new TimelineCollectionViewController(this);
             this.sidebar = new SidebarViewController(this);
             this.webview = new FeedWebViewController(this);

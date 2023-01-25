@@ -10,7 +10,7 @@ namespace MauiFeed.Events
     {
         private int feedListItemId;
 
-        ISidebarItem folder;
+        private ISidebarItem folder;
 
         public FeedFolderDropEventArgs(ISidebarItem folder, int feedListItemId)
         {

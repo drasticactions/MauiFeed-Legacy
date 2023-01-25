@@ -8,6 +8,8 @@ namespace MauiFeed.Apple
 {
     public class PaddingLabel : UILabel
     {
+        private UIEdgeInsets textEdgeInsets = UIEdgeInsets.Zero;
+
         public PaddingLabel()
         {
             this.Layer.MasksToBounds = true;
@@ -15,8 +17,6 @@ namespace MauiFeed.Apple
             this.BackgroundColor = UIColorExtensions.GetSystemTint();
             this.Font = this.Font.WithSize(10);
         }
-
-        private UIEdgeInsets textEdgeInsets = UIEdgeInsets.Zero;
 
         public UIEdgeInsets TextEdgeInsets
         {

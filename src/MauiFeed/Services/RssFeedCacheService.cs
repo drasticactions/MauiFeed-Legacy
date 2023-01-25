@@ -2,10 +2,10 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using System.Reflection.Metadata.Ecma335;
 using CodeHollow.FeedReader;
 using MauiFeed.Events;
 using MauiFeed.Models;
-using System.Reflection.Metadata.Ecma335;
 
 namespace MauiFeed.Services
 {

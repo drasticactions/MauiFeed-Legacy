@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="FeedWebViewController.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using System;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.PureLayout;
 using Drastic.Tools;
@@ -29,7 +33,16 @@ namespace MauiFeed.Apple
 
         public void SetFeedItem(FeedItem item)
         {
+
+/* プロジェクト 'MauiFeed.Apple(net7.0-maccatalyst)' からのマージされていない変更
+前:
             Task.Run(async () => {
+後:
+            Task.Run(async () =>
+            {
+*/
+            Task.Run(async () =>
+            {
                 var result = await this.templateService.RenderFeedItemAsync(item, true);
                 this.webview.SetSource(result);
             }).FireAndForgetSafeAsync();

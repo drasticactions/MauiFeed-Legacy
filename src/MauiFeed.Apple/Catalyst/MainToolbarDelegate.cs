@@ -8,15 +8,18 @@ using AppKit;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Tools;
 using MauiFeed.Services;
+using ObjCRuntime;
 using UIKit;
 
 namespace MauiFeed.Apple
 {
     public class MainToolbarDelegate : AppKit.NSToolbarDelegate
     {
+        public const string Refresh = "Refresh";
         private RootSplitViewController controller;
         private RssFeedCacheService cache;
-        public const string Refresh = "Refresh";
+        private UIAlertController addFeedController;
+        private AddNewFeedController newFeedController;
         public const string Plus = "Plus";
         public const string MarkAllAsRead = "MarkAllAsRead";
         public const string MarkAsRead = "MarkAsRead";
@@ -29,8 +32,25 @@ namespace MauiFeed.Apple
 
         public MainToolbarDelegate(RootSplitViewController controller)
         {
+            this.newFeedController = new AddNewFeedController();
             this.controller = controller;
             this.cache = (RssFeedCacheService)Ioc.Default.GetService<RssFeedCacheService>()!;
+            this.addFeedController = UIAlertController.Create(Translations.Common.AddFeedButton, null, UIAlertControllerStyle.Alert);
+            this.addFeedController.AddTextField((field) => { });
+            var saveButtonAction = UIAlertAction.Create(Translations.Common.AddLabel, UIAlertActionStyle.Default, (alert) => {
+                Uri? result = null;
+                var created = Uri.TryCreate(this.addFeedController.TextFields[0].Text, UriKind.Absolute, out result);
+                if (created)
+                {
+                    Task.Run(async () => {
+                        await this.cache.RetrieveFeedAsync(result!.ToString());
+                        this.controller.SidebarViewController.UpdateSidebar();
+                    }).FireAndForgetSafeAsync();
+                }
+            });
+            var cancelButtonAction = UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, (alert) => { });
+            this.addFeedController.AddAction(saveButtonAction);
+            this.addFeedController.AddAction(cancelButtonAction);
         }
 
         public override string[] DefaultItemIdentifiers(NSToolbar toolbar)
@@ -116,7 +136,7 @@ namespace MauiFeed.Apple
                 toolbarItem.UIImage = UIImage.GetSystemImage("square.and.arrow.up");
             }
 
-            toolbarItem.Activated += ToolbarItem_Activated;
+            toolbarItem.Activated += this.ToolbarItem_Activated;
             return toolbarItem;
         }
 
@@ -130,15 +150,26 @@ namespace MauiFeed.Apple
                     Task.Run(async () =>
                     {
                         await this.cache.RefreshFeedsAsync(this.controller.ProgressUpdate);
-                    }
-                    );
+                    });
+                    break;
+                case Plus:
+                    this.controller.PresentViewControllerAsync(this.addFeedController, true).FireAndForgetSafeAsync();
                     break;
                 case MarkAllAsRead:
                     Task.Run(async () =>
                     {
-                    }
-                    );
+                    });
                     break;
+            }
+        }
+
+        private class AddNewFeedController : UIViewController
+        {
+            public AddNewFeedController()
+            {
+                this.ModalPresentationStyle = UIModalPresentationStyle.Automatic;
+                this.View!.AddSubview(new UILabel());
+                this.View!.AddSubview(new UIButton());
             }
         }
     }

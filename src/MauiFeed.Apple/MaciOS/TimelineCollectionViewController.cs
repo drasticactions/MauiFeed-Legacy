@@ -27,7 +27,8 @@ namespace MauiFeed.Apple
             this.collectionView = new UICollectionView(this.View!.Bounds, this.CreateLayout());
             this.controller = controller;
 
-            var rowRegistration = UICollectionViewCellRegistration.GetRegistration(typeof(FeedListCell),
+            var rowRegistration = UICollectionViewCellRegistration.GetRegistration(
+                typeof(FeedListCell),
                 new UICollectionViewCellRegistrationConfigurationHandler((cell, indexpath, item) =>
                 {
                     var listCell = (FeedListCell)cell;
@@ -35,13 +36,13 @@ namespace MauiFeed.Apple
                     listCell.SetupCell(sidebarItem.Item);
                 }));
 
-            this.dataSource = new UICollectionViewDiffableDataSource<NSString, MacFeedItem>(collectionView!,
+            this.dataSource = new UICollectionViewDiffableDataSource<NSString, MacFeedItem>(
+                this.collectionView!,
                 new UICollectionViewDiffableDataSourceCellProvider((collectionView, indexPath, item) =>
                 {
                     var sidebarItem = (MacFeedItem)item;
                     return collectionView.DequeueConfiguredReusableCell(rowRegistration, indexPath, item);
-                })
-            );
+                }));
 
             this.collectionView.Delegate = this;
 #if !TVOS
@@ -150,13 +151,7 @@ namespace MauiFeed.Apple
                 this.item = item;
                 this.item.PropertyChanged += this.Item_PropertyChanged;
 
-                //this.contentLabel.Text = item.Title;
-
-                this.UpdateIsRead();
-            }
-
-            private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-            {
+                // this.contentLabel.Text = item.Title;
                 this.UpdateIsRead();
             }
 
@@ -170,6 +165,11 @@ namespace MauiFeed.Apple
                 {
                     this.InvokeOnMainThread(() => this.hasSeenIcon.Image = this.item?.IsRead ?? false ? UIImage.GetSystemImage("circle") : UIImage.GetSystemImage("circle.fill"));
                 }
+            }
+
+            private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+            {
+                this.UpdateIsRead();
             }
         }
 

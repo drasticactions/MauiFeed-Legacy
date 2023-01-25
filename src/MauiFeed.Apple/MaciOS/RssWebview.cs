@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="RssWebview.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using System;
 using MauiFeed.Views;
 using ObjCRuntime;
 using WebKit;
@@ -17,13 +21,13 @@ namespace MauiFeed.Apple
         {
         }
 
-        protected RssWebview(NSObjectFlag t)
-            : base(t)
+        protected internal RssWebview(NativeHandle handle)
+            : base(handle)
         {
         }
 
-        protected internal RssWebview(NativeHandle handle)
-            : base(handle)
+        protected RssWebview(NSObjectFlag t)
+            : base(t)
         {
         }
 

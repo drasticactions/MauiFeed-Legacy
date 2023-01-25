@@ -321,6 +321,16 @@ namespace MauiFeed.Services
             return Expression.Lambda<Func<TData, bool>>(body, parameter);
         }
 
+        public async Task<FeedItem?> GetFeedItemViaRssId(string? rssId)
+        {
+            if (rssId is null)
+            {
+                return null;
+            }
+
+            return await this.FeedItems!.FirstOrDefaultAsync(n => n.RssId == rssId);
+        }
+
         /// <summary>
         /// Run when configuring the database.
         /// </summary>
@@ -347,16 +357,6 @@ namespace MauiFeed.Services
             modelBuilder.Entity<FeedListItem>().HasIndex(n => n.Uri).IsUnique();
             modelBuilder.Entity<FeedItem>().HasKey(n => n.Id);
             modelBuilder.Entity<FeedItem>().HasIndex(n => n.RssId).IsUnique();
-        }
-
-        public async Task<FeedItem?> GetFeedItemViaRssId(string? rssId)
-        {
-            if (rssId is null)
-            {
-                return null;
-            }
-
-            return await this.FeedItems!.FirstOrDefaultAsync(n => n.RssId == rssId);
         }
 
         public async Task<FeedListItem?> GetFeedListItem(Uri? rssId)
