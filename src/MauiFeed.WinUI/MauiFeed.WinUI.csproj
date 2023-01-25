@@ -109,7 +109,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0-preview3" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
 		<PackageReference Include="Drastic.Utilities" Version="1.0.10" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.1" />
