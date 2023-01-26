@@ -6,34 +6,29 @@ using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 using Windows.Management.Core;
 using Windows.Storage;
-using Windows.UI;
 using Windows.UI.ViewManagement;
 
 namespace MauiFeed.WinUI.Services
 {
+    /// <summary>
+    /// Theme Selector Service.
+    /// </summary>
     public class ThemeSelectorService
     {
-        private UISettings uiSettings = new UISettings();
         private const string SettingsKey = "AppBackgroundRequestedTheme";
+        private UISettings uiSettings = new UISettings();
         private ApplicationDataContainer localSettings;
-        private Window window;
-        public ElementTheme Theme { get; set; } = ElementTheme.Default;
+        private WindowService windowService;
 
-        public bool IsDark => Theme == ElementTheme.Dark || (Theme == ElementTheme.Default && ThemeSelectorService.IsDarkDefault);
-
-        public static bool IsDarkDefault
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ThemeSelectorService"/> class.
+        /// </summary>
+        /// <param name="windowService"><see cref="WindowService"/>.</param>
+        public ThemeSelectorService(WindowService windowService)
         {
-            get
-            {
-                return new Windows.UI.ViewManagement.UISettings().GetColorValue(Windows.UI.ViewManagement.UIColorType.Background) == Color.FromArgb(255, 0, 0, 0);
-            }
-        }
-
-        public ThemeSelectorService(Window window)
-        {
-            this.window = window;
+            this.windowService = windowService;
             this.localSettings = ApplicationDataManager.CreateForPackageFamily(Package.Current.Id.FamilyName).LocalSettings;
-            Theme = LoadThemeFromSettings();
+            this.Theme = this.LoadThemeFromSettings();
             this.uiSettings.ColorValuesChanged += (sender, args) =>
             {
                 if (this.Theme == ElementTheme.Default)
@@ -43,21 +38,52 @@ namespace MauiFeed.WinUI.Services
             };
         }
 
+        /// <summary>
+        /// Fired when the theme changes.
+        /// </summary>
         public event EventHandler<EventArgs>? ThemeChanged;
 
-        public void SetTheme(ElementTheme theme)
+        /// <summary>
+        /// Gets a value indicating whether the dark theme is the default on the system.
+        /// </summary>
+        public static bool IsDarkDefault
         {
-            Theme = theme;
-
-            SetRequestedTheme();
-            SaveThemeInSettings(Theme);
+            get
+            {
+                return new UISettings().GetColorValue(UIColorType.Background) == Windows.UI.Color.FromArgb(255, 0, 0, 0);
+            }
         }
 
-        public void SetRequestedTheme()
+        /// <summary>
+        /// Gets the current application theme.
+        /// </summary>
+        public ElementTheme Theme { get; private set; } = ElementTheme.Default;
+
+        /// <summary>
+        /// Gets a value indicating whether the current theme is dark.
+        /// </summary>
+        public bool IsDark => this.Theme == ElementTheme.Dark || (this.Theme == ElementTheme.Default && ThemeSelectorService.IsDarkDefault);
+
+        /// <summary>
+        /// Sets the current application theme for all windows.
+        /// </summary>
+        /// <param name="theme">The theme to change to.</param>
+        public void SetTheme(ElementTheme theme)
         {
-            if (this.window.Content is FrameworkElement frameworkElement)
+            this.Theme = theme;
+
+            this.SetRequestedTheme();
+            this.SaveThemeInSettings(this.Theme);
+        }
+
+        private void SetRequestedTheme()
+        {
+            foreach (var window in this.windowService.ApplicationWindows)
             {
-                frameworkElement.RequestedTheme = Theme;
+                if (window.Content is FrameworkElement frameworkElement)
+                {
+                    frameworkElement.RequestedTheme = this.Theme;
+                }
             }
 
             this.ThemeChanged?.Invoke(this, EventArgs.Empty);

@@ -3,7 +3,8 @@
 		<LangVersion>preview</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<WarningsAsErrors>nullable</WarningsAsErrors>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<NoWarn>SA0001</NoWarn>
 		<Company>Drastic Actions</Company>
 		<Copyright>Copyright (C) Drastic Actions</Copyright>
 		<IsPackable>false</IsPackable>
@@ -24,6 +25,8 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.2" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

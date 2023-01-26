@@ -10,43 +10,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <ResourceDictionary>
-                    <ResourceDictionary.ThemeDictionaries>
-                        <ResourceDictionary x:Key="Light">
-                            <SolidColorBrush x:Key="ArticleBackground" Color="White"/>
-                        </ResourceDictionary>
-                        <ResourceDictionary x:Key="Dark">
-                            <SolidColorBrush x:Key="ArticleBackground" Color="#121212"/>
-                        </ResourceDictionary>
-                    </ResourceDictionary.ThemeDictionaries>
-                </ResourceDictionary>
-                <ResourceDictionary>
-                    <!--Custom size margins-->
-                    <Thickness x:Key="PageTitleMargin">0,0,12,7</Thickness>
-                    <Thickness x:Key="SettingsSubheaderMargin">25, 20, 0, 48</Thickness>
-
-                    <!--Medium size margins-->
-                    <Thickness x:Key="MediumLeftRightMargin">12,0,12,0</Thickness>
-                    <Thickness x:Key="MediumLeftTopRightBottomMargin">12,12,12,12</Thickness>
-
-                    <!--Small size margins-->
-                    <Thickness x:Key="SmallAllMargin">5, 5, 5, 5</Thickness>
-                    <Thickness x:Key="EightTopMargin">0, 8, 0, 0</Thickness>
-                </ResourceDictionary>
+                <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
-            <SolidColorBrush x:Key="WindowCaptionBackground">Transparent</SolidColorBrush>
-            <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled">Transparent</SolidColorBrush>
-            <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <local:BooleanToVisibilityInverter x:Key="BooleanToVisibilityInverter"/>
-            <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-            <local:FavoriteLabelConverter x:Key="FavoriteLabelConverter"/>
-            <local:UnreadReadLabelConverter x:Key="UnreadReadLabelConverter"/>
-            <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
-            <local:HtmlToTextConverter x:Key="HtmlToTextConverter"/>
-            <local:ImageByteConverter x:Key="ImageByteConverter"/>
-            <local:AddUpdateFolderConverter x:Key="AddUpdateFolderConverter"/>
-            <local:IntVisibilityConverter x:Key="IntVisibilityConverter"/>
-            <local:IntVisibilityInverter x:Key="IntVisibilityInverter"/>
+            <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>
 </Application>
