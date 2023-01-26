@@ -10,7 +10,12 @@
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
+    <DefaultLanguage>ja-JP</DefaultLanguage>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Pages\FeedTimelineSplitPage.xaml" />
+    <None Remove="Pages\SettingsPage.xaml" />
+  </ItemGroup>
 
 	<ItemGroup>
 		<Content Include="Assets\LargeTile.scale-100.png" />
@@ -96,6 +101,7 @@
 	</ItemGroup>
 	
   <ItemGroup>
+    <PackageReference Include="Drastic.Modal" Version="1.0.9" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
     <PackageReference Include="WinUICommunity.Common" Version="3.0.2" />
@@ -111,6 +117,19 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\FeedTimelineSplitPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!-- 

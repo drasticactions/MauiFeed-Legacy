@@ -2,6 +2,11 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Drastic.Services;
+using MauiFeed.Services;
+using MauiFeed.WinUI.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 
 namespace MauiFeed.WinUI
@@ -12,6 +17,8 @@ namespace MauiFeed.WinUI
     public partial class App : Application
     {
         private Window? window;
+        private WindowService windowService;
+        private ThemeSelectorService themeSelectorService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="App"/> class.
@@ -21,6 +28,17 @@ namespace MauiFeed.WinUI
         public App()
         {
             this.InitializeComponent();
+            this.windowService = new WindowService();
+            this.themeSelectorService = new ThemeSelectorService(this.windowService);
+
+            var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+            Ioc.Default.ConfigureServices(
+                new ServiceCollection()
+                .AddSingleton<IErrorHandlerService, WinUIErrorHandlerService>()
+                .AddSingleton<DatabaseContext>(new DatabaseContext(System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db")))
+                .AddSingleton(this.windowService)
+                .AddSingleton(this.themeSelectorService)
+                .BuildServiceProvider());
         }
 
         /// <summary>
@@ -29,7 +47,7 @@ namespace MauiFeed.WinUI
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            this.window = new MainWindow();
+            this.window = this.windowService.AddWindow<MainWindow>();
             this.window.Activate();
         }
     }

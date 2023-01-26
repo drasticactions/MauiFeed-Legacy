@@ -26,6 +26,7 @@
 	
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
+		<PackageReference Include="Drastic.Utilities" Version="1.0.10" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.2" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
 			<PrivateAssets>all</PrivateAssets>

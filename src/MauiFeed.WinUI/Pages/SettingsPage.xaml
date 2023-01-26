@@ -1,0 +1,59 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<Page
+    x:Class="MauiFeed.WinUI.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MauiFeed.WinUI.Pages"
+    xmlns:tools="using:MauiFeed.WinUI.Tools"
+    xmlns:common="using:MauiFeed.Translations"
+    xmlns:controls="using:WinUICommunity.SettingsUI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <tools:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="ElementTheme" />
+    </Page.Resources>
+    <ScrollViewer>
+        <StackPanel Margin="{StaticResource SettingsSubheaderMargin}" Spacing="25">
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                       Text="{x:Bind common:Common.SettingsLabel}" />
+
+            <StackPanel  Margin="5" Spacing="5">
+                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                       Text="{x:Bind common:Common.ThemeLabel}" />
+                <StackPanel Margin="{StaticResource EightTopMargin}">
+                    <RadioButton
+                            IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
+                            Command="{x:Bind SwitchThemeCommand}"
+                    Content="{x:Bind common:Common.LightThemeLabel}"
+                            GroupName="AppTheme">
+                        <RadioButton.CommandParameter>
+                            <xaml:ElementTheme>Light</xaml:ElementTheme>
+                        </RadioButton.CommandParameter>
+                    </RadioButton>
+                    <RadioButton
+                            IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
+                            Command="{x:Bind SwitchThemeCommand}"
+                            Content="{x:Bind common:Common.DarkThemeLabel}"
+                            GroupName="AppTheme">
+                        <RadioButton.CommandParameter>
+                            <xaml:ElementTheme>Dark</xaml:ElementTheme>
+                        </RadioButton.CommandParameter>
+                    </RadioButton>
+                    <RadioButton
+                            IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
+                            Command="{x:Bind SwitchThemeCommand}"
+                            Content="{x:Bind common:Common.DefaultThemeLabel}"
+                            GroupName="AppTheme">
+                        <RadioButton.CommandParameter>
+                            <xaml:ElementTheme>Default</xaml:ElementTheme>
+                        </RadioButton.CommandParameter>
+                    </RadioButton>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
