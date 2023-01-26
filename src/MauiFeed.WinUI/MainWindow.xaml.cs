@@ -9,10 +9,12 @@ using MauiFeed.Models;
 using MauiFeed.Services;
 using MauiFeed.Views;
 using MauiFeed.WinUI.Pages;
+using MauiFeed.WinUI.Services;
 using MauiFeed.WinUI.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using WinUIEx;
 
 namespace MauiFeed.WinUI

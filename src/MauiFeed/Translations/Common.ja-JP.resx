@@ -120,6 +120,12 @@
   <data name="AddLabel" xml:space="preserve">
     <value>追加...</value>
   </data>
+  <data name="AllLabel" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="AllUnreadLabel" xml:space="preserve">
+    <value>未読</value>
+  </data>
   <data name="AppTitle" xml:space="preserve">
     <value>MauiFeed</value>
   </data>
@@ -144,7 +150,13 @@
   <data name="SettingsLabel" xml:space="preserve">
     <value>設定</value>
   </data>
+  <data name="StarredLabel" xml:space="preserve">
+    <value>お気に入り</value>
+  </data>
   <data name="ThemeLabel" xml:space="preserve">
     <value>テーマ</value>
+  </data>
+  <data name="TodayLabel" xml:space="preserve">
+    <value>今日</value>
   </data>
 </root>
