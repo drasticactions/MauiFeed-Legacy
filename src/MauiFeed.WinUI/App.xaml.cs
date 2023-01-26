@@ -4,6 +4,7 @@
 
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Services;
+using MauiFeed.NewsService;
 using MauiFeed.Services;
 using MauiFeed.WinUI.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +37,9 @@ namespace MauiFeed.WinUI
                 new ServiceCollection()
                 .AddSingleton<IErrorHandlerService, WinUIErrorHandlerService>()
                 .AddSingleton<DatabaseContext>(new DatabaseContext(System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db")))
+                .AddSingleton<ITemplateService, HandlebarsTemplateService>()
+                .AddSingleton<IRssService, FeedReaderService>()
+                .AddSingleton<RssFeedCacheService>()
                 .AddSingleton(this.windowService)
                 .AddSingleton(this.themeSelectorService)
                 .BuildServiceProvider());

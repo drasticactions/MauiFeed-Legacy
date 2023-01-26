@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddFeedButton" xml:space="preserve">
+    <value>Add Feed</value>
+  </data>
+  <data name="AddFolderLabel" xml:space="preserve">
+    <value>Add Folder</value>
+  </data>
   <data name="AddLabel" xml:space="preserve">
     <value>Add...</value>
   </data>
@@ -174,7 +180,7 @@
   <data name="LightThemeLabel" xml:space="preserve">
     <value>Light</value>
   </data>
-    <data name="LocalLabel" xml:space="preserve">
+  <data name="LocalLabel" xml:space="preserve">
     <value>Local</value>
   </data>
   <data name="MarkAllAsReadLabel" xml:space="preserve">
@@ -225,7 +231,7 @@
   <data name="ThemeLabel" xml:space="preserve">
     <value>Theme</value>
   </data>
-   <data name="TodayLabel" xml:space="preserve">
+  <data name="TodayLabel" xml:space="preserve">
     <value>Today</value>
   </data>
   <data name="UpdateFolderLabel" xml:space="preserve">

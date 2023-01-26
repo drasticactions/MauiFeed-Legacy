@@ -1,24 +1,40 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Update="Translations\Common.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Common.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Translations\Common.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Common.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Translations\Common.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Common.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Translations\Common.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Common.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<EmbeddedResource Include="Icon\dotnet_bot.png" />
+		<EmbeddedResource Include="Icon\favicon.ico" />
+		<EmbeddedResource Include="Templates\feeditem.html.hbs" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="AngleSharp" Version="0.17.1" />
+		<PackageReference Include="CodeHollow.FeedReader" Version="1.2.4" />
+		<PackageReference Include="Handlebars.Net" Version="2.1.2" />
+		<PackageReference Include="SmartReader" Version="0.9.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Events\" />
+	</ItemGroup>
 </Project>

@@ -64,6 +64,40 @@ namespace MauiFeed.WinUI
         /// </summary>
         public ObservableCollection<NavigationViewItemBase> Items { get; } = new ObservableCollection<NavigationViewItemBase>();
 
+        /// <summary>
+        /// Update sidebar items.
+        /// </summary>
+        public void UpdateSidebar()
+        {
+            foreach (var item in this.SidebarItems)
+            {
+                item.Update();
+            }
+        }
+
+        /// <summary>
+        /// Add Item To Sidebar.
+        /// </summary>
+        /// <param name="item">Item to add.</param>
+        public void AddItemToSidebar(FeedListItem item)
+        {
+            var oldItem = this.SidebarItems.FirstOrDefault(n => n.FeedListItem?.Id == item.Id);
+
+            // If we don't have this item already in the list, add it.
+            // Then, update the sidebar. If you tried adding an existing item,
+            // It would have updated the feed, so we can show the new items.
+            if (oldItem is null)
+            {
+                var sidebarItem = new FeedSidebarItem(item!);
+                this.Items.Add(sidebarItem.NavItem);
+
+                // BUG: What if you try and add it in twice?
+                this.SidebarItems.Add(sidebarItem);
+            }
+
+            this.UpdateSidebar();
+        }
+
         private void GenerateMenuButtons()
         {
             var refreshButton = new NavigationViewItem() { Content = Translations.Common.RefreshButton, Icon = new SymbolIcon(Symbol.Refresh) };
@@ -80,16 +114,29 @@ namespace MauiFeed.WinUI
 
             var addFeedButton = new NavigationViewItem() { Content = Translations.Common.FeedLabel, Icon = new SymbolIcon(Symbol.Library) };
             addFeedButton.SelectsOnInvoked = false;
+            addFeedButton.ContextFlyout = new Flyout() { Content = new AddNewFeedFlyout(this) };
+            addFeedButton.Tapped += this.MenuButtonTapped;
 
             addButton.MenuItems.Add(addFeedButton);
 
             var addFolderButton = new NavigationViewItem() { Content = Translations.Common.FolderLabel, Icon = new SymbolIcon(Symbol.Folder) };
             addFolderButton.SelectsOnInvoked = false;
-
+            addFolderButton.Tapped += this.AddFolderButtonTapped;
             addButton.MenuItems.Add(addFolderButton);
 
             this.Items.Add(addButton);
             this.Items.Add(new NavigationViewItemSeparator());
+        }
+
+        private void AddFolderButtonTapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            ((NavigationViewItem)sender).ContextFlyout = new Flyout() { Content = new FolderOptionsFlyout(this, new FeedSidebarItem(new FeedFolder())) };
+            ((FrameworkElement)sender)!.ContextFlyout.ShowAt((FrameworkElement)sender!);
+        }
+
+        private void MenuButtonTapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            ((FrameworkElement)sender)!.ContextFlyout.ShowAt((FrameworkElement)sender!);
         }
 
         private void GenerateSidebarItems()

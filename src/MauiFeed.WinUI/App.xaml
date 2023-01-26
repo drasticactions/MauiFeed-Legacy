@@ -29,6 +29,9 @@
                     <Thickness x:Key="EightTopMargin">0, 8, 0, 0</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+            <tools:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
+            <tools:BooleanToVisibilityInverter x:Name="BooleanToVisibilityInverter"/>
+            <tools:AddUpdateFolderConverter x:Name="AddUpdateFolderConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

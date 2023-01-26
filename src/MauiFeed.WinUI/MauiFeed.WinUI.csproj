@@ -15,6 +15,8 @@
 	<ItemGroup>
 		<None Remove="Pages\FeedTimelineSplitPage.xaml" />
 		<None Remove="Pages\SettingsPage.xaml" />
+		<None Remove="Views\AddNewFeedFlyout.xaml" />
+		<None Remove="Views\FolderOptionsFlyout.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -124,6 +126,16 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Page Update="Views\FolderOptionsFlyout.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
+	<ItemGroup>
+	  <Page Update="Views\AddNewFeedFlyout.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 	<ItemGroup>
 		<Page Update="Pages\FeedTimelineSplitPage.xaml">

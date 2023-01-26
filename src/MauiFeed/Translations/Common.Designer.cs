@@ -61,6 +61,24 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Add Feed に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AddFeedButton {
+            get {
+                return ResourceManager.GetString("AddFeedButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Add Folder に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AddFolderLabel {
+            get {
+                return ResourceManager.GetString("AddFolderLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Add... に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string AddLabel {
