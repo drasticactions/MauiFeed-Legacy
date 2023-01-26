@@ -150,6 +150,9 @@
   <data name="LightThemeLabel" xml:space="preserve">
     <value>ライト</value>
   </data>
+  <data name="NoSelectionLabel" xml:space="preserve">
+    <value>選択なし</value>
+  </data>
   <data name="RefreshButton" xml:space="preserve">
     <value>更新</value>
   </data>

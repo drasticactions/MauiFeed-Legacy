@@ -31,7 +31,14 @@
             </ResourceDictionary.MergedDictionaries>
             <tools:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
             <tools:BooleanToVisibilityInverter x:Name="BooleanToVisibilityInverter"/>
+            <tools:NullToVisibilityConverter x:Name="NullToVisibilityConverter"/>
+            <tools:NullToVisibilityInverter x:Name="NullToVisibilityInverter"/>
+            <tools:ImageByteConverter x:Name="ImageByteConverter"/>
+            <tools:HtmlToTextConverter x:Name="HtmlToTextConverter"/>
             <tools:AddUpdateFolderConverter x:Name="AddUpdateFolderConverter"/>
+            <tools:AllUnreadReadLabelConverter x:Name="AllUnreadReadLabelConverter"/>
+            <tools:UnreadReadLabelConverter x:Name="UnreadReadLabelConverter"/>
+            <tools:FavoriteLabelConverter x:Name="FavoriteLabelConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

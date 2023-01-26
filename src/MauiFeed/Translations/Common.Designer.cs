@@ -304,6 +304,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   No Selection に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string NoSelectionLabel {
+            get {
+                return ResourceManager.GetString("NoSelectionLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Open In Browser に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OpenInBrowserLabel {

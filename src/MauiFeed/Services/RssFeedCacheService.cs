@@ -87,6 +87,7 @@ namespace MauiFeed.Services
             if (oldFeed is null)
             {
                 await this.databaseContext.FeedListItems!.AddAsync(feed!);
+                oldFeed = feed;
             }
 
             foreach (var item in feedListItems!)
@@ -105,6 +106,7 @@ namespace MauiFeed.Services
 
             feed!.Items = feedListItems;
 
+            await this.databaseContext.SaveChangesAsync();
             return feed;
         }
     }

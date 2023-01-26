@@ -198,6 +198,9 @@
   <data name="MarkAsUnreadLabel" xml:space="preserve">
     <value>Mark As Unread</value>
   </data>
+  <data name="NoSelectionLabel" xml:space="preserve">
+    <value>No Selection</value>
+  </data>
   <data name="OpenInBrowserLabel" xml:space="preserve">
     <value>Open In Browser</value>
   </data>

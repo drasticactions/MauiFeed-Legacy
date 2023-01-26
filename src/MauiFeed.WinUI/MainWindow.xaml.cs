@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Newtonsoft.Json.Linq;
 using WinUIEx;
 
 namespace MauiFeed.WinUI
@@ -152,7 +153,7 @@ namespace MauiFeed.WinUI
             var smartFilters = new NavigationViewItem() { Content = Translations.Common.SmartFeedsLabel, Icon = new SymbolIcon(Symbol.Filter) };
             smartFilters.SelectsOnInvoked = false;
 
-            var allButtonItem = new FeedSidebarItem(Translations.Common.AllLabel, new SymbolIcon(Symbol.Bookmarks), this.context.FeedItems!.Include(n => n.Feed).Where(n => n.Id > 0));
+            var allButtonItem = new FeedSidebarItem(Translations.Common.AllLabel, new SymbolIcon(Symbol.Bookmarks), this.context.FeedItems!.Include(n => n.Feed));
             smartFilters.MenuItems.Add(allButtonItem.NavItem);
             this.SidebarItems.Add(allButtonItem);
 
@@ -174,9 +175,9 @@ namespace MauiFeed.WinUI
 
         private void GenerateNavigationItems()
         {
-            foreach (var item in this.context.FeedListItems!.Where(n => n.FolderId <= 0))
+            foreach (var item in this.context.FeedListItems!.Include(n => n.Items).Where(n => n.FolderId == null || n.FolderId <= 0))
             {
-                var sidebarItem = new FeedSidebarItem(item!);
+                var sidebarItem = new FeedSidebarItem(item!, this.context.FeedItems!.Include(n => n.Feed).Where(n => n.FeedListItemId == item.Id));
                 this.Items.Add(sidebarItem.NavItem);
                 this.SidebarItems.Add(sidebarItem);
             }
@@ -204,12 +205,14 @@ namespace MauiFeed.WinUI
         {
             if (args.SelectedItem is NavigationViewItem nav)
             {
-                switch (nav.Tag?.ToString() ?? string.Empty)
+                var value = nav.Tag?.ToString() ?? string.Empty;
+                switch (value)
                 {
                     case "Settings":
                         this.NavigationFrame.Content = this.settingsPage;
                         break;
                     default:
+                        this.feedSplitPage.SelectedSidebarItem = this.SidebarItems.FirstOrDefault(n => n.Id.ToString() == value);
                         this.NavigationFrame.Content = this.feedSplitPage;
                         break;
                 }

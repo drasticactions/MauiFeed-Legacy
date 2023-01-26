@@ -7,6 +7,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Events\**" />
+	  <EmbeddedResource Remove="Events\**" />
+	  <None Remove="Events\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Compile Update="Translations\Common.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -32,9 +38,5 @@
 		<PackageReference Include="CodeHollow.FeedReader" Version="1.2.4" />
 		<PackageReference Include="Handlebars.Net" Version="2.1.2" />
 		<PackageReference Include="SmartReader" Version="0.9.1" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Events\" />
 	</ItemGroup>
 </Project>
