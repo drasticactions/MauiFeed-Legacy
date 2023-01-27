@@ -64,14 +64,10 @@ namespace MauiFeed.WinUI.Views
         public FeedSidebarItem Item { get; set; }
 
         private Task UpdateFolder(FeedSidebarItem item)
-        {
-            return Task.CompletedTask;
-        }
+            => this.sidebar.AddOrUpdateFolder(item);
 
         private Task RemoveFolder(FeedSidebarItem item)
-        {
-            return Task.CompletedTask;
-        }
+            => this.sidebar.RemoveFolder(item);
 
         private async void FeedUrlField_KeyUp(object sender, KeyRoutedEventArgs e)
         {

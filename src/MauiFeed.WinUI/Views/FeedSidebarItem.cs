@@ -136,7 +136,28 @@ namespace MauiFeed.WinUI.Views
         public NavigationViewItem NavItem { get; }
 
         /// <inheritdoc/>
-        public string Title => this.NavItem.Content as string ?? string.Empty;
+        public string Title
+        {
+            get
+            {
+                if (this.NavItem.Content is string result)
+                {
+                    return result;
+                }
+
+                if (this.FeedListItem is not null)
+                {
+                    return this.FeedListItem.Name ?? string.Empty;
+                }
+
+                if (this.FeedFolder is not null)
+                {
+                    return this.FeedFolder.Name ?? string.Empty;
+                }
+
+                return string.Empty;
+            }
+        }
 
         /// <inheritdoc/>
         public SidebarItemType ItemType { get; }

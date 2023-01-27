@@ -5,6 +5,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Modal;
+using Drastic.Tools;
 using MauiFeed.Models;
 using MauiFeed.Services;
 using MauiFeed.Views;
@@ -29,6 +30,9 @@ namespace MauiFeed.WinUI
         private SettingsPage settingsPage;
         private DatabaseContext context;
         private ThemeSelectorService themeSelectorService;
+        private NavigationViewItemSeparator folderSeparator;
+        private NavigationViewItemSeparator filterSeparator;
+        private NavigationViewItem? addFolderButton;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -53,6 +57,8 @@ namespace MauiFeed.WinUI
             var manager = WinUIEx.WindowManager.Get(this);
             manager.Backdrop = new WinUIEx.MicaSystemBackdrop();
 
+            this.folderSeparator = new NavigationViewItemSeparator();
+            this.filterSeparator = new NavigationViewItemSeparator();
             this.GenerateMenuButtons();
             this.GenerateSidebarItems();
         }
@@ -101,6 +107,74 @@ namespace MauiFeed.WinUI
             this.UpdateSidebar();
         }
 
+        /// <summary>
+        /// Remove a folder.
+        /// </summary>
+        /// <param name="item">Feed Folder.</param>
+        /// <returns>Task.</returns>
+        public Task RemoveFolder(FeedSidebarItem item)
+        {
+            this.addFolderButton?.ContextFlyout?.Hide();
+            item.NavItem.ContextFlyout?.Hide();
+            var feedFolder = item.FeedFolder!;
+            if (this.feedSplitPage.SelectedSidebarItem == item)
+            {
+                var firstItem = this.SidebarItems.FirstOrDefault();
+                this.NavView.SelectedItem = firstItem?.NavItem;
+            }
+
+            this.context.FeedFolder!.Remove(feedFolder);
+            this.context.SaveChangesAsync().FireAndForgetSafeAsync();
+            this.SidebarItems.Remove(item);
+            this.Items.Remove(item.NavItem);
+
+            if (this.SidebarItems.Count(n => n.ItemType == SidebarItemType.Folder) <= 0)
+            {
+                this.Items.Remove(this.folderSeparator);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Add a new folder.
+        /// </summary>
+        /// <param name="item">Feed Folder.</param>
+        /// <returns>Task.</returns>
+        public Task AddOrUpdateFolder(FeedSidebarItem item)
+        {
+            this.addFolderButton?.ContextFlyout?.Hide();
+            item.NavItem.ContextFlyout?.Hide();
+
+            var feedFolder = item.FeedFolder!;
+            item.NavItem!.Content = feedFolder.Name;
+            if (feedFolder.Id <= 0)
+            {
+                this.context.FeedFolder!.Add(feedFolder);
+                item.NavItem.ContextFlyout = new Flyout() { Content = new FolderOptionsFlyout(this, item) };
+                var folderIndex = this.Items.IndexOf(this.folderSeparator);
+                if (folderIndex < 0)
+                {
+                    folderIndex = this.Items.IndexOf(this.filterSeparator);
+                    this.Items.Insert(folderIndex + 1, item.NavItem);
+                    this.Items.Insert(folderIndex + 2, this.folderSeparator);
+                }
+                else
+                {
+                    // Last one before the separator.
+                    this.Items.Insert(folderIndex, item.NavItem);
+                }
+            }
+            else
+            {
+                this.context.FeedFolder!.Update(feedFolder);
+            }
+
+            this.SidebarItems.Add(item);
+            this.context.SaveChangesAsync().FireAndForgetSafeAsync();
+            return Task.CompletedTask;
+        }
+
         private void GenerateMenuButtons()
         {
             var refreshButton = new NavigationViewItem() { Content = Translations.Common.RefreshButton, Icon = new SymbolIcon(Symbol.Refresh) };
@@ -122,10 +196,10 @@ namespace MauiFeed.WinUI
 
             addButton.MenuItems.Add(addFeedButton);
 
-            var addFolderButton = new NavigationViewItem() { Content = Translations.Common.FolderLabel, Icon = new SymbolIcon(Symbol.Folder) };
-            addFolderButton.SelectsOnInvoked = false;
-            addFolderButton.Tapped += this.AddFolderButtonTapped;
-            addButton.MenuItems.Add(addFolderButton);
+            this.addFolderButton = new NavigationViewItem() { Content = Translations.Common.FolderLabel, Icon = new SymbolIcon(Symbol.Folder) };
+            this.addFolderButton.SelectsOnInvoked = false;
+            this.addFolderButton.Tapped += this.AddFolderButtonTapped;
+            addButton.MenuItems.Add(this.addFolderButton);
 
             this.Items.Add(addButton);
             this.Items.Add(new NavigationViewItemSeparator());
@@ -172,7 +246,7 @@ namespace MauiFeed.WinUI
             this.SidebarItems.Add(star);
 
             this.Items.Add(smartFilters);
-            this.Items.Add(new NavigationViewItemSeparator());
+            this.Items.Add(this.filterSeparator);
         }
 
         private void GenerateNavigationItems()
@@ -190,7 +264,7 @@ namespace MauiFeed.WinUI
             foreach (var item in this.context.FeedFolder!.Include(n => n.Items)!)
             {
                 var folder = new FeedSidebarItem(item, this.context.FeedItems!.Include(n => n.Feed).Where(n => (n.Feed!.FolderId ?? 0) == item.Id).OrderByDescending(n => n.PublishingDate));
-
+                folder.NavItem.ContextFlyout = new Flyout() { Content = new FolderOptionsFlyout(this, folder) };
                 foreach (var feed in item.Items!)
                 {
                     var sidebarItem = new FeedSidebarItem(item!);
@@ -200,6 +274,12 @@ namespace MauiFeed.WinUI
 
                 this.Items.Add(folder.NavItem);
                 this.SidebarItems.Add(folder);
+            }
+
+            // If we have folders, add the separator.
+            if (this.SidebarItems.Any(n => n.ItemType == SidebarItemType.Folder))
+            {
+                this.Items.Add(this.folderSeparator);
             }
         }
 

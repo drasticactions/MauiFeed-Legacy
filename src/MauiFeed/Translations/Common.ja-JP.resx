@@ -159,6 +159,12 @@
   <data name="NoSelectionLabel" xml:space="preserve">
     <value>選択なし</value>
   </data>
+  <data name="OpenInBrowserLabel" xml:space="preserve">
+    <value>ブラウザで開く</value>
+  </data>
+  <data name="OpenShareLabel" xml:space="preserve">
+    <value>リンクを共有</value>
+  </data>
   <data name="RefreshButton" xml:space="preserve">
     <value>更新</value>
   </data>

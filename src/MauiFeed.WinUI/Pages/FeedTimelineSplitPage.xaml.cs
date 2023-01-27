@@ -51,6 +51,7 @@ namespace MauiFeed.WinUI.Pages
             this.template = Ioc.Default.GetService<ITemplateService>()!;
             this.dispatcher = Ioc.Default.GetService<IAppDispatcher>()!;
             this.themeService = Ioc.Default.GetService<ThemeSelectorService>()!;
+            this.themeService.ThemeChanged += this.ThemeServiceThemeChanged;
             this.platform = Ioc.Default.GetService<WindowsPlatformService>()!;
             this.MarkAsFavoriteCommand = new AsyncCommand<FeedItem>(this.MarkAsFavoriteAsync, (x) => true, this.errorHandler);
             this.OpenInBrowserCommand = new AsyncCommand<FeedItem>(this.OpenInBrowserAsync, (x) => true, this.errorHandler);
@@ -291,6 +292,14 @@ namespace MauiFeed.WinUI.Pages
             this.SelectedItem = selected;
 
             this.RenderFeedAsync(selected).FireAndForgetSafeAsync();
+        }
+
+        private void ThemeServiceThemeChanged(object? sender, EventArgs e)
+        {
+            if (this.SelectedItem is not null)
+            {
+                this.RenderFeedAsync(this.SelectedItem).FireAndForgetSafeAsync();
+            }
         }
     }
 }
