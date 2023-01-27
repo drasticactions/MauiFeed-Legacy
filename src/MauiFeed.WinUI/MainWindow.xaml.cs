@@ -28,6 +28,7 @@ namespace MauiFeed.WinUI
         private FeedTimelineSplitPage feedSplitPage;
         private SettingsPage settingsPage;
         private DatabaseContext context;
+        private ThemeSelectorService themeSelectorService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -35,11 +36,12 @@ namespace MauiFeed.WinUI
         public MainWindow()
         {
             this.InitializeComponent();
-
+            this.Activated += this.MainWindowActivated;
             this.context = Ioc.Default.GetService<DatabaseContext>()!;
+            this.themeSelectorService = Ioc.Default.GetService<ThemeSelectorService>()!;
 
             this.settingsPage = new SettingsPage();
-            this.feedSplitPage = new FeedTimelineSplitPage();
+            this.feedSplitPage = new FeedTimelineSplitPage(this);
             this.NavigationFrame.Content = this.feedSplitPage;
 
             this.ExtendsContentIntoAppTitleBar(true);
@@ -223,6 +225,12 @@ namespace MauiFeed.WinUI
 
         private void FeedSearchBoxQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
+        }
+
+        private void MainWindowActivated(object sender, WindowActivatedEventArgs args)
+        {
+            this.Activated -= this.MainWindowActivated;
+            this.themeSelectorService.SetRequestedTheme();
         }
     }
 }

@@ -34,6 +34,7 @@
             Grid.Row="1"
             IsSettingsVisible="True"
             IsBackButtonVisible="Collapsed"
+            OpenPaneLength="250"
             MenuItemsSource="{x:Bind Items, Mode=OneWay}"
             SelectionChanged="NavViewSelectionChanged"
             IsTitleBarAutoPaddingEnabled="False">

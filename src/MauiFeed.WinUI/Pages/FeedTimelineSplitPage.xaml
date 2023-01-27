@@ -6,7 +6,9 @@
     xmlns:models="using:MauiFeed.Models"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:MauiFeed.WinUI.Views"
     xmlns:common="using:MauiFeed.Translations"
+    Background="{ThemeResource FeedItemHolderBackground}"
     mc:Ignorable="d">
 
     <SplitView DisplayMode="Inline" IsPaneOpen="True">
@@ -22,26 +24,31 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" FontWeight="Bold" MaxLines="1" TextTrimming="WordEllipsis" Text="{x:Bind SelectedSidebarItem.Title, Mode=OneWay}"/>
-                        <StackPanel Visibility="{x:Bind SelectedSidebarItem, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}" Margin="0,33,0,0" Grid.Column="1" Orientation="Horizontal">
-                            <Button Margin="0,0,20,0">
+                        <TextBlock VerticalAlignment="Center" Grid.Column="0" FontWeight="Bold" MaxLines="1" TextTrimming="WordEllipsis" Text="{x:Bind SelectedSidebarItem.Title, Mode=OneWay}"/>
+                        <StackPanel Visibility="{x:Bind SelectedSidebarItem, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}" Margin="0,0,0,0" Grid.Column="1" Orientation="Horizontal">
+                            <Button Command="{x:Bind RefreshCommand}" Margin="0,0,20,0">
                                 <Grid>
                                     <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
                             </Button>
-                            <Button Margin="0,0,20,0">
+                            <Button Command="{x:Bind MarkAllAsReadCommand}" CommandParameter="{x:Bind SelectedSidebarItem, Mode=TwoWay}" Margin="0,0,20,0">
                                 <Grid>
                                     <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
                             </Button>
-                            <ToggleButton IsChecked="{x:Bind SelectedSidebarItem.HideUnreadItems, Mode=OneWay}"  Margin="0,0,20,0" Visibility="{x:Bind SelectedSidebarItem.AlwaysHideUnread, Mode=OneWay, Converter={StaticResource BooleanToVisibilityInverter}}">
+                            <ToggleButton IsChecked="{x:Bind SelectedSidebarItem.HideUnreadItems, Mode=OneWay}"  Command="{x:Bind SetHideUnreadItemsCommand}" CommandParameter="{x:Bind SelectedSidebarItem, Mode=TwoWay}" Margin="0,0,20,0" Visibility="{x:Bind SelectedSidebarItem.AlwaysHideUnread, Mode=OneWay, Converter={StaticResource BooleanToVisibilityInverter}}">
                                 <Grid>
                                     <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
                             </ToggleButton>
                         </StackPanel>
                     </Grid>
-                    <ListView x:Name="ArticleList" Grid.Row="1" ItemsSource="{x:Bind Items, Mode=OneWay}" SelectionMode="Single" Grid.Column="0">
+                    <ListView x:Name="ArticleList"
+                              Grid.Row="1"
+                              ItemsSource="{x:Bind Items, Mode=OneWay}"
+                              SelectionMode="Single"
+                              SelectionChanged="ArticleListSelectionChanged"
+                              >
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="models:FeedItem">
                                 <Grid>
@@ -90,8 +97,48 @@
             </Grid>
         </SplitView.Pane>
         <SplitView.Content>
-            <Grid > 
-                <Grid x:Name="NoItemsGrid">
+            <Grid>
+                <Grid x:Name="FeedItemHolder" Visibility="{x:Bind SelectedItem, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Margin="20,15,0,20" Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Visibility="{x:Bind SelectedItem, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}" Margin="0,0,0,0" Grid.Column="1" Orientation="Horizontal">
+                            <Button  Command="{x:Bind MarkAsReadCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}" Margin="0,0,20,0">
+                                <Grid>
+                                    <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Visibility="{x:Bind SelectedItem.IsRead, Mode=OneWay, Converter={StaticResource BooleanToVisibilityInverter}}" Foreground="{ThemeResource SystemAccentColor}" Glyph="" />
+                                    <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
+                                </Grid>
+                            </Button>
+                            <Button Command="{x:Bind MarkAsFavoriteCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}"
+                            Margin="0,0,20,0">
+                                <Grid>
+                                    <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Visibility="{x:Bind SelectedItem.IsFavorite, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Yellow" Glyph="" />
+                                    <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
+                                </Grid>
+                            </Button>
+                            <Button Command="{x:Bind OpenShareCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}"
+                            Margin="0,0,20,0">
+                                <Grid>
+                                    <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
+                                </Grid>
+                            </Button>
+                            <Button Command="{x:Bind OpenInBrowserCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}"
+                            Margin="0,0,20,0">
+                                <Grid>
+                                    <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <views:RssWebview Grid.Row="1" x:Name="LocalRssWebview"/>
+                </Grid>
+                <Grid x:Name="NoItemsGrid" Visibility="{x:Bind SelectedItem, Mode=OneWay, Converter={StaticResource NullToVisibilityInverter}}">
                     <Image Margin="25" VerticalAlignment="Center" HorizontalAlignment="Center" MaxHeight="300" MaxWidth="300" Source="ms-appx:///Assets/Square150x150Logo.scale-400.png" />
                 </Grid>
             </Grid>

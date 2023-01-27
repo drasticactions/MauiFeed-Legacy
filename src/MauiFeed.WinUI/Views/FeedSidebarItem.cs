@@ -126,6 +126,11 @@ namespace MauiFeed.WinUI.Views
         }
 
         /// <summary>
+        /// Gets a value indicating whether there are unread items in a given list.
+        /// </summary>
+        public bool HasUnreadItems => this.Items.Any(n => !n.IsRead);
+
+        /// <summary>
         /// Gets the navigation view item.
         /// </summary>
         public NavigationViewItem NavItem { get; }

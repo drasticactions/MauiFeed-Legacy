@@ -76,7 +76,10 @@ namespace MauiFeed.WinUI.Services
             this.SaveThemeInSettings(this.Theme);
         }
 
-        private void SetRequestedTheme()
+        /// <summary>
+        /// Set the requested theme.
+        /// </summary>
+        public void SetRequestedTheme()
         {
             foreach (var window in this.windowService.ApplicationWindows)
             {

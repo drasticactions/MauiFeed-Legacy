@@ -36,10 +36,12 @@ namespace MauiFeed.WinUI
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
                 .AddSingleton<IErrorHandlerService, WinUIErrorHandlerService>()
+                .AddSingleton<IAppDispatcher>(new AppDispatcher(dispatcherQueue))
                 .AddSingleton<DatabaseContext>(new DatabaseContext(System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db")))
                 .AddSingleton<ITemplateService, HandlebarsTemplateService>()
                 .AddSingleton<IRssService, FeedReaderService>()
                 .AddSingleton<RssFeedCacheService>()
+                .AddSingleton<WindowsPlatformService>()
                 .AddSingleton(this.windowService)
                 .AddSingleton(this.themeSelectorService)
                 .BuildServiceProvider());

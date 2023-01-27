@@ -29,6 +29,17 @@
                     <Thickness x:Key="EightTopMargin">0, 8, 0, 0</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="FeedItemHolderBackground" Color="White"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="FeedItemHolderBackground" Color="#121212"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <SolidColorBrush x:Key="FeedItemHolderBackground" Color="#121212"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
             <tools:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
             <tools:BooleanToVisibilityInverter x:Name="BooleanToVisibilityInverter"/>
             <tools:NullToVisibilityConverter x:Name="NullToVisibilityConverter"/>
