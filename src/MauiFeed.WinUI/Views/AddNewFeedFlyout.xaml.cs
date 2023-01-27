@@ -52,6 +52,7 @@ namespace MauiFeed.WinUI.Views
 
             var feed = await this.cache.RetrieveFeedAsync(uri);
             this.sidebar.AddItemToSidebar(feed);
+            this.FeedUrlField.Text = string.Empty;
         }
 
         private void FeedUrlField_KeyUp(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)

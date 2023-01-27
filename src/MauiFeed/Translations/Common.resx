@@ -126,6 +126,9 @@
   <data name="AddLabel" xml:space="preserve">
     <value>Add...</value>
   </data>
+  <data name="AddToFolderLabel" xml:space="preserve">
+    <value>Add To Folder</value>
+  </data>
   <data name="AllLabel" xml:space="preserve">
     <value>All</value>
   </data>
@@ -197,6 +200,9 @@
   </data>
   <data name="MarkAsUnreadLabel" xml:space="preserve">
     <value>Mark As Unread</value>
+  </data>
+  <data name="MoveToFolderLabel" xml:space="preserve">
+    <value>Move To Folder</value>
   </data>
   <data name="NoSelectionLabel" xml:space="preserve">
     <value>No Selection</value>

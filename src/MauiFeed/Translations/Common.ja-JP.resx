@@ -168,6 +168,9 @@
   <data name="RefreshButton" xml:space="preserve">
     <value>更新</value>
   </data>
+  <data name="RemoveFeedLabel" xml:space="preserve">
+    <value>RSSフェードを消し</value>
+  </data>
   <data name="SettingsLabel" xml:space="preserve">
     <value>設定</value>
   </data>

@@ -6,9 +6,11 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MauiFeed.Models;
 using MauiFeed.Views;
+using MauiFeed.WinUI.Events;
 using MauiFeed.WinUI.Tools;
 using Microsoft.UI.Xaml.Controls;
-using WinUIEx;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using WinUICommunity.Common.Extensions;
 
 namespace MauiFeed.WinUI.Views
 {
@@ -25,7 +27,7 @@ namespace MauiFeed.WinUI.Views
         /// </summary>
         /// <param name="feedListItem">Feed List Item.</param>
         /// <param name="query">Optional query parameter.</param>
-        public FeedSidebarItem(FeedListItem feedListItem, IQueryable<FeedItem>? query = default)
+        public FeedSidebarItem(FeedListItem feedListItem, IQueryable<Models.FeedItem>? query = default)
         {
             this.id = Guid.NewGuid();
             this.FeedListItem = feedListItem;
@@ -40,6 +42,8 @@ namespace MauiFeed.WinUI.Views
 
             this.Query = query;
             this.NavItem = new NavigationViewItem() { Content = feedListItem.Name, Icon = new ImageIcon() { Source = icon, Width = 30, Height = 30, }, Tag = this.id };
+            this.NavItem.CanDrag = true;
+            this.NavItem.Loaded += this.NavItemLoaded;
             this.ItemType = SidebarItemType.FeedListItem;
             this.Update();
         }
@@ -56,6 +60,9 @@ namespace MauiFeed.WinUI.Views
             this.FeedFolder = folder;
             this.ItemType = SidebarItemType.Folder;
             this.NavItem = new NavigationViewItem() { Content = folder.Name, Icon = new SymbolIcon(Symbol.Folder), Tag = this.id };
+            this.NavItem.Loaded += this.NavItemLoaded;
+            this.NavItem.AllowDrop = true;
+            this.Update();
         }
 
         /// <summary>
@@ -75,6 +82,11 @@ namespace MauiFeed.WinUI.Views
 
         /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        /// Event fired when folder gets item dropped.
+        /// </summary>
+        public event EventHandler<FeedFolderDropEventArgs>? OnFolderDropped;
 
         /// <summary>
         /// Gets the Id of the Feed Sidebar Item.
@@ -204,6 +216,50 @@ namespace MauiFeed.WinUI.Views
             onChanged?.Invoke();
             this.OnPropertyChanged(propertyName);
             return true;
+        }
+
+        private void NavItemLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            var nav = (NavigationViewItem)sender!;
+            nav.Loaded -= this.NavItemLoaded;
+            var presenter = nav.FindDescendant<NavigationViewItemPresenter>();
+            if (presenter is not null)
+            {
+                presenter.CanDrag = nav.CanDrag;
+                presenter.AllowDrop = nav.AllowDrop;
+                if (presenter.CanDrag)
+                {
+                    presenter.DragStarting += this.PresenterDragStarting;
+                }
+
+                if (presenter.AllowDrop)
+                {
+                    presenter.DragOver += this.PresenterDragOver;
+                    presenter.Drop += this.PresenterDrop;
+                }
+            }
+        }
+
+        private async void PresenterDrop(object sender, Microsoft.UI.Xaml.DragEventArgs e)
+        {
+            var feedIdObject = await e.DataView.GetDataAsync(nameof(this.Id));
+            if (feedIdObject is not Guid feedId)
+            {
+                return;
+            }
+
+            this.OnFolderDropped?.Invoke(this, new FeedFolderDropEventArgs(feedId, this));
+        }
+
+        private void PresenterDragOver(object sender, Microsoft.UI.Xaml.DragEventArgs e)
+        {
+            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+        }
+
+        private void PresenterDragStarting(Microsoft.UI.Xaml.UIElement sender, Microsoft.UI.Xaml.DragStartingEventArgs args)
+        {
+            args.Data.RequestedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+            args.Data.SetData(nameof(this.Id), this?.Id);
         }
     }
 }

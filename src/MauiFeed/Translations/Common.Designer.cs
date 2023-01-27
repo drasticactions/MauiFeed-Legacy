@@ -88,6 +88,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Add To Folder に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AddToFolderLabel {
+            get {
+                return ResourceManager.GetString("AddToFolderLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   All に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string AllLabel {
@@ -300,6 +309,15 @@ namespace MauiFeed.Translations {
         public static string MarkAsUnreadLabel {
             get {
                 return ResourceManager.GetString("MarkAsUnreadLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Move To Folder に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MoveToFolderLabel {
+            get {
+                return ResourceManager.GetString("MoveToFolderLabel", resourceCulture);
             }
         }
         
