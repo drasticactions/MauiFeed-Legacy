@@ -89,7 +89,7 @@ namespace MauiFeed.WinUI
             // It would have updated the feed, so we can show the new items.
             if (oldItem is null)
             {
-                var sidebarItem = new FeedSidebarItem(item!);
+                var sidebarItem = new FeedSidebarItem(item!, this.context.FeedItems!.Include(n => n.Feed).Where(n => n.FeedListItemId == item.Id));
                 this.Items.Add(sidebarItem.NavItem);
 
                 // BUG: What if you try and add it in twice?

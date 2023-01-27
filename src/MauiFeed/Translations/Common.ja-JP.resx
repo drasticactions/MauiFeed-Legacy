@@ -144,8 +144,14 @@
   <data name="FeedLabel" xml:space="preserve">
     <value>RSSフェード</value>
   </data>
+  <data name="FeedUrlLabel" xml:space="preserve">
+    <value>RSSフェードURL</value>
+  </data>
   <data name="FolderLabel" xml:space="preserve">
     <value>フォルダ</value>
+  </data>
+  <data name="FolderNameLabel" xml:space="preserve">
+    <value>フォルダ名</value>
   </data>
   <data name="LightThemeLabel" xml:space="preserve">
     <value>ライト</value>
