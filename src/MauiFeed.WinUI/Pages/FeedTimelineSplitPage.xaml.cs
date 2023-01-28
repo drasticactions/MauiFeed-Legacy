@@ -199,7 +199,7 @@ namespace MauiFeed.WinUI.Pages
             this.sidebar.UpdateSidebar();
         }
 
-        private Task MarkAllAsReadAsync(List<FeedItem> items)
+        private async Task MarkAllAsReadAsync(List<FeedItem> items)
         {
             var allRead = items.All(n => n.IsRead);
 
@@ -209,9 +209,8 @@ namespace MauiFeed.WinUI.Pages
             }
 
             this.context.FeedItems!.UpdateRange(items);
-            this.context.SaveChangesAsync().FireAndForgetSafeAsync(this.errorHandler);
-
-            return Task.CompletedTask;
+            await this.context.SaveChangesAsync();
+            this.sidebar.UpdateSidebar();
         }
 
         private async Task RefreshAsync()
@@ -224,13 +223,12 @@ namespace MauiFeed.WinUI.Pages
             }
         }
 
-        private Task MarkAsFavoriteAsync(FeedItem item)
+        private async Task MarkAsFavoriteAsync(FeedItem item)
         {
             item.IsFavorite = !item.IsFavorite;
             this.context.FeedItems!.Update(item);
-            this.context.SaveChangesAsync().FireAndForgetSafeAsync(this.errorHandler);
-
-            return Task.CompletedTask;
+            await this.context.SaveChangesAsync();
+            this.sidebar.UpdateSidebar();
         }
 
         private async Task OpenInBrowserAsync(FeedItem item)

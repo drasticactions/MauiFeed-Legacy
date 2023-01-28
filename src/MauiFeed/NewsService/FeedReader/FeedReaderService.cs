@@ -40,21 +40,35 @@ namespace MauiFeed.NewsService
 
                 if (item.ImageCache is null)
                 {
-                    if (item.ImageUri is not null)
-                    {
-                        item.ImageCache = await this.client.GetByteArrayAsync(item.ImageUri);
-                    }
-                    else if (item.Uri is not null)
+                    if (item.Uri is not null)
                     {
                         try
                         {
                             // If ImageUri is null, try to get the favicon from the site itself.
-                            item.ImageCache = await this.client.GetByteArrayAsync($"{item.Uri.Scheme}://{item.Uri.Host}/favicon.ico");
+                            item.ImageCache = await this.GetFaviconFromUriAsync(item.Uri);
                         }
                         catch (Exception)
                         {
                             // If it fails to work for whatever reason, ignore it for now, use the placeholder.
                         }
+                    }
+
+                    if (item.ImageCache is null && feed.Items.Any() && feed.Items.First().Link is string link)
+                    {
+                        try
+                        {
+                            // If ImageUri is null, try to get the favicon from the site itself.
+                            item.ImageCache = await this.GetFaviconFromUriAsync(new Uri(link));
+                        }
+                        catch (Exception)
+                        {
+                            // If it fails to work for whatever reason, ignore it for now, use the placeholder.
+                        }
+                    }
+
+                    if (item.ImageCache is null && item.ImageUri is not null)
+                    {
+                        item.ImageCache = await this.client.GetByteArrayAsync(item.ImageUri);
                     }
                 }
 
@@ -83,6 +97,18 @@ namespace MauiFeed.NewsService
             }
 
             return (null, null);
+        }
+
+        private async Task<byte[]?> GetFaviconFromUriAsync(Uri uri)
+        {
+            try
+            {
+                return await this.client.GetByteArrayAsync($"{uri.Scheme}://{uri.Host}/favicon.ico");
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

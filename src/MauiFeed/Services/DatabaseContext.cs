@@ -68,7 +68,7 @@ namespace MauiFeed.Services
             modelBuilder.Entity<FeedListItem>().HasKey(n => n.Id);
             modelBuilder.Entity<FeedListItem>().HasIndex(n => n.Uri).IsUnique();
             modelBuilder.Entity<FeedItem>().HasKey(n => n.Id);
-            modelBuilder.Entity<FeedItem>().HasIndex(n => n.RssId).IsUnique();
+            modelBuilder.Entity<FeedItem>().HasIndex(n => n.RssId).IsUnique(false);
         }
     }
 }

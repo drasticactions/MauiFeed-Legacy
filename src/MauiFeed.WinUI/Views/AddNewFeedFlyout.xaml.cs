@@ -50,8 +50,12 @@ namespace MauiFeed.WinUI.Views
             var popup = ((Popup)((FrameworkElement)this.Parent).Parent)!;
             popup.IsOpen = false;
 
-            var feed = await this.cache.RetrieveFeedAsync(uri);
-            this.sidebar.AddItemToSidebar(feed);
+            if (!this.sidebar.SidebarItems.Any(n => n.FeedListItem?.Uri == uri))
+            {
+                var feed = await this.cache.RetrieveFeedAsync(uri);
+                this.sidebar.AddItemToSidebar(feed);
+            }
+
             this.FeedUrlField.Text = string.Empty;
         }
 
