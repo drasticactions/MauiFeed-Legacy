@@ -109,7 +109,7 @@ namespace MauiFeed.WinUI
             if (oldItem is null)
             {
                 var sidebarItem = new FeedSidebarItem(item!, this.context.FeedItems!.Include(n => n.Feed).Where(n => n.FeedListItemId == item.Id));
-                sidebarItem.NavItem.RightTapped += this.NavItemRightTapped;
+                sidebarItem.RightTapped += this.NavItemRightTapped;
                 this.Items.Add(sidebarItem.NavItem);
 
                 // BUG: What if you try and add it in twice?
@@ -147,7 +147,7 @@ namespace MauiFeed.WinUI
             }
 
             item.OnFolderDropped -= this.SidebarItemOnFolderDropped;
-            item.NavItem.RightTapped -= this.FolderRightTapped;
+            item.RightTapped -= this.NavItemRightTapped;
             return Task.CompletedTask;
         }
 
@@ -180,13 +180,14 @@ namespace MauiFeed.WinUI
                     // Last one before the separator.
                     this.Items.Insert(folderIndex, item.NavItem);
                 }
+
+                this.SidebarItems.Add(item);
             }
             else
             {
                 this.context.FeedFolder!.Update(feedFolder);
             }
 
-            this.SidebarItems.Add(item);
             this.context.SaveChangesAsync().FireAndForgetSafeAsync();
             return Task.CompletedTask;
         }
@@ -270,7 +271,7 @@ namespace MauiFeed.WinUI
             foreach (var item in this.context.FeedListItems!.Include(n => n.Items).Where(n => n.FolderId == null || n.FolderId <= 0))
             {
                 var sidebarItem = new FeedSidebarItem(item!, this.context.FeedItems!.Include(n => n.Feed).Where(n => n.FeedListItemId == item.Id));
-                sidebarItem.NavItem.RightTapped += this.NavItemRightTapped;
+                sidebarItem.RightTapped += this.NavItemRightTapped;
                 this.Items.Add(sidebarItem.NavItem);
                 this.SidebarItems.Add(sidebarItem);
             }
@@ -296,13 +297,13 @@ namespace MauiFeed.WinUI
         private (FeedSidebarItem Folder, List<FeedSidebarItem> FeedItems) GenerateFeedFolderSidebarItem(FeedFolder item)
         {
             var feedSidebarItems = new List<FeedSidebarItem>();
-            var folder = new FeedSidebarItem(item, this.context.FeedItems!.Include(n => n.Feed).Where(n => (n.Feed!.FolderId ?? 0) == item.Id).OrderByDescending(n => n.PublishingDate));
-            folder.NavItem.RightTapped += this.FolderRightTapped;
+            var folder = new FeedSidebarItem(item, this.context.FeedItems!.Include(n => n.Feed).Where(n => (n.Feed!.FolderId ?? 0) == item.Id));
+            folder.RightTapped += this.NavItemRightTapped;
             folder.OnFolderDropped += this.SidebarItemOnFolderDropped;
             foreach (var feed in item.Items!)
             {
                 var sidebarItem = new FeedSidebarItem(feed, this.context.FeedItems!.Include(n => n.Feed).Where(n => n.FeedListItemId == feed.Id));
-                sidebarItem.NavItem.RightTapped += this.NavItemRightTapped;
+                sidebarItem.RightTapped += this.NavItemRightTapped;
                 sidebarItem.NavItem.SetValue(Canvas.ZIndexProperty, 99);
                 folder.NavItem.MenuItems.Add(sidebarItem.NavItem);
                 feedSidebarItems.Add(sidebarItem);
@@ -322,19 +323,9 @@ namespace MauiFeed.WinUI
             this.MoveItemToFolderAsync(navItem, e.Folder).FireAndForgetSafeAsync();
         }
 
-        private async Task MoveItemToFolderAsync(FeedSidebarItem item, FeedSidebarItem folderItem)
+        private async Task MoveItemToFolderAsync(FeedSidebarItem navigationViewItem, FeedSidebarItem folderViewItem)
         {
-            if (folderItem.ItemType is not SidebarItemType.Folder)
-            {
-                return;
-            }
-
-            if (item is not FeedSidebarItem navigationViewItem)
-            {
-                return;
-            }
-
-            if (folderItem is not FeedSidebarItem folderViewItem)
+            if (folderViewItem.ItemType is not SidebarItemType.Folder)
             {
                 return;
             }
@@ -342,20 +333,24 @@ namespace MauiFeed.WinUI
             var feedListItem = navigationViewItem.FeedListItem!;
             var folder = folderViewItem.FeedFolder!;
 
-            await this.RemoveFromFolderAsync(item);
+            if (feedListItem.FolderId > 0)
+            {
+                var oldFolder = this.SidebarItems.FirstOrDefault(n => n.FeedFolder?.Id == feedListItem.FolderId);
+                if (oldFolder is null)
+                {
+                    System.Diagnostics.Debug.Assert(oldFolder is not null, "Why does the folder not exist???");
+                }
+                else
+                {
+                    // Remove the existing item from the folder.
+                    System.Diagnostics.Debug.Assert(oldFolder.NavItem.MenuItems.Remove(navigationViewItem.NavItem), "Was this removed???");
+                }
+            }
+
+            await this.RemoveFromFolderAsync(navigationViewItem);
 
             feedListItem.Folder = folder;
             feedListItem.FolderId = folder.Id;
-
-            // Remove existing item.
-            var index = this.Items.IndexOf(navigationViewItem.NavItem);
-            if (index >= 0)
-            {
-                this.Items.RemoveAt(index);
-            }
-
-            // Move item under folder.
-            // folderViewItem.MenuItems.Add(navigationViewItem);
 
             // Update the database.
             this.context.FeedListItems!.Update(feedListItem);
@@ -364,7 +359,15 @@ namespace MauiFeed.WinUI
             // Generate new folder.
             var (navItem, feedSidebarItems) = this.GenerateFeedFolderSidebarItem(folder);
 
+            foreach (var feedItem in feedSidebarItems)
+            {
+                this.SidebarItems[this.SidebarItems.IndexOf(this.SidebarItems.First(n => n.FeedListItem?.Id == feedItem.FeedListItem?.Id))] = feedItem;
+            }
+
             this.Items[this.Items.IndexOf(folderViewItem.NavItem)] = navItem.NavItem;
+            this.SidebarItems[this.SidebarItems.IndexOf(folderViewItem)] = navItem;
+
+            this.UpdateSidebar();
         }
 
         private async Task RemoveFromFolderAsync(FeedSidebarItem navigationViewItem, bool moveToRoot = false)
@@ -401,6 +404,7 @@ namespace MauiFeed.WinUI
                         break;
                     default:
                         this.feedSplitPage.SelectedSidebarItem = this.SidebarItems.FirstOrDefault(n => n.Id.ToString() == value);
+                        System.Diagnostics.Debug.Assert(this.feedSplitPage.SelectedSidebarItem is not null, "Why is this null?");
                         this.NavigationFrame.Content = this.feedSplitPage;
                         break;
                 }
@@ -419,37 +423,44 @@ namespace MauiFeed.WinUI
             this.themeSelectorService.SetRequestedTheme();
         }
 
-        private void NavItemRightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+        private void NavItemRightTapped(object? sender, Events.NavItemRightTappedEventArgs e)
         {
-            var navItem = (NavigationViewItem)sender;
-            var sidebarItem = this.SidebarItems.First(n => n.Id.ToString() == navItem.Tag.ToString());
-            var menuFlyout = new MenuFlyout();
-            var folders = this.SidebarItems.Where(n => n.ItemType == SidebarItemType.Folder).ToList();
-            var folderItemText = sidebarItem.FeedListItem?.FolderId > 0 ? Common.MoveToFolderLabel : Common.AddToFolderLabel;
-            menuFlyout.Items.Add(new MenuFlyoutItem() { Text = Common.RemoveFeedLabel, Command = this.RemoveFeedCommand, CommandParameter = sidebarItem });
-            var folderItem = new MenuFlyoutSubItem() { Text = folderItemText, Icon = new SymbolIcon(Symbol.Folder) };
-            foreach (var item in folders)
-            {
-                var folder = new FolderMenuFlyoutItem(item);
-                folder.Click += this.FolderClick;
-                folderItem.Items.Add(folder);
-            }
+            var sidebarItem = e.SidebarItem;
 
-            menuFlyout.Items.Add(folderItem);
-            menuFlyout.ShowAt(navItem);
+            switch (sidebarItem.ItemType)
+            {
+                case SidebarItemType.SmartFilter:
+                    break;
+                case SidebarItemType.Folder:
+                    this.folderFlyout = new Flyout() { Content = new FolderOptionsFlyout(this, sidebarItem) };
+                    this.folderFlyout.ShowAt(sidebarItem.NavItem);
+                    break;
+                case SidebarItemType.FeedListItem:
+                    var menuFlyout = new MenuFlyout();
+                    var folders = this.SidebarItems.Where(n => n.ItemType == SidebarItemType.Folder).ToList();
+                    var folderItemText = sidebarItem.FeedListItem?.FolderId > 0 ? Common.MoveToFolderLabel : Common.AddToFolderLabel;
+                    var folderId = sidebarItem.FeedListItem?.FolderId ?? 0;
+                    menuFlyout.Items.Add(new MenuFlyoutItem() { Icon = new SymbolIcon(Symbol.Globe), Text = Common.RemoveFeedLabel, Command = this.RemoveFeedCommand, CommandParameter = sidebarItem });
+                    var folderItem = new MenuFlyoutSubItem() { Text = folderItemText, Icon = new SymbolIcon(Symbol.Folder) };
+                    foreach (var item in folders.Where(n => n.FeedFolder?.Id != folderId))
+                    {
+                        var folder = new FolderMenuFlyoutItem(item, e.SidebarItem);
+                        folder.Click += this.FolderClick;
+                        folderItem.Items.Add(folder);
+                    }
+
+                    menuFlyout.Items.Add(folderItem);
+                    menuFlyout.ShowAt(sidebarItem.NavItem);
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void FolderClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void FolderRightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
-        {
-            var navItem = (NavigationViewItem)sender;
-            var sidebarItem = this.SidebarItems.First(n => n.Id.ToString() == navItem.Tag.ToString());
-            this.folderFlyout = new Flyout() { Content = new FolderOptionsFlyout(this, sidebarItem) };
-            this.folderFlyout.ShowAt(navItem);
+            var folderMenu = (FolderMenuFlyoutItem)sender;
+            this.MoveItemToFolderAsync(folderMenu.FeedItem, folderMenu.Folder).FireAndForgetSafeAsync();
         }
 
         private Task RemoveFeed(FeedSidebarItem item)
@@ -483,13 +494,22 @@ namespace MauiFeed.WinUI
 
         private class FolderMenuFlyoutItem : MenuFlyoutItem
         {
-            public FolderMenuFlyoutItem(FeedSidebarItem folder)
+            public FolderMenuFlyoutItem(FeedSidebarItem folder, FeedSidebarItem feedItem)
             {
                 this.Folder = folder;
                 this.Text = folder.FeedFolder!.Name;
+                this.FeedItem = feedItem;
             }
 
+            /// <summary>
+            /// Gets the Folder.
+            /// </summary>
             public FeedSidebarItem Folder { get; }
+
+            /// <summary>
+            /// Gets the feed item.
+            /// </summary>
+            public FeedSidebarItem FeedItem { get; }
         }
     }
 }

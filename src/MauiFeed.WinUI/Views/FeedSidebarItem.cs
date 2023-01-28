@@ -89,6 +89,11 @@ namespace MauiFeed.WinUI.Views
         public event EventHandler<FeedFolderDropEventArgs>? OnFolderDropped;
 
         /// <summary>
+        /// Event fired when nav item is right tapped.
+        /// </summary>
+        public event EventHandler<NavItemRightTappedEventArgs>? RightTapped;
+
+        /// <summary>
         /// Gets the Id of the Feed Sidebar Item.
         /// </summary>
         public Guid Id => this.id;
@@ -119,7 +124,7 @@ namespace MauiFeed.WinUI.Views
                     query = query.Where(n => !n.IsRead);
                 }
 
-                return query?.ToList() ?? new List<FeedItem>();
+                return query?.OrderByDescending(n => n.PublishingDate).ToList() ?? new List<FeedItem>();
             }
         }
 
@@ -227,6 +232,7 @@ namespace MauiFeed.WinUI.Views
             {
                 presenter.CanDrag = nav.CanDrag;
                 presenter.AllowDrop = nav.AllowDrop;
+                presenter.RightTapped += this.PresenterRightTapped;
                 if (presenter.CanDrag)
                 {
                     presenter.DragStarting += this.PresenterDragStarting;
@@ -238,6 +244,11 @@ namespace MauiFeed.WinUI.Views
                     presenter.Drop += this.PresenterDrop;
                 }
             }
+        }
+
+        private void PresenterRightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+        {
+            this.RightTapped?.Invoke(this, new NavItemRightTappedEventArgs(this));
         }
 
         private async void PresenterDrop(object sender, Microsoft.UI.Xaml.DragEventArgs e)

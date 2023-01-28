@@ -156,6 +156,9 @@
   <data name="LightThemeLabel" xml:space="preserve">
     <value>ライト</value>
   </data>
+  <data name="MoveToFolderLabel" xml:space="preserve">
+    <value>フォルダに移動</value>
+  </data>
   <data name="NoSelectionLabel" xml:space="preserve">
     <value>選択なし</value>
   </data>
