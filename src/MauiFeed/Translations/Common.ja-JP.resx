@@ -130,7 +130,7 @@
     <value>フォルダに追加</value>
   </data>
   <data name="AllLabel" xml:space="preserve">
-    <value>全部</value>
+    <value>全て</value>
   </data>
   <data name="AllUnreadLabel" xml:space="preserve">
     <value>未読</value>
@@ -178,7 +178,7 @@
     <value>世界</value>
   </data>
   <data name="HideAllReadLabel" xml:space="preserve">
-    <value>すべて未読を隠す</value>
+    <value>全て未読を隠す</value>
   </data>
   <data name="LightThemeLabel" xml:space="preserve">
     <value>ライト</value>
@@ -187,19 +187,19 @@
     <value>ローカル</value>
   </data>
   <data name="MarkAllAsReadLabel" xml:space="preserve">
-    <value>すべて既読</value>
+    <value>全て既読に変更</value>
   </data>
   <data name="MarkAllAsUnrealLabel" xml:space="preserve">
-    <value>すべて未読</value>
+    <value>全て未読に変更</value>
   </data>
   <data name="MarkAsReadLabel" xml:space="preserve">
-    <value>既読</value>
+    <value>既読に変更</value>
   </data>
   <data name="MarkAsStarLabel" xml:space="preserve">
     <value>お気に入りに追加</value>
   </data>
   <data name="MarkAsUnreadLabel" xml:space="preserve">
-    <value>未読</value>
+    <value>未読に変更</value>
   </data>
   <data name="MoveToFolderLabel" xml:space="preserve">
     <value>フォルダに移動</value>
