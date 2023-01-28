@@ -403,15 +403,6 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
-        ///   Show Read Articles に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string ShowReadArticlesLabel {
-            get {
-                return ResourceManager.GetString("ShowReadArticlesLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Smart Feeds に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SmartFeedsLabel {

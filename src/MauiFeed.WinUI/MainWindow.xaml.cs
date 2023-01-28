@@ -380,6 +380,10 @@ namespace MauiFeed.WinUI
                     oldFolder.NavItem.MenuItems.Remove(navigationViewItem);
                 }
             }
+            else
+            {
+                this.Items.Remove(navigationViewItem.NavItem);
+            }
 
             if (moveToRoot)
             {

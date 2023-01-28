@@ -126,6 +126,9 @@
   <data name="AddLabel" xml:space="preserve">
     <value>追加...</value>
   </data>
+  <data name="AddToFolderLabel" xml:space="preserve">
+    <value>フォルダに追加</value>
+  </data>
   <data name="AllLabel" xml:space="preserve">
     <value>全部</value>
   </data>
@@ -153,8 +156,50 @@
   <data name="FolderNameLabel" xml:space="preserve">
     <value>フォルダ名</value>
   </data>
+  <data name="GoogleNewsService" xml:space="preserve">
+    <value>Google ニュース</value>
+  </data>
+  <data name="GoogleSectionBusiness" xml:space="preserve">
+    <value>ビジネス</value>
+  </data>
+  <data name="GoogleSectionHealth" xml:space="preserve">
+    <value>健康</value>
+  </data>
+  <data name="GoogleSectionNation" xml:space="preserve">
+    <value>国家</value>
+  </data>
+  <data name="GoogleSectionScience" xml:space="preserve">
+    <value>科学</value>
+  </data>
+  <data name="GoogleSectionTechnology" xml:space="preserve">
+    <value>テクノロジー</value>
+  </data>
+  <data name="GoogleSectionWorld" xml:space="preserve">
+    <value>世界</value>
+  </data>
+  <data name="HideAllReadLabel" xml:space="preserve">
+    <value>すべて未読を隠す</value>
+  </data>
   <data name="LightThemeLabel" xml:space="preserve">
     <value>ライト</value>
+  </data>
+  <data name="LocalLabel" xml:space="preserve">
+    <value>ローカル</value>
+  </data>
+  <data name="MarkAllAsReadLabel" xml:space="preserve">
+    <value>すべて既読</value>
+  </data>
+  <data name="MarkAllAsUnrealLabel" xml:space="preserve">
+    <value>すべて未読</value>
+  </data>
+  <data name="MarkAsReadLabel" xml:space="preserve">
+    <value>既読</value>
+  </data>
+  <data name="MarkAsStarLabel" xml:space="preserve">
+    <value>お気に入りに追加</value>
+  </data>
+  <data name="MarkAsUnreadLabel" xml:space="preserve">
+    <value>未読</value>
   </data>
   <data name="MoveToFolderLabel" xml:space="preserve">
     <value>フォルダに移動</value>
@@ -174,8 +219,20 @@
   <data name="RemoveFeedLabel" xml:space="preserve">
     <value>RSSフェードを消し</value>
   </data>
+  <data name="RemoveFolderLabel" xml:space="preserve">
+    <value>フォルダを削除</value>
+  </data>
+  <data name="RemoveFromFolderLabel" xml:space="preserve">
+    <value>フォルダから削除</value>
+  </data>
+  <data name="RemoveStarLabel" xml:space="preserve">
+    <value>お気に入りを削除</value>
+  </data>
   <data name="SettingsLabel" xml:space="preserve">
     <value>設定</value>
+  </data>
+  <data name="SmartFeedsLabel" xml:space="preserve">
+    <value>Smart Filters</value>
   </data>
   <data name="StarredLabel" xml:space="preserve">
     <value>お気に入り</value>

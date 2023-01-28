@@ -231,9 +231,6 @@
   <data name="SettingsLabel" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="ShowReadArticlesLabel" xml:space="preserve">
-    <value>Show Read Articles</value>
-  </data>
   <data name="SmartFeedsLabel" xml:space="preserve">
     <value>Smart Feeds</value>
   </data>
