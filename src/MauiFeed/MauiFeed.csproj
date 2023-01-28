@@ -34,9 +34,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AngleSharp" Version="0.17.1" />
+		<PackageReference Include="AngleSharp" Version="1.0.1" />
 		<PackageReference Include="CodeHollow.FeedReader" Version="1.2.4" />
 		<PackageReference Include="Handlebars.Net" Version="2.1.2" />
-		<PackageReference Include="SmartReader" Version="0.9.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\external\SmartReader\src\SmartReader\SmartReader.csproj" />
 	</ItemGroup>
 </Project>

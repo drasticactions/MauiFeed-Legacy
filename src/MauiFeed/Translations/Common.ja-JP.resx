@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddFeedButton" xml:space="preserve">
-    <value>RSSフェードを追加</value>
+    <value>RSSフィードを追加</value>
   </data>
   <data name="AddFolderLabel" xml:space="preserve">
     <value>フォルダを追加</value>
@@ -145,10 +145,10 @@
     <value>既定のテーマ</value>
   </data>
   <data name="FeedLabel" xml:space="preserve">
-    <value>RSSフェード</value>
+    <value>RSSフィード</value>
   </data>
   <data name="FeedUrlLabel" xml:space="preserve">
-    <value>RSSフェードURL</value>
+    <value>RSSフィードURL</value>
   </data>
   <data name="FolderLabel" xml:space="preserve">
     <value>フォルダ</value>
@@ -217,7 +217,7 @@
     <value>更新</value>
   </data>
   <data name="RemoveFeedLabel" xml:space="preserve">
-    <value>RSSフェードを消し</value>
+    <value>RSSフィードを消し</value>
   </data>
   <data name="RemoveFolderLabel" xml:space="preserve">
     <value>フォルダを削除</value>

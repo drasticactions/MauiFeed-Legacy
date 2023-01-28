@@ -1,0 +1,4 @@
+[submodule "external/SmartReader"]
+	path = external/SmartReader
+	url = git@github.com:drasticactions/SmartReader.git
+	branch = DateTimeFix
