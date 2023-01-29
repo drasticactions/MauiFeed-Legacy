@@ -232,6 +232,9 @@
   <data name="RemoveStarLabel" xml:space="preserve">
     <value>Remove From Favorites</value>
   </data>
+  <data name="SearchLabel" xml:space="preserve">
+    <value>Search</value>
+  </data>
   <data name="SettingsLabel" xml:space="preserve">
     <value>Settings</value>
   </data>

@@ -41,7 +41,7 @@
             SelectionChanged="NavViewSelectionChanged"
             IsTitleBarAutoPaddingEnabled="False">
                 <NavigationView.AutoSuggestBox>
-                    <AutoSuggestBox x:Name="FeedSearchBox" QuerySubmitted="FeedSearchBoxQuerySubmitted" QueryIcon="Find"/>
+                    <AutoSuggestBox x:Name="FeedSearchBox" PlaceholderText="{x:Bind common:Common.SearchLabel}" QuerySubmitted="FeedSearchBoxQuerySubmitted" QueryIcon="Find"/>
                 </NavigationView.AutoSuggestBox>
                 <NavigationView.Content>
                     <Frame x:Name="NavigationFrame" />

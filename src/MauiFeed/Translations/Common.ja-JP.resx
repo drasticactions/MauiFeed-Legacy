@@ -232,6 +232,9 @@
   <data name="RemoveStarLabel" xml:space="preserve">
     <value>お気に入りを削除</value>
   </data>
+  <data name="SearchLabel" xml:space="preserve">
+    <value>検索</value>
+  </data>
   <data name="SettingsLabel" xml:space="preserve">
     <value>設定</value>
   </data>

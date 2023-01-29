@@ -438,6 +438,14 @@ namespace MauiFeed.WinUI
 
         private void FeedSearchBoxQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
+            if (string.IsNullOrEmpty(args.QueryText))
+            {
+                return;
+            }
+
+            this.feedSplitPage.SelectedSidebarItem = new FeedSidebarItem(Common.SearchLabel, new SymbolIcon(Symbol.Find), this.context.FeedItems!.Where(n => (n.Title ?? string.Empty).Contains(args.QueryText)));
+            System.Diagnostics.Debug.Assert(this.feedSplitPage.SelectedSidebarItem is not null, "Why is this null?");
+            this.NavigationFrame.Content = this.feedSplitPage;
         }
 
         private void MainWindowActivated(object sender, WindowActivatedEventArgs args)
