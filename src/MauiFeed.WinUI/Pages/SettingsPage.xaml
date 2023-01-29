@@ -54,6 +54,12 @@
                     </RadioButton>
                 </StackPanel>
             </StackPanel>
+
+            <StackPanel Margin="5" Spacing="5">
+                <HyperlinkButton Content="Third-Party Licenses" NavigateUri="https://drasticactions.site/mauifeed-license.html" />
+                <HyperlinkButton Content="Terms and Conditions" NavigateUri="https://drasticactions.site/mauifeed-termsandconditions.html" />
+                <HyperlinkButton Content="Privacy Policy" NavigateUri="https://drasticactions.site/mauifeed-privacypolicy.html" />
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </Page>
