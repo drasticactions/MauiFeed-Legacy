@@ -19,16 +19,19 @@ namespace MauiFeed.WinUI.Services
         private UISettings uiSettings = new UISettings();
         private ApplicationDataContainer localSettings;
         private WindowService windowService;
+        private ApplicationSettingsService applicationSettingsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ThemeSelectorService"/> class.
         /// </summary>
         /// <param name="windowService"><see cref="WindowService"/>.</param>
-        public ThemeSelectorService(WindowService windowService)
+        /// <param name="applicationSettingsService">App Settings Service.</param>
+        public ThemeSelectorService(WindowService windowService, ApplicationSettingsService applicationSettingsService)
         {
             this.windowService = windowService;
+            this.applicationSettingsService = applicationSettingsService;
             this.localSettings = ApplicationDataManager.CreateForPackageFamily(Package.Current.Id.FamilyName).LocalSettings;
-            this.Theme = this.LoadThemeFromSettings();
+            this.Theme = this.applicationSettingsService.ApplicationElementTheme;
             this.uiSettings.ColorValuesChanged += (sender, args) =>
             {
                 if (this.Theme == ElementTheme.Default)
@@ -73,7 +76,7 @@ namespace MauiFeed.WinUI.Services
             this.Theme = theme;
 
             this.SetRequestedTheme();
-            this.SaveThemeInSettings(this.Theme);
+            this.applicationSettingsService.ApplicationElementTheme = this.Theme;
         }
 
         /// <summary>
@@ -90,24 +93,6 @@ namespace MauiFeed.WinUI.Services
             }
 
             this.ThemeChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private ElementTheme LoadThemeFromSettings()
-        {
-            ElementTheme cacheTheme = ElementTheme.Default;
-            string? themeName = this.localSettings.Values[SettingsKey] as string;
-
-            if (!string.IsNullOrEmpty(themeName))
-            {
-                Enum.TryParse(themeName, out cacheTheme);
-            }
-
-            return cacheTheme;
-        }
-
-        private void SaveThemeInSettings(ElementTheme theme)
-        {
-            this.localSettings.Values[SettingsKey] = theme.ToString();
         }
     }
 }

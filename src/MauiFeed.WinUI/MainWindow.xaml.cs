@@ -36,6 +36,7 @@ namespace MauiFeed.WinUI
         private SettingsPage settingsPage;
         private DatabaseContext context;
         private ThemeSelectorService themeSelectorService;
+        private ApplicationSettingsService appSettings;
         private NavigationViewItemSeparator folderSeparator;
         private NavigationViewItemSeparator filterSeparator;
         private NavigationViewItem? addFolderButton;
@@ -51,6 +52,7 @@ namespace MauiFeed.WinUI
             this.InitializeComponent();
             this.MainWindowGrid.DataContext = this;
             this.refreshProgress = Ioc.Default.GetService<Progress<RssCacheFeedUpdate>>()!;
+            this.appSettings = Ioc.Default.GetService<ApplicationSettingsService>()!;
             this.refreshProgress.ProgressChanged += this.RefreshProgressProgressChanged;
             this.Activated += this.MainWindowActivated;
             this.context = Ioc.Default.GetService<DatabaseContext>()!;
@@ -545,12 +547,27 @@ namespace MauiFeed.WinUI
         private void RefreshProgressProgressChanged(object? sender, RssCacheFeedUpdate e)
         {
             this.isRefreshing = !e.IsDone;
+
+            if (e.IsDone)
+            {
+                this.appSettings.LastUpdated = DateTime.UtcNow;
+            }
         }
 
         private void MainWindowLoaded(object sender, RoutedEventArgs e)
         {
             ((FrameworkElement)sender).Loaded -= this.MainWindowLoaded;
-            this.RefreshAllFeedsAsync().FireAndForgetSafeAsync();
+            var lastUpdated = this.appSettings.LastUpdated;
+            if (lastUpdated == null)
+            {
+                return;
+            }
+
+            var totalHours = (DateTime.UtcNow - lastUpdated.Value).TotalHours;
+            if (totalHours > 1)
+            {
+                this.RefreshAllFeedsAsync().FireAndForgetSafeAsync();
+            }
         }
 
         private class FolderMenuFlyoutItem : MenuFlyoutItem

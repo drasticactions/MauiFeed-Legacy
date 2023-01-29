@@ -21,6 +21,7 @@ namespace MauiFeed.WinUI
         private Window? window;
         private WindowService windowService;
         private ThemeSelectorService themeSelectorService;
+        private ApplicationSettingsService settingsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="App"/> class.
@@ -31,7 +32,8 @@ namespace MauiFeed.WinUI
         {
             this.InitializeComponent();
             this.windowService = new WindowService();
-            this.themeSelectorService = new ThemeSelectorService(this.windowService);
+            this.settingsService = new ApplicationSettingsService();
+            this.themeSelectorService = new ThemeSelectorService(this.windowService, this.settingsService);
 
             var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
             Ioc.Default.ConfigureServices(
@@ -44,6 +46,7 @@ namespace MauiFeed.WinUI
                 .AddSingleton<RssFeedCacheService>()
                 .AddSingleton<WindowsPlatformService>()
                 .AddSingleton(new Progress<RssCacheFeedUpdate>())
+                .AddSingleton(this.settingsService)
                 .AddSingleton(this.windowService)
                 .AddSingleton(this.themeSelectorService)
                 .BuildServiceProvider());
