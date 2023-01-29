@@ -17,6 +17,7 @@
 		<None Remove="Pages\SettingsPage.xaml" />
 		<None Remove="Views\AddNewFeedFlyout.xaml" />
 		<None Remove="Views\FolderOptionsFlyout.xaml" />
+		<None Remove="Views\RefreshView.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -126,6 +127,11 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Page Update="Views\RefreshView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 	<ItemGroup>
 	  <Page Update="Views\FolderOptionsFlyout.xaml">

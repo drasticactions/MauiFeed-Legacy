@@ -4,6 +4,7 @@
 
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Services;
+using MauiFeed.Models;
 using MauiFeed.NewsService;
 using MauiFeed.Services;
 using MauiFeed.WinUI.Services;
@@ -42,6 +43,7 @@ namespace MauiFeed.WinUI
                 .AddSingleton<IRssService, FeedReaderService>()
                 .AddSingleton<RssFeedCacheService>()
                 .AddSingleton<WindowsPlatformService>()
+                .AddSingleton(new Progress<RssCacheFeedUpdate>())
                 .AddSingleton(this.windowService)
                 .AddSingleton(this.themeSelectorService)
                 .BuildServiceProvider());

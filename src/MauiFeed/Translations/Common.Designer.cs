@@ -358,6 +358,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Refreshing {0} of {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string RefreshingLabel {
+            get {
+                return ResourceManager.GetString("RefreshingLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Remove Feed に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RemoveFeedLabel {

@@ -3,6 +3,9 @@
 // </copyright>
 
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Modal;
 using Drastic.Services;
@@ -26,8 +29,9 @@ namespace MauiFeed.WinUI
     /// <summary>
     /// An empty window that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainWindow : WindowEx
+    public sealed partial class MainWindow : WindowEx, IErrorHandlerService
     {
+        private bool isRefreshing;
         private FeedTimelineSplitPage feedSplitPage;
         private SettingsPage settingsPage;
         private DatabaseContext context;
@@ -36,7 +40,8 @@ namespace MauiFeed.WinUI
         private NavigationViewItemSeparator filterSeparator;
         private NavigationViewItem? addFolderButton;
         private Flyout? folderFlyout;
-        private IErrorHandlerService errorHandler;
+        private Progress<RssCacheFeedUpdate> refreshProgress;
+        private RssFeedCacheService rssFeedCacheService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -44,10 +49,13 @@ namespace MauiFeed.WinUI
         public MainWindow()
         {
             this.InitializeComponent();
+            this.MainWindowGrid.DataContext = this;
+            this.refreshProgress = Ioc.Default.GetService<Progress<RssCacheFeedUpdate>>()!;
+            this.refreshProgress.ProgressChanged += this.RefreshProgressProgressChanged;
             this.Activated += this.MainWindowActivated;
             this.context = Ioc.Default.GetService<DatabaseContext>()!;
             this.themeSelectorService = Ioc.Default.GetService<ThemeSelectorService>()!;
-            this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
+            this.rssFeedCacheService = Ioc.Default.GetService<RssFeedCacheService>()!;
 
             this.settingsPage = new SettingsPage();
             this.feedSplitPage = new FeedTimelineSplitPage(this);
@@ -64,7 +72,7 @@ namespace MauiFeed.WinUI
 
             this.folderSeparator = new NavigationViewItemSeparator();
             this.filterSeparator = new NavigationViewItemSeparator();
-            this.RemoveFeedCommand = new AsyncCommand<FeedSidebarItem>(this.RemoveFeed, null, this.errorHandler);
+            this.RemoveFeedCommand = new AsyncCommand<FeedSidebarItem>(this.RemoveFeed, null, this);
             this.GenerateMenuButtons();
             this.GenerateSidebarItems();
         }
@@ -192,13 +200,24 @@ namespace MauiFeed.WinUI
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc/>
+        public void HandleError(Exception ex)
+        {
+            if (Debugger.IsAttached)
+            {
+                Debugger.Break();
+            }
+
+            this.FeedRefreshView.IsRefreshing = false;
+        }
+
         private void GenerateMenuButtons()
         {
             var refreshButton = new NavigationViewItem() { Content = Translations.Common.RefreshButton, Icon = new SymbolIcon(Symbol.Refresh) };
             refreshButton.SelectsOnInvoked = false;
             refreshButton.Tapped += (sender, args) =>
             {
-                this.feedSplitPage.UpdateFeed();
+                this.RefreshAllFeedsAsync().FireAndForgetSafeAsync(this);
             };
 
             this.Items.Add(refreshButton);
@@ -494,6 +513,23 @@ namespace MauiFeed.WinUI
             this.feedSplitPage.UpdateFeed();
             await this.context.SaveChangesAsync();
             this.UpdateSidebar();
+        }
+
+        private async Task RefreshAllFeedsAsync()
+        {
+            if (this.isRefreshing)
+            {
+                return;
+            }
+
+            await this.rssFeedCacheService.RefreshFeedsAsync(this.context.FeedListItems!.ToList(), this.refreshProgress);
+            this.UpdateSidebar();
+            this.feedSplitPage.UpdateFeed();
+        }
+
+        private void RefreshProgressProgressChanged(object? sender, RssCacheFeedUpdate e)
+        {
+            this.isRefreshing = !e.IsDone;
         }
 
         private class FolderMenuFlyoutItem : MenuFlyoutItem

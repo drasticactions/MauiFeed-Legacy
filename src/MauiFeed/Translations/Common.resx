@@ -216,6 +216,10 @@
   <data name="RefreshButton" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="RefreshingLabel" xml:space="preserve">
+    <value>Refreshing {0} of {1}</value>
+    <comment>{0} is the current number being refresh, {1} is the total</comment>
+  </data>
   <data name="RemoveFeedLabel" xml:space="preserve">
     <value>Remove Feed</value>
   </data>

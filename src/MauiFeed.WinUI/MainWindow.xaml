@@ -10,6 +10,7 @@
     xmlns:common="using:MauiFeed.Translations"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:MauiFeed.WinUI.Views"
     MinWidth="750"
     MinHeight="400"
     mc:Ignorable="d">
@@ -29,7 +30,8 @@
                        Style="{StaticResource CaptionTextBlockStyle}"
                        Margin="12,14,0,0" VerticalAlignment="Center" />
             </StackPanel>
-            <NavigationView
+            <views:RefreshView x:Name="FeedRefreshView" Grid.Row="1" Margin="0,20,20,0" Canvas.ZIndex="99" VerticalAlignment="Top" HorizontalAlignment="Right" />
+            <NavigationView 
             x:Name="NavView"
             Grid.Row="1"
             IsSettingsVisible="True"

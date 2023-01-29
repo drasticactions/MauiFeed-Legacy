@@ -216,6 +216,10 @@
   <data name="RefreshButton" xml:space="preserve">
     <value>更新</value>
   </data>
+  <data name="RefreshingLabel" xml:space="preserve">
+    <value>{1}の{0}を更新しています。</value>
+    <comment>{0} is the current number being refresh, {1} is the total</comment>
+  </data>
   <data name="RemoveFeedLabel" xml:space="preserve">
     <value>RSSフィードを消し</value>
   </data>

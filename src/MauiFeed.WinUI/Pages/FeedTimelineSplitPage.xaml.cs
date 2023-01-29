@@ -24,6 +24,7 @@ namespace MauiFeed.WinUI.Pages
     /// </summary>
     public sealed partial class FeedTimelineSplitPage : Page, INotifyPropertyChanged
     {
+        private bool isRefreshing;
         private FeedSidebarItem? selectedSidebarItem;
         private FeedItem? selectedItem;
         private DatabaseContext context;
@@ -34,6 +35,7 @@ namespace MauiFeed.WinUI.Pages
         private RssFeedCacheService rssFeedCacheService;
         private ThemeSelectorService themeService;
         private WindowsPlatformService platform;
+        private Progress<RssCacheFeedUpdate> refreshProgress;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedTimelineSplitPage"/> class.
@@ -45,6 +47,8 @@ namespace MauiFeed.WinUI.Pages
             this.sidebar = sidebar;
             this.DataContext = this;
             this.ArticleList.DataContext = this;
+            this.refreshProgress = Ioc.Default.GetService<Progress<RssCacheFeedUpdate>>()!;
+            this.refreshProgress.ProgressChanged += this.RefreshProgressProgressChanged;
             this.context = Ioc.Default.GetService<DatabaseContext>()!;
             this.rssFeedCacheService = Ioc.Default.GetService<RssFeedCacheService>()!;
             this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
@@ -215,9 +219,9 @@ namespace MauiFeed.WinUI.Pages
 
         private async Task RefreshAsync()
         {
-            if (this.selectedSidebarItem?.FeedListItem is not null)
+            if (this.selectedSidebarItem?.FeedListItem is not null && !this.isRefreshing)
             {
-                await this.rssFeedCacheService.RefreshFeedAsync(this.selectedSidebarItem.FeedListItem);
+                await this.rssFeedCacheService.RefreshFeedAsync(this.selectedSidebarItem.FeedListItem, this.refreshProgress);
                 this.UpdateFeed();
                 this.sidebar.UpdateSidebar();
             }
@@ -298,6 +302,11 @@ namespace MauiFeed.WinUI.Pages
             {
                 this.RenderFeedAsync(this.SelectedItem).FireAndForgetSafeAsync();
             }
+        }
+
+        private void RefreshProgressProgressChanged(object? sender, RssCacheFeedUpdate e)
+        {
+            this.isRefreshing = !e.IsDone;
         }
     }
 }
