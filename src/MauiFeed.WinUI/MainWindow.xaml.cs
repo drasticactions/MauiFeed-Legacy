@@ -75,6 +75,8 @@ namespace MauiFeed.WinUI
             this.RemoveFeedCommand = new AsyncCommand<FeedSidebarItem>(this.RemoveFeed, null, this);
             this.GenerateMenuButtons();
             this.GenerateSidebarItems();
+
+            ((FrameworkElement)this.Content).Loaded += this.MainWindowLoaded;
         }
 
         /// <summary>
@@ -132,7 +134,7 @@ namespace MauiFeed.WinUI
         /// </summary>
         /// <param name="item">Feed Folder.</param>
         /// <returns>Task.</returns>
-        public Task RemoveFolder(FeedSidebarItem item)
+        public async Task RemoveFolder(FeedSidebarItem item)
         {
             this.addFolderButton?.ContextFlyout?.Hide();
             this.folderFlyout?.Hide();
@@ -145,7 +147,12 @@ namespace MauiFeed.WinUI
             }
 
             this.context.FeedFolder!.Remove(feedFolder);
-            this.context.SaveChangesAsync().FireAndForgetSafeAsync();
+            if (feedFolder.Items != null && feedFolder.Items.Any())
+            {
+                this.context.FeedListItems!.RemoveRange(feedFolder.Items.ToList());
+            }
+
+            await this.context.SaveChangesAsync();
             this.SidebarItems.Remove(item);
             this.Items.Remove(item.NavItem);
 
@@ -156,7 +163,7 @@ namespace MauiFeed.WinUI
 
             item.OnFolderDropped -= this.SidebarItemOnFolderDropped;
             item.RightTapped -= this.NavItemRightTapped;
-            return Task.CompletedTask;
+            this.UpdateSidebar();
         }
 
         /// <summary>
@@ -538,6 +545,12 @@ namespace MauiFeed.WinUI
         private void RefreshProgressProgressChanged(object? sender, RssCacheFeedUpdate e)
         {
             this.isRefreshing = !e.IsDone;
+        }
+
+        private void MainWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            ((FrameworkElement)sender).Loaded -= this.MainWindowLoaded;
+            this.RefreshAllFeedsAsync().FireAndForgetSafeAsync();
         }
 
         private class FolderMenuFlyoutItem : MenuFlyoutItem

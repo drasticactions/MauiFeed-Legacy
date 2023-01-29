@@ -26,17 +26,17 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock VerticalAlignment="Center" Grid.Column="0" FontWeight="Bold" MaxLines="1" TextTrimming="WordEllipsis" Text="{x:Bind SelectedSidebarItem.Title, Mode=OneWay}"/>
                         <StackPanel Visibility="{x:Bind SelectedSidebarItem, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}" Margin="0,0,0,0" Grid.Column="1" Orientation="Horizontal">
-                            <Button Command="{x:Bind RefreshCommand}" Margin="0,0,20,0">
+                            <Button ToolTipService.ToolTip="{x:Bind common:Common.RefreshButton}" Command="{x:Bind RefreshCommand}" Margin="0,0,20,0">
                                 <Grid>
                                     <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
                             </Button>
-                            <Button Command="{x:Bind MarkAllAsReadCommand}" CommandParameter="{x:Bind SelectedSidebarItem, Mode=TwoWay}" Margin="0,0,20,0">
+                            <Button ToolTipService.ToolTip="{x:Bind common:Common.MarkAllAsReadLabel}" Command="{x:Bind MarkAllAsReadCommand}" CommandParameter="{x:Bind SelectedSidebarItem, Mode=TwoWay}" Margin="0,0,20,0">
                                 <Grid>
                                     <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
                             </Button>
-                            <ToggleButton IsChecked="{x:Bind SelectedSidebarItem.HideUnreadItems, Mode=OneWay}"  Command="{x:Bind SetHideUnreadItemsCommand}" CommandParameter="{x:Bind SelectedSidebarItem, Mode=TwoWay}" Margin="0,0,20,0" Visibility="{x:Bind SelectedSidebarItem.AlwaysHideUnread, Mode=OneWay, Converter={StaticResource BooleanToVisibilityInverter}}">
+                            <ToggleButton ToolTipService.ToolTip="{x:Bind common:Common.HideAllReadLabel}" IsChecked="{x:Bind SelectedSidebarItem.HideUnreadItems, Mode=OneWay}"  Command="{x:Bind SetHideUnreadItemsCommand}" CommandParameter="{x:Bind SelectedSidebarItem, Mode=TwoWay}" Margin="0,0,20,0" Visibility="{x:Bind SelectedSidebarItem.AlwaysHideUnread, Mode=OneWay, Converter={StaticResource BooleanToVisibilityInverter}}">
                                 <Grid>
                                     <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
@@ -109,26 +109,26 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Visibility="{x:Bind SelectedItem, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}" Margin="0,0,0,0" Grid.Column="1" Orientation="Horizontal">
-                            <Button  Command="{x:Bind MarkAsReadCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}" Margin="0,0,20,0">
+                            <Button ToolTipService.ToolTip="{x:Bind common:Common.MarkAsReadLabel}" Command="{x:Bind MarkAsReadCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}" Margin="0,0,20,0">
                                 <Grid>
                                     <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Visibility="{x:Bind SelectedItem.IsRead, Mode=OneWay, Converter={StaticResource BooleanToVisibilityInverter}}" Foreground="{ThemeResource SystemAccentColor}" Glyph="" />
                                     <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
                             </Button>
-                            <Button Command="{x:Bind MarkAsFavoriteCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}"
+                            <Button ToolTipService.ToolTip="{x:Bind common:Common.MarkAsStarLabel}" Command="{x:Bind MarkAsFavoriteCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}"
                             Margin="0,0,20,0">
                                 <Grid>
                                     <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Visibility="{x:Bind SelectedItem.IsFavorite, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Yellow" Glyph="" />
                                     <FontIcon FontSize="13" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
                             </Button>
-                            <Button Command="{x:Bind OpenShareCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}"
+                            <Button ToolTipService.ToolTip="{x:Bind common:Common.OpenShareLabel}" Command="{x:Bind OpenShareCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}"
                             Margin="0,0,20,0">
                                 <Grid>
                                     <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
                                 </Grid>
                             </Button>
-                            <Button Command="{x:Bind OpenInBrowserCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}"
+                            <Button ToolTipService.ToolTip="{x:Bind common:Common.OpenInBrowserLabel}" Command="{x:Bind OpenInBrowserCommand}" CommandParameter="{x:Bind SelectedItem, Mode=OneWay}"
                             Margin="0,0,20,0">
                                 <Grid>
                                     <FontIcon FontSize="14" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="" />
