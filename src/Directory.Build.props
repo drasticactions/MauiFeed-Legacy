@@ -3,7 +3,6 @@
 		<LangVersion>preview</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<NoWarn>SA0001</NoWarn>
 		<Company>Drastic Actions</Company>
 		<Copyright>Copyright (C) Drastic Actions</Copyright>

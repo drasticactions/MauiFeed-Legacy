@@ -12,6 +12,13 @@
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+		<WindowsPackageType>None</WindowsPackageType>
+		<ApplicationIcon>AppIcon.ico</ApplicationIcon>
+		<!-- 
+			Unpackaged WinUI apps break on WindowsAppSDK-VersionInfo.cs from the nuget 
+			See https://github.com/microsoft/WindowsAppSDK/issues/2032
+		-->
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Pages\FeedTimelineSplitPage.xaml" />
@@ -22,6 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="AppIcon.ico" />
 		<Content Include="Assets\LargeTile.scale-100.png" />
 		<Content Include="Assets\LargeTile.scale-125.png" />
 		<Content Include="Assets\LargeTile.scale-150.png" />
@@ -108,6 +116,7 @@
 		<PackageReference Include="Drastic.Modal" Version="1.0.9" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
+		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
 		<PackageReference Include="WinUICommunity.Common" Version="3.0.2" />
 		<PackageReference Include="WinUICommunity.SettingsUI" Version="3.0.2" />
 		<PackageReference Include="WinUIEx" Version="2.1.0" />

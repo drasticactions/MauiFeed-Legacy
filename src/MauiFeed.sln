@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartReader", "..\external\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{30A1549F-A887-4DF3-AD99-EAD8F1C9BCAD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9310715C-A2C4-4301-8C2F-23C51B3C5D21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,5 +87,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E2C21AA1-FA41-4FC0-B822-CF46858B38F3} = {30A1549F-A887-4DF3-AD99-EAD8F1C9BCAD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20860AD8-5D5D-4ABF-8F98-D16364EE61DA}
 	EndGlobalSection
 EndGlobal

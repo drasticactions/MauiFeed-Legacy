@@ -16,12 +16,14 @@ using MauiFeed.Translations;
 using MauiFeed.Views;
 using MauiFeed.WinUI.Pages;
 using MauiFeed.WinUI.Services;
+using MauiFeed.WinUI.Tools;
 using MauiFeed.WinUI.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Newtonsoft.Json.Linq;
+using Windows.System;
 using WinUIEx;
 
 namespace MauiFeed.WinUI
@@ -77,8 +79,7 @@ namespace MauiFeed.WinUI
             this.RemoveFeedCommand = new AsyncCommand<FeedSidebarItem>(this.RemoveFeed, null, this);
             this.GenerateMenuButtons();
             this.GenerateSidebarItems();
-
-            ((FrameworkElement)this.Content).Loaded += this.MainWindowLoaded;
+            this.MainWindowLoaded();
         }
 
         /// <summary>
@@ -554,9 +555,8 @@ namespace MauiFeed.WinUI
             }
         }
 
-        private void MainWindowLoaded(object sender, RoutedEventArgs e)
+        private void MainWindowLoaded()
         {
-            ((FrameworkElement)sender).Loaded -= this.MainWindowLoaded;
             var lastUpdated = this.appSettings.LastUpdated;
             if (lastUpdated == null)
             {

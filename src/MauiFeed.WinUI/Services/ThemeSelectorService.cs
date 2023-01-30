@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using MauiFeed.Models;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 using Windows.Management.Core;
@@ -17,7 +18,6 @@ namespace MauiFeed.WinUI.Services
     {
         private const string SettingsKey = "AppBackgroundRequestedTheme";
         private UISettings uiSettings = new UISettings();
-        private ApplicationDataContainer localSettings;
         private WindowService windowService;
         private ApplicationSettingsService applicationSettingsService;
 
@@ -30,8 +30,7 @@ namespace MauiFeed.WinUI.Services
         {
             this.windowService = windowService;
             this.applicationSettingsService = applicationSettingsService;
-            this.localSettings = ApplicationDataManager.CreateForPackageFamily(Package.Current.Id.FamilyName).LocalSettings;
-            this.Theme = this.applicationSettingsService.ApplicationElementTheme;
+            this.Theme = this.GetElementTheme(this.applicationSettingsService.ApplicationElementTheme);
             this.uiSettings.ColorValuesChanged += (sender, args) =>
             {
                 if (this.Theme == ElementTheme.Default)
@@ -76,7 +75,7 @@ namespace MauiFeed.WinUI.Services
             this.Theme = theme;
 
             this.SetRequestedTheme();
-            this.applicationSettingsService.ApplicationElementTheme = this.Theme;
+            this.applicationSettingsService.ApplicationElementTheme = this.GetAppTheme(this.Theme);
         }
 
         /// <summary>
@@ -93,6 +92,36 @@ namespace MauiFeed.WinUI.Services
             }
 
             this.ThemeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private ElementTheme GetElementTheme(AppTheme theme)
+        {
+            switch (theme)
+            {
+                case AppTheme.Default:
+                    return ElementTheme.Default;
+                case AppTheme.Light:
+                    return ElementTheme.Light;
+                case AppTheme.Dark:
+                    return ElementTheme.Dark;
+                default:
+                    return ElementTheme.Default;
+            }
+        }
+
+        private AppTheme GetAppTheme(ElementTheme theme)
+        {
+            switch (theme)
+            {
+                case ElementTheme.Default:
+                    return AppTheme.Default;
+                case ElementTheme.Light:
+                    return AppTheme.Light;
+                case ElementTheme.Dark:
+                    return AppTheme.Dark;
+                default:
+                    return AppTheme.Default;
+            }
         }
     }
 }

@@ -1,9 +1,6 @@
 {
   "profiles": {
-    "MauiFeed.WinUI (Package)": {
-      "commandName": "MsixPackage"
-    },
-    "MauiFeed.WinUI (Unpackaged)": {
+    "MauiFeed.WinUI": {
       "commandName": "Project"
     }
   }
