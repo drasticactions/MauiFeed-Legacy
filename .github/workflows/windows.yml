@@ -62,14 +62,20 @@ jobs:
         Platform: ${{ matrix.platform }}
 
     # Upload the app
-    - name: Upload Unpackaged App x64
+    - name: Upload Unpackaged App
       uses: actions/upload-artifact@v2
+      env:
+        Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform }}
       with:
         name: MauiFeed-Unpackaged-${{env.Platform}}
-        path: src\\${{ env.Project_Name }}\\app\unpackaged-x64
+        path: src\\${{ env.Project_Name }}\\app\unpackaged-${{env.Platform}}
         
-    - name: Upload Packaged App x64
+    - name: Upload Packaged App
       uses: actions/upload-artifact@v2
+      env:
+        Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform }}
       with:
         name: MauiFeed-Packaged-${{env.Platform}}
-        path: src\\${{ env.Project_Name }}\\app\packaged-x64
+        path: src\\${{ env.Project_Name }}\\app\packaged-${{env.Platform}}
