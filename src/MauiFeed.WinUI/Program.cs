@@ -16,10 +16,11 @@ namespace MauiFeed.WinUI
     internal class Program
     {
         [STAThread]
-        private static async Task<int> Main(string[] args)
+        private static int Main(string[] args)
         {
             WinRT.ComWrappersSupport.InitializeComWrappers();
-            bool isRedirect = await DecideRedirection();
+
+            bool isRedirect = DecideRedirection();
             if (!isRedirect)
             {
                 Microsoft.UI.Xaml.Application.Start((p) =>
@@ -34,7 +35,7 @@ namespace MauiFeed.WinUI
             return 0;
         }
 
-        private static async Task<bool> DecideRedirection()
+        private static bool DecideRedirection()
         {
             bool isRedirect = false;
             AppActivationArguments args = AppInstance.GetCurrent().GetActivatedEventArgs();
@@ -48,7 +49,7 @@ namespace MauiFeed.WinUI
             else
             {
                 isRedirect = true;
-                await keyInstance.RedirectActivationToAsync(args);
+                keyInstance.RedirectActivationToAsync(args).GetAwaiter().GetResult();
             }
 
             return isRedirect;
