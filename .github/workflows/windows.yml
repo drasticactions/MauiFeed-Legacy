@@ -41,6 +41,10 @@ jobs:
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
+      
+    - name: Install Windows App SDK
+      shell: powershell
+      run: Invoke-webrequest -uri https://aka.ms/windowsappsdk/1.2/1.2.230118.102/windowsappruntimeinstall-x64.exe -OutFile windowsappruntimeinstall-x64.exe ; &.\windowsappruntimeinstall-x64.exe
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
