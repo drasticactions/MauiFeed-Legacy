@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         configuration: [Release]
-        platform: [x64]
+        platform: [win10-x64]
 
     runs-on: windows-2022
     
@@ -44,13 +44,13 @@ jobs:
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
-      run: msbuild $env:Project_Name /t:Restore /p:Configuration=$env:Configuration
+      run: msbuild /t:Restore /p:Configuration=$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
         
     # Create the app by building and publishing the project
     - name: Create the app
-      run: msbuild $env:Project_Name /t:Publish /p:Configuration=$env:Configuration /p:Platform=$env:Platform
+      run: msbuild /t:Publish /p:Configuration=$env:Configuration /p:Platform=$env:Platform
       env:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}
