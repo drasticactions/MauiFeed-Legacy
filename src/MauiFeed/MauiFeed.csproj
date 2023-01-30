@@ -13,6 +13,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Icon\logo.png" />
+	  <None Remove="Icon\logo_header.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Icon\logo_header.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Compile Update="Translations\Common.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -30,6 +39,7 @@
 	<ItemGroup>
 		<EmbeddedResource Include="Icon\dotnet_bot.png" />
 		<EmbeddedResource Include="Icon\favicon.ico" />
+		<EmbeddedResource Include="Icon\logo.png" />
 		<EmbeddedResource Include="Templates\feeditem.html.hbs" />
 	</ItemGroup>
 

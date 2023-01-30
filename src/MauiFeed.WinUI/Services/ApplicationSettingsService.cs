@@ -2,6 +2,8 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using MauiFeed.Models;
+using MauiFeed.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Windows.ApplicationModel;
@@ -16,18 +18,25 @@ namespace MauiFeed.WinUI.Services
     /// </summary>
     public class ApplicationSettingsService
     {
-        private const string AppBackgroundRequestedTheme = "AppBackgroundRequestedTheme";
-        private const string LastUpdatedValue = "LastUpdated";
-        private ApplicationDataContainer localSettings;
-        private ElementTheme? cachedTheme;
-        private DateTime? cachedTime;
+        private DatabaseContext databaseContext;
+        private AppSettings appSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationSettingsService"/> class.
         /// </summary>
-        public ApplicationSettingsService()
+        /// <param name="context">Database Context.</param>
+        public ApplicationSettingsService(DatabaseContext context)
         {
-            this.localSettings = ApplicationDataManager.CreateForPackageFamily(Package.Current.Id.FamilyName).LocalSettings;
+            this.databaseContext = context;
+            var appSettings = this.databaseContext.AppSettings!.FirstOrDefault();
+            if (appSettings is null)
+            {
+                appSettings = new AppSettings();
+                this.databaseContext.AppSettings!.Add(appSettings);
+                this.databaseContext.SaveChanges();
+            }
+
+            this.appSettings = appSettings;
         }
 
         /// <summary>
@@ -37,57 +46,37 @@ namespace MauiFeed.WinUI.Services
         {
             get
             {
-                if (this.cachedTime is not null)
-                {
-                    return this.cachedTime;
-                }
-
-                DateTime dateTime = DateTime.MinValue;
-                var result = DateTime.TryParse(this.localSettings.Values[LastUpdatedValue] as string, out dateTime);
-                if (result)
-                {
-                    this.cachedTime = dateTime;
-                }
-
-                return this.cachedTime;
+                return this.appSettings.LastUpdated;
             }
 
             set
             {
-                this.localSettings.Values[LastUpdatedValue] = value.ToString();
-                this.cachedTime = value;
+                this.appSettings.LastUpdated = value;
+                this.UpdateAppSettings();
             }
         }
 
         /// <summary>
         /// Gets or sets the application theme.
         /// </summary>
-        public ElementTheme ApplicationElementTheme
+        public AppTheme ApplicationElementTheme
         {
             get
             {
-                if (this.cachedTheme is not null)
-                {
-                    return (ElementTheme)this.cachedTheme;
-                }
-
-                ElementTheme cacheTheme = ElementTheme.Default;
-                string? themeName = this.localSettings.Values[AppBackgroundRequestedTheme] as string;
-
-                if (!string.IsNullOrEmpty(themeName))
-                {
-                    Enum.TryParse(themeName, out cacheTheme);
-                }
-
-                this.cachedTheme = cacheTheme;
-                return cacheTheme;
+                return this.appSettings.AppTheme;
             }
 
             set
             {
-                this.localSettings.Values[AppBackgroundRequestedTheme] = value.ToString();
-                this.cachedTheme = value;
+                this.appSettings.AppTheme = value;
+                this.UpdateAppSettings();
             }
+        }
+
+        private void UpdateAppSettings()
+        {
+            this.databaseContext.AppSettings!.Update(this.appSettings);
+            this.databaseContext.SaveChanges();
         }
     }
 }

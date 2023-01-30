@@ -7,11 +7,18 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Platforms>x86;x64;ARM64</Platforms>
 		<RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+		<IsUnpackaged Condition="'$(IsUnpackaged)' == ''">true</IsUnpackaged>
+		<WindowsPackageType Condition="'$(IsUnpackaged)' == 'true'">None</WindowsPackageType>
+		<WindowsAppSDKSelfContained Condition="'$(IsUnpackaged)' == 'true'">true</WindowsAppSDKSelfContained>
+		<SelfContained Condition="'$(IsUnpackaged)' == 'true'">true</SelfContained>
 		<PublishProfile>win10-$(Platform).pubxml</PublishProfile>
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+		<ApplicationIcon Condition="'$(IsUnpackaged)' == 'true'">AppIcon.ico</ApplicationIcon>
 	</PropertyGroup>
+	
 	<ItemGroup>
 		<None Remove="Pages\FeedTimelineSplitPage.xaml" />
 		<None Remove="Pages\SettingsPage.xaml" />
@@ -21,6 +28,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="AppIcon.ico" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(IsUnpackaged)' == 'false'">
 		<Content Include="Assets\LargeTile.scale-100.png" />
 		<Content Include="Assets\LargeTile.scale-125.png" />
 		<Content Include="Assets\LargeTile.scale-150.png" />
@@ -107,6 +118,7 @@
 		<PackageReference Include="Drastic.Modal" Version="1.0.9" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
+		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
 		<PackageReference Include="WinUICommunity.Common" Version="3.0.2" />
 		<PackageReference Include="WinUICommunity.SettingsUI" Version="3.0.2" />
 		<PackageReference Include="WinUIEx" Version="2.1.0" />

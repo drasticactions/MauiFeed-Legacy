@@ -50,6 +50,7 @@
             <tools:AllUnreadReadLabelConverter x:Name="AllUnreadReadLabelConverter"/>
             <tools:UnreadReadLabelConverter x:Name="UnreadReadLabelConverter"/>
             <tools:FavoriteLabelConverter x:Name="FavoriteLabelConverter"/>
+            <tools:EmbeddedImageConverter x:Name="EmbeddedImageConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

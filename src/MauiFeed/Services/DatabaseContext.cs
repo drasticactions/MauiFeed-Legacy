@@ -44,6 +44,11 @@ namespace MauiFeed.Services
         public DbSet<FeedFolder>? FeedFolder { get; set; }
 
         /// <summary>
+        /// Gets or sets the App Settings.
+        /// </summary>
+        public DbSet<AppSettings>? AppSettings { get; set; }
+
+        /// <summary>
         /// Run when configuring the database.
         /// </summary>
         /// <param name="optionsBuilder"><see cref="DbContextOptionsBuilder"/>.</param>
@@ -64,6 +69,7 @@ namespace MauiFeed.Services
                 throw new ArgumentNullException(nameof(modelBuilder));
             }
 
+            modelBuilder.Entity<AppSettings>().HasKey(n => n.Id);
             modelBuilder.Entity<FeedFolder>().HasKey(n => n.Id);
             modelBuilder.Entity<FeedListItem>().HasKey(n => n.Id);
             modelBuilder.Entity<FeedListItem>().HasIndex(n => n.Uri).IsUnique();

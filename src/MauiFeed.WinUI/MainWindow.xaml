@@ -24,7 +24,7 @@
             </Grid.RowDefinitions>
             <StackPanel VerticalAlignment="Top" Orientation="Horizontal" x:Name="AppTitleBar" Grid.Row="0">
                 <Border Margin="14,14,0,0" CornerRadius="7">
-                    <Image  Width="20" Height="20" Source="Assets/Square150x150Logo.scale-200.png" x:Name="AppIcon" />
+                    <Image  Width="20" Height="20" Source="{Binding AppLogo, Converter={StaticResource EmbeddedImageConverter}}" x:Name="AppIcon" />
                 </Border>
                 <TextBlock x:Name="AppTitleTextBlock" Text="{x:Bind common:Common.AppTitle}"
                        Style="{StaticResource CaptionTextBlockStyle}"

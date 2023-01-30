@@ -8,6 +8,7 @@ using MauiFeed.Models;
 using MauiFeed.NewsService;
 using MauiFeed.Services;
 using MauiFeed.WinUI.Services;
+using MauiFeed.WinUI.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 
@@ -20,8 +21,6 @@ namespace MauiFeed.WinUI
     {
         private Window? window;
         private WindowService windowService;
-        private ThemeSelectorService themeSelectorService;
-        private ApplicationSettingsService settingsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="App"/> class.
@@ -31,25 +30,25 @@ namespace MauiFeed.WinUI
         public App()
         {
             this.InitializeComponent();
-            this.windowService = new WindowService();
-            this.settingsService = new ApplicationSettingsService();
-            this.themeSelectorService = new ThemeSelectorService(this.windowService, this.settingsService);
+            string databaseField = WinUIExtensions.IsRunningAsUwp() ? System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db") : System.IO.Path.Combine("database.db");
 
             var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
                 .AddSingleton<IErrorHandlerService, WinUIErrorHandlerService>()
                 .AddSingleton<IAppDispatcher>(new AppDispatcher(dispatcherQueue))
-                .AddSingleton<DatabaseContext>(new DatabaseContext(System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db")))
+                .AddSingleton<DatabaseContext>(new DatabaseContext(databaseField))
                 .AddSingleton<ITemplateService, HandlebarsTemplateService>()
                 .AddSingleton<IRssService, FeedReaderService>()
                 .AddSingleton<RssFeedCacheService>()
                 .AddSingleton<WindowsPlatformService>()
+                .AddSingleton<WindowService>()
+                .AddSingleton<ApplicationSettingsService>()
+                .AddSingleton<ThemeSelectorService>()
                 .AddSingleton(new Progress<RssCacheFeedUpdate>())
-                .AddSingleton(this.settingsService)
-                .AddSingleton(this.windowService)
-                .AddSingleton(this.themeSelectorService)
                 .BuildServiceProvider());
+
+            this.windowService = Ioc.Default.GetService<WindowService>()!;
         }
 
         /// <summary>
@@ -60,6 +59,19 @@ namespace MauiFeed.WinUI
         {
             this.window = this.windowService.AddWindow<MainWindow>();
             this.window.Activate();
+            this.window.SetIconFromApplicationIcon();
+
+            Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().Activated += this.App_Activated;
+        }
+
+        private void App_Activated(object? sender, Microsoft.Windows.AppLifecycle.AppActivationArguments e)
+        {
+            // From https://github.com/andrewleader/RedirectActivationWinUI3Sample/blob/main/RedirectActivationWinUI3Sample/App.xaml.cs#L71-L88
+            var hwnd = (Windows.Win32.Foundation.HWND)WinRT.Interop.WindowNative.GetWindowHandle(this.window);
+
+            Windows.Win32.PInvoke.ShowWindow(hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_RESTORE);
+
+            Windows.Win32.PInvoke.SetForegroundWindow(hwnd);
         }
     }
 }

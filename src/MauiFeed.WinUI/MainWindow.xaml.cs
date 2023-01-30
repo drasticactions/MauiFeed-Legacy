@@ -82,6 +82,11 @@ namespace MauiFeed.WinUI
         }
 
         /// <summary>
+        /// Gets the app logo path.
+        /// </summary>
+        public string AppLogo => "Icon.logo_header.png";
+
+        /// <summary>
         /// Gets the list of sidebar items.
         /// </summary>
         public List<FeedSidebarItem> SidebarItems { get; } = new List<FeedSidebarItem>();
