@@ -1,2 +1,4 @@
 IDataTransferManagerInterop
 GetActiveWindow
+SetForegroundWindow
+ShowWindow

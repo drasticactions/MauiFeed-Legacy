@@ -3,10 +3,13 @@
 // </copyright>
 
 using System.Threading;
+using AngleSharp.Dom;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
+using WinUIEx;
 
 namespace MauiFeed.WinUI
 {
@@ -15,6 +18,8 @@ namespace MauiFeed.WinUI
     /// </summary>
     internal class Program
     {
+        private const string AppKey = "7317741F-805D-4586-999A-9F971DFE1396";
+
         [STAThread]
         private static int Main(string[] args)
         {
@@ -40,7 +45,7 @@ namespace MauiFeed.WinUI
             bool isRedirect = false;
             AppActivationArguments args = AppInstance.GetCurrent().GetActivatedEventArgs();
             ExtendedActivationKind kind = args.Kind;
-            AppInstance keyInstance = AppInstance.FindOrRegisterForKey("randomKey");
+            AppInstance keyInstance = AppInstance.FindOrRegisterForKey(AppKey);
 
             if (keyInstance.IsCurrent)
             {

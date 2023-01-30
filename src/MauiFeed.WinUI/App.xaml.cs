@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using AngleSharp.Dom;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Services;
 using MauiFeed.Models;
@@ -53,6 +54,11 @@ namespace MauiFeed.WinUI
         }
 
         /// <summary>
+        /// Gets the main app window.
+        /// </summary>
+        public Window? Window => this.window;
+
+        /// <summary>
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
@@ -60,6 +66,18 @@ namespace MauiFeed.WinUI
         {
             this.window = this.windowService.AddWindow<MainWindow>();
             this.window.Activate();
+
+            Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().Activated += this.App_Activated;
+        }
+
+        private void App_Activated(object? sender, Microsoft.Windows.AppLifecycle.AppActivationArguments e)
+        {
+            // From https://github.com/andrewleader/RedirectActivationWinUI3Sample/blob/main/RedirectActivationWinUI3Sample/App.xaml.cs#L71-L88
+            var hwnd = (Windows.Win32.Foundation.HWND)WinRT.Interop.WindowNative.GetWindowHandle(this.window);
+
+            Windows.Win32.PInvoke.ShowWindow(hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_RESTORE);
+
+            Windows.Win32.PInvoke.SetForegroundWindow(hwnd);
         }
     }
 }
