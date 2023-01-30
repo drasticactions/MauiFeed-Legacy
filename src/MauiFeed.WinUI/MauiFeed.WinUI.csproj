@@ -12,8 +12,11 @@
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+		<AssemblyName>MauiFeed</AssemblyName>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<WindowsPackageType>None</WindowsPackageType>
 		<ApplicationIcon>AppIcon.ico</ApplicationIcon>
+		<SelfContained>true</SelfContained>
 		<!-- 
 			Unpackaged WinUI apps break on WindowsAppSDK-VersionInfo.cs from the nuget 
 			See https://github.com/microsoft/WindowsAppSDK/issues/2032

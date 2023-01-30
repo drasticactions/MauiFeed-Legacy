@@ -5,12 +5,17 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<AssemblyName>MauiFeed.Core</AssemblyName>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <Compile Remove="Events\**" />
 	  <EmbeddedResource Remove="Events\**" />
 	  <None Remove="Events\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Icon\logo.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -31,6 +36,7 @@
 	<ItemGroup>
 		<EmbeddedResource Include="Icon\dotnet_bot.png" />
 		<EmbeddedResource Include="Icon\favicon.ico" />
+		<EmbeddedResource Include="Icon\logo.png" />
 		<EmbeddedResource Include="Templates\feeditem.html.hbs" />
 	</ItemGroup>
 

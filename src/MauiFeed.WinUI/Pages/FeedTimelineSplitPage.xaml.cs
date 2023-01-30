@@ -78,6 +78,11 @@ namespace MauiFeed.WinUI.Pages
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
+        /// Gets the app logo path.
+        /// </summary>
+        public string AppLogo => "Icon.logo.png";
+
+        /// <summary>
         /// Gets the Open In Browser command.
         /// </summary>
         public AsyncCommand<FeedItem> OpenInBrowserCommand { get; private set; }

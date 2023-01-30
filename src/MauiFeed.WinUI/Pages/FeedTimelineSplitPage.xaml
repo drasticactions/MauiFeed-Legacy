@@ -139,7 +139,7 @@
                     <views:RssWebview Grid.Row="1" x:Name="LocalRssWebview"/>
                 </Grid>
                 <Grid x:Name="NoItemsGrid" Visibility="{x:Bind SelectedItem, Mode=OneWay, Converter={StaticResource NullToVisibilityInverter}}">
-                    <Image Margin="25" VerticalAlignment="Center" HorizontalAlignment="Center" MaxHeight="300" MaxWidth="300" Source="ms-appx:///Assets/Square150x150Logo.scale-400.png" />
+                    <Image Margin="25" VerticalAlignment="Center" HorizontalAlignment="Center" MaxHeight="300" MaxWidth="300" Source="{x:Bind AppLogo, Converter={StaticResource EmbeddedImageConverter}}" />
                 </Grid>
             </Grid>
         </SplitView.Content>
