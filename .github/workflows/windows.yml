@@ -23,6 +23,7 @@ jobs:
         
     env:
       Solution_Name: MauiFeed
+      working-directory: ./src
       
     steps:
     - name: Checkout
