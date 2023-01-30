@@ -41,10 +41,6 @@ jobs:
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
-      
-    - name: Install Windows App SDK
-      shell: powershell
-      run: Invoke-webrequest -uri https://aka.ms/windowsappsdk/1.2/1.2.230118.102/windowsappruntimeinstall-x64.exe -OutFile windowsappruntimeinstall-x64.exe ; &.\windowsappruntimeinstall-x64.exe
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
@@ -53,14 +49,14 @@ jobs:
         Configuration: ${{ matrix.configuration }}
         
     - name: Create the app (Packaged)
-      run: dotnet publish -r win10-$env:Platform -c $env:Configuration -p:Platform=$env:Platform -p:IsUnpackaged=false -o=app\packaged-$env:Platform
+      run: dotnet publish -r win10-$env:Platform -c $env:Configuration -p:Platform=$env:Platform -p:IsUnpackaged=false -o=app\packaged-${{env.Platform}}
       env:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}
         
     # Create the app by building and publishing the project
     - name: Create the app (Unpackaged)
-      run: dotnet publish -r win10-$env:Platform -c $env:Configuration -p:Platform=$env:Platform -p:IsUnpackaged=true -o=app\unpackaged-$env:Platform
+      run: dotnet publish -r win10-$env:Platform -c $env:Configuration -p:Platform=$env:Platform -p:IsUnpackaged=true -o=app\unpackaged-${{env.Platform}}
       env:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}
