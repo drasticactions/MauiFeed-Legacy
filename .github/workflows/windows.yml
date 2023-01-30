@@ -23,6 +23,7 @@ jobs:
         
     env:
       Solution_Name: MauiFeed
+      Project_Name: MauiFeed.WinUI
       working-directory: ./src
       
     steps:
@@ -59,7 +60,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Upload app
-        path: ${{ env.Solution_Name }}\\bin
+        path: ${{ env.Project_Name }}\\bin
     
     
     
