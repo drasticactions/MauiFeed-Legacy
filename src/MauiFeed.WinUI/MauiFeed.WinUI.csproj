@@ -179,9 +179,12 @@
 	<Target Name="_SetVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
 		<PropertyGroup>
 			<Version>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)$(GitSemVerDashLabel)+$(GitBranch).$(GitCommit)</Version>
-			<PackageVersion>$(Version)</PackageVersion>
 		</PropertyGroup>
 	</Target>
+
+	<PropertyGroup>
+		<GitInfoReportImportance>high</GitInfoReportImportance>
+	</PropertyGroup>
 
 	<Target Name="PopulateInfo" DependsOnTargets="GitInfo" BeforeTargets="PrepareForBuild">
 		<PropertyGroup>
