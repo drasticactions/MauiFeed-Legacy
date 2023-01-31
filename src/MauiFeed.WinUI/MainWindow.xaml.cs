@@ -23,6 +23,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Newtonsoft.Json.Linq;
+using WinUICommunity.Common.Extensions;
 using WinUIEx;
 
 namespace MauiFeed.WinUI
@@ -76,6 +77,7 @@ namespace MauiFeed.WinUI
             this.folderSeparator = new NavigationViewItemSeparator();
             this.filterSeparator = new NavigationViewItemSeparator();
             this.RemoveFeedCommand = new AsyncCommand<FeedSidebarItem>(this.RemoveFeed, null, this);
+            this.RemoveFromFolderCommand = new AsyncCommand<FeedSidebarItem>((x) => this.RemoveFromFolderAsync(x, true), null, this);
             this.GenerateMenuButtons();
             this.GenerateSidebarItems();
             this.NavView.Loaded += this.NavigationFrameLoaded;
@@ -97,6 +99,11 @@ namespace MauiFeed.WinUI
         /// Gets the remove feed command.
         /// </summary>
         public AsyncCommand<FeedSidebarItem> RemoveFeedCommand { get; }
+
+        /// <summary>
+        /// Gets the remove from folder feed command.
+        /// </summary>
+        public AsyncCommand<FeedSidebarItem> RemoveFromFolderCommand { get; }
 
         /// <summary>
         /// Gets the list of navigation items.
@@ -412,22 +419,24 @@ namespace MauiFeed.WinUI
                 var oldFolder = this.SidebarItems.FirstOrDefault(n => n.ItemType is SidebarItemType.Folder && n.FeedFolder?.Id == navigationViewItem.FeedListItem.FolderId);
                 if (oldFolder != null)
                 {
-                    oldFolder.NavItem.MenuItems.Remove(navigationViewItem);
+                    System.Diagnostics.Debug.Assert(oldFolder.NavItem.MenuItems.Remove(navigationViewItem.NavItem), "Should not be null");
                 }
             }
             else
             {
-                this.Items.Remove(navigationViewItem.NavItem);
+                System.Diagnostics.Debug.Assert(this.Items.Remove(navigationViewItem.NavItem), "Should not be null");
             }
 
             if (moveToRoot)
             {
                 // Reset to null.
-                this.Items.Add(navigationViewItem.NavItem);
-                navigationViewItem.FeedListItem!.FolderId = null;
-                navigationViewItem.FeedListItem!.Folder = null;
-                this.context.FeedListItems!.Update(navigationViewItem.FeedListItem);
+                this.SidebarItems.Remove(navigationViewItem);
+                var feedListItem = navigationViewItem.FeedListItem!;
+                feedListItem.FolderId = null;
+                feedListItem.Folder = null;
+                this.context.FeedListItems!.Update(feedListItem);
                 await this.context.SaveChangesAsync();
+                this.AddItemToSidebar(feedListItem);
             }
         }
 
@@ -487,7 +496,8 @@ namespace MauiFeed.WinUI
                     var folders = this.SidebarItems.Where(n => n.ItemType == SidebarItemType.Folder).ToList();
                     var folderItemText = sidebarItem.FeedListItem?.FolderId > 0 ? Common.MoveToFolderLabel : Common.AddToFolderLabel;
                     var folderId = sidebarItem.FeedListItem?.FolderId ?? 0;
-                    menuFlyout.Items.Add(new MenuFlyoutItem() { Icon = new SymbolIcon(Symbol.Remove), Text = Common.RemoveFeedLabel, Command = this.RemoveFeedCommand, CommandParameter = sidebarItem });
+                    menuFlyout.Items.Add(new MenuFlyoutItem() { Icon = new SymbolIcon(Symbol.Delete), Text = Common.RemoveFeedLabel, Command = this.RemoveFeedCommand, CommandParameter = sidebarItem });
+                    menuFlyout.Items.Add(new MenuFlyoutItem() { Icon = new SymbolIcon(Symbol.Remove), Text = Common.RemoveFromFolderLabel, Command = this.RemoveFromFolderCommand, CommandParameter = sidebarItem });
                     var folderItem = new MenuFlyoutSubItem() { Text = folderItemText, Icon = new SymbolIcon(Symbol.Folder) };
                     foreach (var item in folders.Where(n => n.FeedFolder?.Id != folderId))
                     {
@@ -496,7 +506,11 @@ namespace MauiFeed.WinUI
                         folderItem.Items.Add(folder);
                     }
 
-                    menuFlyout.Items.Add(folderItem);
+                    if (folderItem.Items.Any())
+                    {
+                        menuFlyout.Items.Add(folderItem);
+                    }
+
                     menuFlyout.ShowAt(sidebarItem.NavItem);
                     break;
                 default:
