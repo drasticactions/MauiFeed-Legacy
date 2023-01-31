@@ -55,6 +55,14 @@
                 </StackPanel>
             </StackPanel>
 
+            <StackPanel>
+                <ComboBox x:Name="LanguageComboBox" ItemsSource="{x:Bind Languages, Mode=OneWay}" SelectedItem="{x:Bind LanguageSetting, Mode=OneWay}"
+                          DisplayMemberPath="Item1" SelectedValuePath="Item2"
+                          SelectionChanged="LanguageComboBoxSelectionChanged"
+                          Loaded="LanguageComboBoxLoaded"
+                          Header="{x:Bind common:Common.LanguageLabel}" Width="200" />
+            </StackPanel>
+
             <StackPanel Margin="5" Spacing="5">
                 <HyperlinkButton Content="Third-Party Licenses" NavigateUri="https://drasticactions.site/mauifeed-license.html" />
                 <HyperlinkButton Content="Terms and Conditions" NavigateUri="https://drasticactions.site/mauifeed-termsandconditions.html" />

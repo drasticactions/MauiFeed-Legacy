@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using System.Globalization;
 using System.Threading;
 using AngleSharp.Dom;
 using Microsoft.UI.Dispatching;
@@ -24,7 +25,6 @@ namespace MauiFeed.WinUI
         private static int Main(string[] args)
         {
             WinRT.ComWrappersSupport.InitializeComWrappers();
-
             bool isRedirect = DecideRedirection();
             if (!isRedirect)
             {

@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using System.Globalization;
 using MauiFeed.Models;
 using MauiFeed.Services;
 using Microsoft.UI.Xaml;
@@ -20,6 +21,7 @@ namespace MauiFeed.WinUI.Services
     {
         private DatabaseContext databaseContext;
         private AppSettings appSettings;
+        private CultureInfo defaultCulture;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationSettingsService"/> class.
@@ -28,6 +30,7 @@ namespace MauiFeed.WinUI.Services
         public ApplicationSettingsService(DatabaseContext context)
         {
             this.databaseContext = context;
+            this.defaultCulture = Thread.CurrentThread.CurrentUICulture;
             var appSettings = this.databaseContext.AppSettings!.FirstOrDefault();
             if (appSettings is null)
             {
@@ -37,6 +40,7 @@ namespace MauiFeed.WinUI.Services
             }
 
             this.appSettings = appSettings;
+            this.UpdateCulture();
         }
 
         /// <summary>
@@ -59,6 +63,23 @@ namespace MauiFeed.WinUI.Services
         /// <summary>
         /// Gets or sets the application theme.
         /// </summary>
+        public LanguageSetting ApplicationLanguageSetting
+        {
+            get
+            {
+                return this.appSettings.LanguageSetting;
+            }
+
+            set
+            {
+                this.appSettings.LanguageSetting = value;
+                this.UpdateAppSettings();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the application theme.
+        /// </summary>
         public AppTheme ApplicationElementTheme
         {
             get
@@ -73,10 +94,28 @@ namespace MauiFeed.WinUI.Services
             }
         }
 
+        private void UpdateCulture()
+        {
+            var culture = this.defaultCulture;
+            switch (this.ApplicationLanguageSetting)
+            {
+                case LanguageSetting.English:
+                    culture = new CultureInfo("en-US");
+                    break;
+                case LanguageSetting.Japanese:
+                    culture = new CultureInfo("ja-JP");
+                    break;
+            }
+
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
+        }
+
         private void UpdateAppSettings()
         {
             this.databaseContext.AppSettings!.Update(this.appSettings);
             this.databaseContext.SaveChanges();
+            this.UpdateCulture();
         }
     }
 }

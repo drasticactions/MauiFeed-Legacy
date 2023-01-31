@@ -141,6 +141,9 @@
   <data name="DarkThemeLabel" xml:space="preserve">
     <value>ダーク</value>
   </data>
+  <data name="DefaultLanguage" xml:space="preserve">
+    <value>既定の言語</value>
+  </data>
   <data name="DefaultThemeLabel" xml:space="preserve">
     <value>既定のテーマ</value>
   </data>
@@ -179,6 +182,9 @@
   </data>
   <data name="HideAllReadLabel" xml:space="preserve">
     <value>全て未読を隠す</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>言語</value>
   </data>
   <data name="LightThemeLabel" xml:space="preserve">
     <value>ライト</value>

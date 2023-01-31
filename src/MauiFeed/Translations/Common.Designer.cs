@@ -135,9 +135,27 @@ namespace MauiFeed.Translations {
         /// <summary>
         ///   Default に類似しているローカライズされた文字列を検索します。
         /// </summary>
+        public static string DefaultLanguage {
+            get {
+                return ResourceManager.GetString("DefaultLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Default に類似しているローカライズされた文字列を検索します。
+        /// </summary>
         public static string DefaultThemeLabel {
             get {
                 return ResourceManager.GetString("DefaultThemeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   English に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string EnglishLanguage {
+            get {
+                return ResourceManager.GetString("EnglishLanguage", resourceCulture);
             }
         }
         
@@ -246,6 +264,24 @@ namespace MauiFeed.Translations {
         public static string HideAllReadLabel {
             get {
                 return ResourceManager.GetString("HideAllReadLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   日本語 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string JapaneseLanguage {
+            get {
+                return ResourceManager.GetString("JapaneseLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Language に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string LanguageLabel {
+            get {
+                return ResourceManager.GetString("LanguageLabel", resourceCulture);
             }
         }
         

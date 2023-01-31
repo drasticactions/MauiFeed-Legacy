@@ -18,6 +18,7 @@ using MauiFeed.WinUI.Pages;
 using MauiFeed.WinUI.Services;
 using MauiFeed.WinUI.Views;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -77,6 +78,7 @@ namespace MauiFeed.WinUI
             this.RemoveFeedCommand = new AsyncCommand<FeedSidebarItem>(this.RemoveFeed, null, this);
             this.GenerateMenuButtons();
             this.GenerateSidebarItems();
+            this.NavView.Loaded += this.NavigationFrameLoaded;
 
             ((FrameworkElement)this.Content).Loaded += this.MainWindowLoaded;
         }
@@ -573,6 +575,13 @@ namespace MauiFeed.WinUI
             {
                 this.RefreshAllFeedsAsync().FireAndForgetSafeAsync();
             }
+        }
+
+        private void NavigationFrameLoaded(object sender, RoutedEventArgs e)
+        {
+            this.NavigationFrame.Loaded -= this.NavigationFrameLoaded;
+            var settings = (NavigationViewItem)this.NavView.SettingsItem;
+            settings.Content = Translations.Common.SettingsLabel;
         }
 
         private class FolderMenuFlyoutItem : MenuFlyoutItem

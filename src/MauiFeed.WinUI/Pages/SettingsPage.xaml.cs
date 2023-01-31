@@ -8,6 +8,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Services;
 using Drastic.Tools;
+using MauiFeed.Models;
+using MauiFeed.Translations;
 using MauiFeed.WinUI.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -22,6 +24,7 @@ namespace MauiFeed.WinUI.Pages
         private ElementTheme elementTheme;
         private ThemeSelectorService themeSelectorService;
         private IErrorHandlerService errorHandler;
+        private ApplicationSettingsService applicationSettingsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsPage"/> class.
@@ -31,6 +34,7 @@ namespace MauiFeed.WinUI.Pages
             this.InitializeComponent();
             this.DataContext = this;
             this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
+            this.applicationSettingsService = Ioc.Default.GetService<ApplicationSettingsService>()!;
             this.themeSelectorService = Ioc.Default.GetService<ThemeSelectorService>()!;
             this.ElementTheme = this.themeSelectorService.Theme;
             this.SwitchThemeCommand = new AsyncCommand<ElementTheme>(this.SetThemeAsync, (n) => true, this.errorHandler);
@@ -49,9 +53,35 @@ namespace MauiFeed.WinUI.Pages
         }
 
         /// <summary>
+        /// Gets or sets the element theme.
+        /// </summary>
+        public LanguageSetting LanguageSetting
+        {
+            get
+            {
+                return this.applicationSettingsService.ApplicationLanguageSetting;
+            }
+
+            set
+            {
+                this.applicationSettingsService.ApplicationLanguageSetting = value;
+            }
+        }
+
+        /// <summary>
         /// Gets the Switch Theme Command.
         /// </summary>
         public AsyncCommand<ElementTheme> SwitchThemeCommand { get; private set; }
+
+        /// <summary>
+        /// Gets the Languages.
+        /// </summary>
+        public List<Tuple<string, LanguageSetting>> Languages { get; } = new List<Tuple<string, LanguageSetting>>()
+        {
+            new Tuple<string, LanguageSetting>(Common.DefaultLanguage, LanguageSetting.Default),
+            new Tuple<string, LanguageSetting>(Common.EnglishLanguage, LanguageSetting.English),
+            new Tuple<string, LanguageSetting>(Common.JapaneseLanguage, LanguageSetting.Japanese),
+        };
 
         /// <summary>
         /// On Property Changed.
@@ -88,6 +118,16 @@ namespace MauiFeed.WinUI.Pages
             this.ElementTheme = theme;
             this.themeSelectorService.SetTheme(theme);
             return Task.CompletedTask;
+        }
+
+        private void LanguageComboBoxLoaded(object sender, RoutedEventArgs e)
+        {
+            this.LanguageComboBox.SelectedIndex = this.Languages.IndexOf(this.Languages.First(n => n.Item2 == this.LanguageSetting));
+        }
+
+        private void LanguageComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.LanguageSetting = this.Languages[this.LanguageComboBox.SelectedIndex].Item2;
         }
     }
 }

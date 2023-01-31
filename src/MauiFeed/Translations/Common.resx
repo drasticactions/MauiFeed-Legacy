@@ -141,8 +141,14 @@
   <data name="DarkThemeLabel" xml:space="preserve">
     <value>Dark</value>
   </data>
+  <data name="DefaultLanguage" xml:space="preserve">
+    <value>Default</value>
+  </data>
   <data name="DefaultThemeLabel" xml:space="preserve">
     <value>Default</value>
+  </data>
+  <data name="EnglishLanguage" xml:space="preserve">
+    <value>English</value>
   </data>
   <data name="FeedLabel" xml:space="preserve">
     <value>Feed</value>
@@ -179,6 +185,12 @@
   </data>
   <data name="HideAllReadLabel" xml:space="preserve">
     <value>Hide Read Articles</value>
+  </data>
+  <data name="JapaneseLanguage" xml:space="preserve">
+    <value>日本語</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Language</value>
   </data>
   <data name="LightThemeLabel" xml:space="preserve">
     <value>Light</value>

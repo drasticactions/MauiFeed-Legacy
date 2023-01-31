@@ -26,5 +26,10 @@ namespace MauiFeed.Models
         /// Gets or sets the app theme.
         /// </summary>
         public AppTheme AppTheme { get; set; }
+
+        /// <summary>
+        /// Gets or sets the language setting.
+        /// </summary>
+        public LanguageSetting LanguageSetting { get; set; }
     }
 }
