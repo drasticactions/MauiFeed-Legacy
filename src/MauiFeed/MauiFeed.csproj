@@ -7,18 +7,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Events\**" />
-	  <EmbeddedResource Remove="Events\**" />
-	  <None Remove="Events\**" />
+		<Compile Remove="Events\**" />
+		<EmbeddedResource Remove="Events\**" />
+		<None Remove="Events\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Icon\logo.png" />
-	  <None Remove="Icon\logo_header.png" />
+		<None Remove="Icon\logo.png" />
+		<None Remove="Icon\logo_header.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Icon\logo_header.png" />
+		<EmbeddedResource Include="Icon\logo_header.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -35,7 +35,7 @@
 			<LastGenOutput>Common.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<EmbeddedResource Include="Icon\dotnet_bot.png" />
 		<EmbeddedResource Include="Icon\favicon.ico" />
@@ -47,9 +47,25 @@
 		<PackageReference Include="AngleSharp" Version="1.0.1" />
 		<PackageReference Include="CodeHollow.FeedReader" Version="1.2.4" />
 		<PackageReference Include="Handlebars.Net" Version="2.1.2" />
+		<PackageReference Include="GitInfo" Version="2.3.0" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\external\SmartReader\src\SmartReader\SmartReader.csproj" />
+		<ProjectReference Include="..\..\external\SmartReader\src\SmartReader\SmartReader.csproj" />
 	</ItemGroup>
+
+	<Target Name="_SetVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
+		<PropertyGroup>
+			<Version>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)$(GitSemVerDashLabel)+$(GitBranch).$(GitCommit)</Version>
+			<PackageVersion>$(Version)</PackageVersion>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="PopulateInfo" DependsOnTargets="GitInfo" BeforeTargets="PrepareForBuild">
+		<PropertyGroup>
+			<RepositoryBranch>$(GitBranch)</RepositoryBranch>
+			<RepositoryCommit>$(GitCommit)</RepositoryCommit>
+			<SourceRevisionId>$(GitBranch) $(GitCommit)</SourceRevisionId>
+		</PropertyGroup>
+	</Target>
 </Project>

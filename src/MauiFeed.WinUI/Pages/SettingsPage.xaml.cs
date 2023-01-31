@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
@@ -42,6 +43,11 @@ namespace MauiFeed.WinUI.Pages
 
         /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        /// Gets the current version of the app.
+        /// </summary>
+        public string Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
 
         /// <summary>
         /// Gets or sets the element theme.
