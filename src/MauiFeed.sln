@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartReader", "..\external\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{30A1549F-A887-4DF3-AD99-EAD8F1C9BCAD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiFeed.Tests", "MauiFeed.Tests\MauiFeed.Tests.csproj", "{CA616CC6-2127-4DF8-94BF-CC0D5233983B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,22 @@ Global
 		{E2C21AA1-FA41-4FC0-B822-CF46858B38F3}.Release|x64.Build.0 = Release|Any CPU
 		{E2C21AA1-FA41-4FC0-B822-CF46858B38F3}.Release|x86.ActiveCfg = Release|Any CPU
 		{E2C21AA1-FA41-4FC0-B822-CF46858B38F3}.Release|x86.Build.0 = Release|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Debug|x64.Build.0 = Debug|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Debug|x86.Build.0 = Debug|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Release|ARM64.Build.0 = Release|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Release|x64.ActiveCfg = Release|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Release|x64.Build.0 = Release|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Release|x86.ActiveCfg = Release|Any CPU
+		{CA616CC6-2127-4DF8-94BF-CC0D5233983B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

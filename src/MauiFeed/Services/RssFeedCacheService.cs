@@ -89,6 +89,10 @@ namespace MauiFeed.Services
                 await this.databaseContext.FeedListItems!.AddAsync(feed!);
                 oldFeed = feed;
             }
+            else
+            {
+                feed!.Id = oldFeed.Id;
+            }
 
             foreach (var item in feedListItems!)
             {
