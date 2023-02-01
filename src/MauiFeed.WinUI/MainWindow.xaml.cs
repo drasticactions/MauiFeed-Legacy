@@ -16,6 +16,7 @@ using MauiFeed.Translations;
 using MauiFeed.Views;
 using MauiFeed.WinUI.Pages;
 using MauiFeed.WinUI.Services;
+using MauiFeed.WinUI.Tools;
 using MauiFeed.WinUI.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -578,16 +579,22 @@ namespace MauiFeed.WinUI
         private void MainWindowLoaded(object sender, RoutedEventArgs e)
         {
             ((FrameworkElement)sender).Loaded -= this.MainWindowLoaded;
+            this.LastUpdateCheckAsync().FireAndForgetSafeAsync(this);
+        }
+
+        private async Task LastUpdateCheckAsync()
+        {
             var lastUpdated = this.appSettings.LastUpdated;
             if (lastUpdated == null)
             {
+                this.appSettings.LastUpdated = DateTime.UtcNow;
                 return;
             }
 
             var totalHours = (DateTime.UtcNow - lastUpdated.Value).TotalHours;
             if (totalHours > 1)
             {
-                this.RefreshAllFeedsAsync().FireAndForgetSafeAsync();
+                await this.RefreshAllFeedsAsync();
             }
         }
 

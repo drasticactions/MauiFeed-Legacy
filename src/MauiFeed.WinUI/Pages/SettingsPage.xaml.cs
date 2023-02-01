@@ -12,8 +12,10 @@ using Drastic.Tools;
 using MauiFeed.Models;
 using MauiFeed.Translations;
 using MauiFeed.WinUI.Services;
+using MauiFeed.WinUI.Tools;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.ApplicationModel;
 
 namespace MauiFeed.WinUI.Pages
 {
@@ -47,7 +49,7 @@ namespace MauiFeed.WinUI.Pages
         /// <summary>
         /// Gets the current version of the app.
         /// </summary>
-        public string Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
+        public string Version => WinUIExtensions.GetAppVersion();
 
         /// <summary>
         /// Gets or sets the element theme.

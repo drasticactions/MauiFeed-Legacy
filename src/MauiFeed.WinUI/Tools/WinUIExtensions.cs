@@ -2,9 +2,11 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.UI.Xaml;
+using Windows.ApplicationModel;
 using Windows.Storage.Streams;
 
 namespace MauiFeed.WinUI.Tools
@@ -55,6 +57,24 @@ namespace MauiFeed.WinUI.Tools
             result = GetCurrentPackageFullName(ref length, sb);
 
             return result != APPMODELERRORNOPACKAGE;
+        }
+
+        /// <summary>
+        /// Get the current version of app. Returns the store version if UWP. Returns the assembly version if unpackaged.
+        /// </summary>
+        /// <returns>String.</returns>
+        public static string GetAppVersion()
+        {
+            if (IsRunningAsUwp())
+            {
+                Package package = Package.Current;
+                PackageId packageId = package.Id;
+                PackageVersion version = packageId.Version;
+
+                return string.Format("{0}.{1}.{2}.{3}-Store", version.Major, version.Minor, version.Build, version.Revision);
+            }
+
+            return Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Missing";
         }
 
         /// <summary>
