@@ -48,5 +48,5 @@ jobs:
     - name: Upload test artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: TestArtifats
+        name: TestArtifacts
         path: src\\TestResults
