@@ -141,6 +141,15 @@
   <data name="DarkThemeLabel" xml:space="preserve">
     <value>Dark</value>
   </data>
+  <data name="DatabaseExportLabel" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="DatabaseImportLabel" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="DatabaseLabel" xml:space="preserve">
+    <value>Database</value>
+  </data>
   <data name="DefaultLanguage" xml:space="preserve">
     <value>Default</value>
   </data>

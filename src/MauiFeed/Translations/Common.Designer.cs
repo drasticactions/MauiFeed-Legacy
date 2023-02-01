@@ -133,6 +133,33 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   Export に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DatabaseExportLabel {
+            get {
+                return ResourceManager.GetString("DatabaseExportLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Import に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DatabaseImportLabel {
+            get {
+                return ResourceManager.GetString("DatabaseImportLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Database に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DatabaseLabel {
+            get {
+                return ResourceManager.GetString("DatabaseLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Default に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string DefaultLanguage {

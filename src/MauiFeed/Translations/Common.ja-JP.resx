@@ -141,6 +141,15 @@
   <data name="DarkThemeLabel" xml:space="preserve">
     <value>ダーク</value>
   </data>
+  <data name="DatabaseExportLabel" xml:space="preserve">
+    <value>エクスポート</value>
+  </data>
+  <data name="DatabaseImportLabel" xml:space="preserve">
+    <value>インポート</value>
+  </data>
+  <data name="DatabaseLabel" xml:space="preserve">
+    <value>データベース</value>
+  </data>
   <data name="DefaultLanguage" xml:space="preserve">
     <value>既定の言語</value>
   </data>

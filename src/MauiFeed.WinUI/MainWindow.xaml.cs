@@ -62,7 +62,7 @@ namespace MauiFeed.WinUI
             this.themeSelectorService = Ioc.Default.GetService<ThemeSelectorService>()!;
             this.rssFeedCacheService = Ioc.Default.GetService<RssFeedCacheService>()!;
 
-            this.settingsPage = new SettingsPage();
+            this.settingsPage = new SettingsPage(this);
             this.feedSplitPage = new FeedTimelineSplitPage(this);
             this.NavigationFrame.Content = this.feedSplitPage;
 

@@ -64,6 +64,15 @@
                           Header="{x:Bind common:Common.LanguageLabel}" Width="200" />
             </StackPanel>
 
+            <!--<StackPanel>
+                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                       Text="{x:Bind common:Common.DatabaseLabel}" />
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Command="{x:Bind ImportDatabaseCommand}" Content="{x:Bind common:Common.DatabaseImportLabel}"/>
+                    <Button Command="{x:Bind ExportDatabaseCommand}" Content="{x:Bind common:Common.DatabaseExportLabel}" />
+                </StackPanel>
+            </StackPanel>-->
+
             <StackPanel Margin="5" Spacing="5">
                 <HyperlinkButton Content="Third-Party Licenses" NavigateUri="https://drasticactions.site/mauifeed-license.html" />
                 <HyperlinkButton Content="Terms and Conditions" NavigateUri="https://drasticactions.site/mauifeed-termsandconditions.html" />

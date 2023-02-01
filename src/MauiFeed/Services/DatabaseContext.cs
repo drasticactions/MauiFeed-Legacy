@@ -29,6 +29,11 @@ namespace MauiFeed.Services
         }
 
         /// <summary>
+        /// Gets the database Path.
+        /// </summary>
+        public string Location => this.databasePath;
+
+        /// <summary>
         /// Gets or sets the list of feed list items.
         /// </summary>
         public DbSet<FeedListItem>? FeedListItems { get; set; }

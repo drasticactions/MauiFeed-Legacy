@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using System.Reflection;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Services;
 using MauiFeed.Models;
@@ -30,7 +31,7 @@ namespace MauiFeed.WinUI
         public App()
         {
             this.InitializeComponent();
-            string databaseField = WinUIExtensions.IsRunningAsUwp() ? System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db") : System.IO.Path.Combine("database.db");
+            string databaseField = WinUIExtensions.IsRunningAsUwp() ? System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db") : Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly()!.Location!)!, "database.db");
 
             var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
             Ioc.Default.ConfigureServices(
