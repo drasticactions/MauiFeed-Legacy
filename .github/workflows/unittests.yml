@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build:
+  test:
 
     strategy:
       matrix:
@@ -41,7 +41,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
       
     - name: Run dotnet test
-      run: dotnet test
+      run: dotnet test --logger trx --results-directory "TestResults"
       env:
         Configuration: ${{ matrix.configuration }}
 
