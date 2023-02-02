@@ -14,11 +14,14 @@ using MauiFeed.Services;
 using MauiFeed.Translations;
 using MauiFeed.WinUI.Services;
 using MauiFeed.WinUI.Tools;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using WinUIEx;
 
 namespace MauiFeed.WinUI.Pages
 {
@@ -125,7 +128,7 @@ namespace MauiFeed.WinUI.Pages
         private async Task ExportDatabaseAsync()
         {
             var filePicker = new FileSavePicker();
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this.window);
+            var hwnd = this.window.GetWindowHandle();
             WinRT.Interop.InitializeWithWindow.Initialize(filePicker, hwnd);
             filePicker.SuggestedFileName = "mauifeed";
             filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
@@ -136,9 +139,14 @@ namespace MauiFeed.WinUI.Pages
             if (file is not null)
             {
                 Windows.Storage.CachedFileManager.DeferUpdates(file);
-                var oldFile = await StorageFile.GetFileFromPathAsync(this.context.Location);
-                await oldFile.CopyAndReplaceAsync(file);
-                Windows.Storage.Provider.FileUpdateStatus status = await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+                await this.context.Database.CloseConnectionAsync();
+                SqliteConnection.ClearAllPools();
+                using var stream = await file.OpenStreamForWriteAsync();
+                using var oldFile = System.IO.File.Open(this.context.Location, FileMode.Open, FileAccess.Read);
+                await oldFile.CopyToAsync(stream);
+                oldFile.Close();
+                stream.Close();
+                await this.context.Database.OpenConnectionAsync();
             }
         }
 
