@@ -107,6 +107,11 @@ namespace MauiFeed.Models.OPML
         public string XMLUrl { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether the outline is a feed.
+        /// </summary>
+        public bool IsFeed => !string.IsNullOrEmpty(this.XMLUrl);
+
+        /// <summary>
         /// Gets or sets outline list.
         /// </summary>
         public List<Outline> Outlines { get; set; } = new List<Outline>();

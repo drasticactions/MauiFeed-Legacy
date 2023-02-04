@@ -228,6 +228,9 @@
   <data name="OpenShareLabel" xml:space="preserve">
     <value>リンクを共有</value>
   </data>
+  <data name="OPMLFeedLabel" xml:space="preserve">
+    <value>OPML フィード</value>
+  </data>
   <data name="RefreshButton" xml:space="preserve">
     <value>更新</value>
   </data>

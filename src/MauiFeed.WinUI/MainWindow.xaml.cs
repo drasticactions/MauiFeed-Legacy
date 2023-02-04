@@ -6,11 +6,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Xml;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Modal;
 using Drastic.Services;
 using Drastic.Tools;
 using MauiFeed.Models;
+using MauiFeed.Models.OPML;
 using MauiFeed.Services;
 using MauiFeed.Translations;
 using MauiFeed.Views;
@@ -24,6 +26,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Newtonsoft.Json.Linq;
+using Windows.Storage.Pickers;
 using WinUICommunity.Common.Extensions;
 using WinUIEx;
 
@@ -188,7 +191,7 @@ namespace MauiFeed.WinUI
         /// </summary>
         /// <param name="item">Feed Folder.</param>
         /// <returns>Task.</returns>
-        public Task AddOrUpdateFolder(FeedSidebarItem item)
+        public async Task AddOrUpdateFolder(FeedSidebarItem item)
         {
             this.addFolderButton?.ContextFlyout?.Hide();
             this.folderFlyout?.Hide();
@@ -220,8 +223,7 @@ namespace MauiFeed.WinUI
                 this.context.FeedFolder!.Update(feedFolder);
             }
 
-            this.context.SaveChangesAsync().FireAndForgetSafeAsync();
-            return Task.CompletedTask;
+            await this.context.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -256,6 +258,12 @@ namespace MauiFeed.WinUI
 
             addButton.MenuItems.Add(addFeedButton);
 
+            var addOpmlFeed = new NavigationViewItem() { Content = Translations.Common.OPMLFeedLabel, Icon = new SymbolIcon(Symbol.Globe) };
+            addOpmlFeed.SelectsOnInvoked = false;
+            addOpmlFeed.Tapped += this.AddOpmlFeedTapped;
+
+            addButton.MenuItems.Add(addOpmlFeed);
+
             this.addFolderButton = new NavigationViewItem() { Content = Translations.Common.FolderLabel, Icon = new SymbolIcon(Symbol.Folder) };
             this.addFolderButton.SelectsOnInvoked = false;
             this.addFolderButton.Tapped += this.AddFolderButtonTapped;
@@ -264,6 +272,9 @@ namespace MauiFeed.WinUI
             this.Items.Add(addButton);
             this.Items.Add(new NavigationViewItemSeparator());
         }
+
+        private void AddOpmlFeedTapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+            => this.ImportOpmlFeedAsync().FireAndForgetSafeAsync(this);
 
         private void AddFolderButtonTapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
@@ -274,6 +285,79 @@ namespace MauiFeed.WinUI
         private void MenuButtonTapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             ((FrameworkElement)sender)!.ContextFlyout.ShowAt((FrameworkElement)sender!);
+        }
+
+        private async Task ImportOpmlFeedAsync()
+        {
+            var filePicker = new FileOpenPicker();
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, hwnd);
+            filePicker.FileTypeFilter.Add(".opml");
+            var file = await filePicker.PickSingleFileAsync();
+            if (file is null)
+            {
+                return;
+            }
+
+            var text = await Windows.Storage.FileIO.ReadTextAsync(file);
+            var doc = new XmlDocument();
+            doc.LoadXml(text);
+            var opml = new MauiFeed.Models.OPML.Opml(doc);
+
+            System.Diagnostics.Debug.Assert(opml != null, "omlp should not be null");
+
+            await this.ImportOpmlOutlinesItems(opml.Body.Outlines);
+        }
+
+        private async Task ImportOpmlOutlinesItems(List<Outline> outlines, FeedSidebarItem? folder = default)
+        {
+            foreach (var item in outlines)
+            {
+                if (!item.IsFeed)
+                {
+                    // This is a folder...
+                    if (string.IsNullOrEmpty(item.Text))
+                    {
+                        continue;
+                    }
+
+                    var existingFolder = this.SidebarItems.FirstOrDefault(n => n.FeedFolder?.Name == item.Text);
+                    if (existingFolder is null)
+                    {
+                        existingFolder = new FeedSidebarItem(new FeedFolder() { Name = item.Text });
+                        await this.AddOrUpdateFolder(existingFolder);
+                    }
+
+                    await this.ImportOpmlOutlinesItems(item.Outlines, existingFolder);
+                }
+                else
+                {
+                    Uri? opmlUri = null;
+                    var result = Uri.TryCreate(item.XMLUrl, UriKind.Absolute, out opmlUri);
+                    if (!result)
+                    {
+                        continue;
+                    }
+
+                    var existingFeedItem = this.SidebarItems.FirstOrDefault(n => n.FeedListItem?.Uri == opmlUri);
+                    if (existingFeedItem is not null)
+                    {
+                        // If we already have the feed with that URL, don't reimport it and keep it where it is.
+                        continue;
+                    }
+
+                    var feedListItem = await this.rssFeedCacheService.RetrieveFeedAsync(opmlUri!);
+                    var feedSidebarItem = new FeedSidebarItem(feedListItem!, this.context.FeedItems!.Include(n => n.Feed).Where(n => n.FeedListItemId == feedListItem.Id));
+                    if (folder is not null)
+                    {
+                        await this.MoveItemToFolderAsync(feedSidebarItem, folder);
+                    }
+                    else
+                    {
+                        this.AddItemToSidebar(feedListItem);
+                    }
+                }
+            }
         }
 
         private void GenerateSidebarItems()
@@ -404,7 +488,15 @@ namespace MauiFeed.WinUI
 
             foreach (var feedItem in feedSidebarItems)
             {
-                this.SidebarItems[this.SidebarItems.IndexOf(this.SidebarItems.First(n => n.FeedListItem?.Id == feedItem.FeedListItem?.Id))] = feedItem;
+                var index = this.SidebarItems.IndexOf(this.SidebarItems.First(n => n.FeedListItem?.Id == feedItem.FeedListItem?.Id));
+                if (index >= 0)
+                {
+                    this.SidebarItems[index] = feedItem;
+                }
+                else
+                {
+                    this.SidebarItems.Add(feedItem);
+                }
             }
 
             this.Items[this.Items.IndexOf(folderViewItem.NavItem)] = navItem.NavItem;

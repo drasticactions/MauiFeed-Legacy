@@ -234,6 +234,9 @@
   <data name="OpenShareLabel" xml:space="preserve">
     <value>Share Link</value>
   </data>
+  <data name="OPMLFeedLabel" xml:space="preserve">
+    <value>OPML Feed</value>
+  </data>
   <data name="RefreshButton" xml:space="preserve">
     <value>Refresh</value>
   </data>
