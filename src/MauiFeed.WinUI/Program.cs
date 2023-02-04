@@ -2,15 +2,8 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
-using System.Globalization;
-using System.Threading;
-using AngleSharp.Dom;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
-using Windows.ApplicationModel.Activation;
-using Windows.Storage;
-using WinUIEx;
 
 namespace MauiFeed.WinUI
 {

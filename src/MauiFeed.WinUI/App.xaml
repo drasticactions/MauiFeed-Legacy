@@ -5,52 +5,14 @@
     x:Class="MauiFeed.WinUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:tools="using:MauiFeed.WinUI.Tools"
-    xmlns:views="using:MauiFeed.WinUI.Views"
-    xmlns:local="using:MauiFeed.WinUI"
-    xmlns:winui="using:Microsoft.UI.Xaml.Controls"
-    >
+    xmlns:local="using:MauiFeed.WinUI">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <ResourceDictionary Source="ms-appx:///SettingsUI/Themes/Generic.xaml"/>
-                <ResourceDictionary>
-                    <!--Custom size margins-->
-                    <Thickness x:Key="PageTitleMargin">0,0,12,7</Thickness>
-                    <Thickness x:Key="SettingsSubheaderMargin">25, 20, 0, 48</Thickness>
-
-                    <!--Medium size margins-->
-                    <Thickness x:Key="MediumLeftRightMargin">12,0,12,0</Thickness>
-                    <Thickness x:Key="MediumLeftTopRightBottomMargin">12,12,12,12</Thickness>
-
-                    <!--Small size margins-->
-                    <Thickness x:Key="SmallAllMargin">5, 5, 5, 5</Thickness>
-                    <Thickness x:Key="EightTopMargin">0, 8, 0, 0</Thickness>
-                </ResourceDictionary>
+                <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="FeedItemHolderBackground" Color="White"/>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Dark">
-                    <SolidColorBrush x:Key="FeedItemHolderBackground" Color="#121212"/>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="HighContrast">
-                    <SolidColorBrush x:Key="FeedItemHolderBackground" Color="#121212"/>
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
-            <tools:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
-            <tools:BooleanToVisibilityInverter x:Name="BooleanToVisibilityInverter"/>
-            <tools:NullToVisibilityConverter x:Name="NullToVisibilityConverter"/>
-            <tools:NullToVisibilityInverter x:Name="NullToVisibilityInverter"/>
-            <tools:ImageByteConverter x:Name="ImageByteConverter"/>
-            <tools:HtmlToTextConverter x:Name="HtmlToTextConverter"/>
-            <tools:AddUpdateFolderConverter x:Name="AddUpdateFolderConverter"/>
-            <tools:AllUnreadReadLabelConverter x:Name="AllUnreadReadLabelConverter"/>
-            <tools:UnreadReadLabelConverter x:Name="UnreadReadLabelConverter"/>
-            <tools:FavoriteLabelConverter x:Name="FavoriteLabelConverter"/>
-            <tools:EmbeddedImageConverter x:Name="EmbeddedImageConverter"/>
+            <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>
 </Application>

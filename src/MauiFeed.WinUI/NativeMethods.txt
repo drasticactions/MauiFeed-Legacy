@@ -1,4 +1,0 @@
-IDataTransferManagerInterop
-GetActiveWindow
-SetForegroundWindow
-ShowWindow
