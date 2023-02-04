@@ -17,12 +17,22 @@ namespace MauiFeed.NewsService.Google
         private string mainFeedUri = "https://news.google.com/rss?gl={1}&hl={0}&ceid={1}:{0}";
         private string sectiondUri = "https://news.google.com/news/rss/headlines/section/topic/{0}?ned={2}&hl={1}";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GoogleNewsService"/> class.
+        /// </summary>
+        /// <param name="service">Rss Service.</param>
         public GoogleNewsService(IRssService service)
         {
             ArgumentNullException.ThrowIfNull(service);
             this.rssService = service;
         }
 
+        /// <summary>
+        /// Gets the main Google News page.
+        /// </summary>
+        /// <param name="culture">Culture language.</param>
+        /// <param name="token">Cancellation Token.</param>
+        /// <returns>FeedList Item, Feed Item.</returns>
         public async Task<(FeedListItem? FeedList, IList<FeedItem>? FeedItemList)> ReadMainPageAsync(CultureInfo? culture = default, CancellationToken? token = default)
         {
             var (cultureName, cultureLocale) = this.GetCultureNameAndLocal(culture);
@@ -32,6 +42,14 @@ namespace MauiFeed.NewsService.Google
             return await this.rssService.ReadFeedAsync(mainFeedFormat, FeedListItemType.GoogleNews, token);
         }
 
+        /// <summary>
+        /// Get the google news section.
+        /// </summary>
+        /// <param name="section">Section.</param>
+        /// <param name="culture">Culture.</param>
+        /// <param name="token">Cancellation Token.</param>
+        /// <returns>FeedList Item, Feed Item.</returns>
+        /// <exception cref="ArgumentException">Thrown if NewsSection is unknown.</exception>
         public async Task<(FeedListItem? FeedList, IList<FeedItem>? FeedItemList)> ReadSectionAsync(NewsSections section, CultureInfo? culture = default, CancellationToken? token = default)
         {
             if (section is NewsSections.Unknown)
