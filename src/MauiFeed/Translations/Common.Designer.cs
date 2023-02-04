@@ -412,6 +412,15 @@ namespace MauiFeed.Translations {
         }
         
         /// <summary>
+        ///   OPML Feed に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OPMLFeedLabel {
+            get {
+                return ResourceManager.GetString("OPMLFeedLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Refresh に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RefreshButton {

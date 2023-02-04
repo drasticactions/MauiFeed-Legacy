@@ -1,0 +1,54 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<Page
+    x:Class="MauiFeed.WinUI.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MauiFeed.WinUI.Pages"
+    xmlns:tools="using:MauiFeed.WinUI.Tools"
+    xmlns:common="using:MauiFeed.Translations"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:sys="using:System"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <tools:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="ElementTheme" />
+    </Page.Resources>
+    <ScrollViewer>
+        <StackPanel Margin="{StaticResource SettingsSubheaderMargin}" Spacing="25">
+
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                       Text="{x:Bind common:Common.SettingsLabel}" />
+            
+            <StackPanel>
+                <ComboBox x:Name="ThemeComboBox" ItemsSource="{x:Bind AppThemes, Mode=OneWay}" SelectedItem="{x:Bind AppTheme, Mode=OneWay}"
+                          DisplayMemberPath="Item1" SelectedValuePath="Item2"
+                          SelectionChanged="ThemeComboBoxSelectionChanged"
+                          Loaded="ThemeComboBoxLoaded"
+                          Header="{x:Bind common:Common.ThemeLabel}" Width="200" />
+            </StackPanel>
+
+            <StackPanel>
+                <ComboBox x:Name="LanguageComboBox" ItemsSource="{x:Bind Languages, Mode=OneWay}" SelectedItem="{x:Bind LanguageSetting, Mode=OneWay}"
+                          DisplayMemberPath="Item1" SelectedValuePath="Item2"
+                          SelectionChanged="LanguageComboBoxSelectionChanged"
+                          Loaded="LanguageComboBoxLoaded"
+                          Header="{x:Bind common:Common.LanguageLabel}" Width="200" />
+            </StackPanel>
+
+            <StackPanel Margin="5" Spacing="5">
+                <HyperlinkButton Content="Third-Party Licenses" NavigateUri="https://drasticactions.site/mauifeed-license.html" />
+                <HyperlinkButton Content="Terms and Conditions" NavigateUri="https://drasticactions.site/mauifeed-termsandconditions.html" />
+                <HyperlinkButton Content="Privacy Policy" NavigateUri="https://drasticactions.site/mauifeed-privacypolicy.html" />
+                <HyperlinkButton Content="GitHub" NavigateUri="https://github.com/drasticactions/mauifeed" />
+            </StackPanel>
+
+            <StackPanel Margin="5" Spacing="5">
+                <TextBlock Text="{x:Bind sys:String.Format('Version: {0}', Version)}" />
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

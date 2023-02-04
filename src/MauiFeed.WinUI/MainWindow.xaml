@@ -1,9 +1,38 @@
-<Window
+<winex:WindowEx
+    xmlns:winex="using:WinUIEx"
     x:Class="MauiFeed.WinUI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:MauiFeed.WinUI"
+    xmlns:common="using:MauiFeed.Translations"
+    xmlns:views="using:MauiFeed.WinUI.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-</Window>
+
+    <!--If you don't add Window.Content, you don't get theme support. No, I don't know why.-->
+    <Window.Content>
+        <Grid x:Name="MainWindowGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel VerticalAlignment="Top" Orientation="Horizontal" x:Name="AppTitleBar" Grid.Row="0">
+                <Border Margin="14,14,0,0" CornerRadius="7">
+                    <Image  Width="20" Height="20" Source="{Binding AppLogo, Converter={StaticResource EmbeddedImageConverter}}" x:Name="AppIcon" />
+                </Border>
+                <TextBlock x:Name="AppTitleTextBlock" Text="{x:Bind common:Common.AppTitle}"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Margin="12,14,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+            <views:RefreshView x:Name="FeedRefreshView" Grid.Row="1" Margin="0,20,20,0" Canvas.ZIndex="99" VerticalAlignment="Top" HorizontalAlignment="Right" />
+            <views:MauiFeedNavigationView
+                Grid.Row="1"
+                IsBackButtonVisible="Collapsed"
+                OpenPaneLength="250"
+                IsTitleBarAutoPaddingEnabled="False">
+                
+            </views:MauiFeedNavigationView>
+        </Grid>
+    </Window.Content>
+</winex:WindowEx>
