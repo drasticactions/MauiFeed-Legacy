@@ -18,7 +18,7 @@ namespace MauiFeed.Models
         /// <param name="feedsCompleted">Number of Feeds Completed.</param>
         /// <param name="totalFeeds">Total Feeds.</param>
         /// <param name="lastUpdated">Last Feed Updated.</param>
-        public RssCacheFeedUpdate(int feedsCompleted, int totalFeeds, FeedListItem lastUpdated)
+        public RssCacheFeedUpdate(int feedsCompleted, int totalFeeds, FeedListItem? lastUpdated = default)
         {
             this.LastUpdated = lastUpdated;
             this.TotalFeeds = totalFeeds;
@@ -28,7 +28,7 @@ namespace MauiFeed.Models
         /// <summary>
         /// Gets the last feed update.
         /// </summary>
-        public FeedListItem LastUpdated { get; }
+        public FeedListItem? LastUpdated { get; }
 
         /// <summary>
         /// Gets the total number of feeds.

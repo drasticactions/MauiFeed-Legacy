@@ -31,7 +31,7 @@ namespace MauiFeed.Services
         /// </summary>
         /// <param name="feedUri">Feed Uri.</param>
         /// <returns>FeedListItem.</returns>
-        public Task<FeedListItem> RetrieveFeedAsync(Uri feedUri)
+        public Task<FeedListItem?> RetrieveFeedAsync(Uri feedUri)
             => this.RetrieveFeedAsync(feedUri.ToString());
 
         /// <summary>
@@ -77,10 +77,16 @@ namespace MauiFeed.Services
         /// </summary>
         /// <param name="feedUri">FeedUri.</param>
         /// <returns>Task of FeedListItem.</returns>
-        public async Task<FeedListItem> RetrieveFeedAsync(string feedUri)
+        public async Task<FeedListItem?> RetrieveFeedAsync(string feedUri)
         {
             // First, get the feed no matter what.
             (var feed, var feedListItems) = await this.rssService.ReadFeedAsync(feedUri);
+
+            if (feed?.Uri is null)
+            {
+                // Throw error?
+                return null;
+            }
 
             var oldFeed = await this.databaseContext.FeedListItems!.FirstOrDefaultAsync(n => feed!.Uri == n.Uri);
 
