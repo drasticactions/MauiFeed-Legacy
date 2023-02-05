@@ -3,10 +3,14 @@
 // </copyright>
 
 using System.Collections.ObjectModel;
+using System.Xml;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Services;
 using Drastic.Tools;
+using MauiFeed.Models;
+using MauiFeed.Services;
 using MauiFeed.WinUI.Pages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage.Pickers;
@@ -29,6 +33,8 @@ namespace MauiFeed.WinUI.Views
 
         private NavigationViewItem? addFolderButton;
         private IErrorHandlerService errorHandler;
+        private OpmlFeedListItemFactory opmlFactory;
+        private DatabaseContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MauiFeedNavigationView"/> class.
@@ -49,14 +55,37 @@ namespace MauiFeed.WinUI.Views
             this.SelectionChanged += this.MauiFeedNavigationViewSelectionChanged;
 
             this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
+            this.opmlFactory = Ioc.Default.GetService<OpmlFeedListItemFactory>()!;
+            this.context = Ioc.Default.GetService<DatabaseContext>()!;
 
             this.GenerateMenuButtons();
+            this.GenerateSmartFilters();
         }
 
         /// <summary>
         /// Gets the list of navigation items.
         /// </summary>
         public ObservableCollection<NavigationViewItemBase> Items { get; } = new ObservableCollection<NavigationViewItemBase>();
+
+        /// <summary>
+        /// Add a new folder.
+        /// </summary>
+        /// <param name="item">Feed Folder.</param>
+        /// <returns>Task.</returns>
+        public Task AddOrUpdateFolder(FeedSidebarItem item)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Remove a folder.
+        /// </summary>
+        /// <param name="item">Feed Folder.</param>
+        /// <returns>Task.</returns>
+        public Task RemoveFolder(FeedSidebarItem item)
+        {
+            return Task.CompletedTask;
+        }
 
         private void GenerateMenuButtons()
         {
@@ -95,6 +124,27 @@ namespace MauiFeed.WinUI.Views
             this.Items.Add(new NavigationViewItemSeparator());
         }
 
+        private void GenerateSmartFilters()
+        {
+            var smartFilters = new NavigationViewItem() { Content = Translations.Common.SmartFeedsLabel, Icon = new SymbolIcon(Symbol.Filter) };
+            smartFilters.SelectsOnInvoked = false;
+
+            var allButtonItem = new FeedSidebarItem(Translations.Common.AllLabel, new SymbolIcon(Symbol.Bookmarks), this.context.FeedItems!.Include(n => n.Feed));
+            smartFilters.MenuItems.Add(allButtonItem.NavItem);
+
+            var today = new FeedSidebarItem(Translations.Common.TodayLabel, new SymbolIcon(Symbol.GoToToday), this.context.FeedItems!.Include(n => n.Feed).Where(n => n.PublishingDate != null && n.PublishingDate!.Value.Date == DateTime.UtcNow.Date));
+            smartFilters.MenuItems.Add(today.NavItem);
+
+            var unread = new FeedSidebarItem(Translations.Common.AllUnreadLabel, new SymbolIcon(Symbol.Filter), this.context.FeedItems!.Include(n => n.Feed).Where(n => !n.IsRead));
+            smartFilters.MenuItems.Add(unread.NavItem);
+
+            var star = new FeedSidebarItem(Translations.Common.StarredLabel, new SymbolIcon(Symbol.Favorite), this.context.FeedItems!.Include(n => n.Feed).Where(n => n.IsFavorite));
+            smartFilters.MenuItems.Add(star.NavItem);
+
+            this.Items.Add(smartFilters);
+            this.Items.Add(this.filterSeparator);
+        }
+
         private async Task OpenImportOpmlFeedPickerAsync()
         {
             System.Diagnostics.Debug.Assert(this.window is not null, "Window is null when it should not be.");
@@ -106,6 +156,15 @@ namespace MauiFeed.WinUI.Views
             if (file is null)
             {
                 return;
+            }
+
+            var text = await Windows.Storage.FileIO.ReadTextAsync(file);
+            var xml = new XmlDocument();
+            xml.LoadXml(text);
+            var result = await this.opmlFactory.GenerateFeedListItemsFromOpmlAsync(new Models.OPML.Opml(xml));
+            if (result > 0)
+            {
+                // Reorganize.
             }
         }
 

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
@@ -22,8 +22,6 @@
 	<ItemGroup>
 		<None Remove="Pages\FeedTimelineSplitPage.xaml" />
 		<None Remove="Pages\SettingsPage.xaml" />
-		<None Remove="Views\AddNewFeedFlyout.xaml" />
-		<None Remove="Views\FolderOptionsFlyout.xaml" />
 		<None Remove="Views\RefreshView.xaml" />
 	</ItemGroup>
 
@@ -137,6 +135,10 @@
 	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<ProjectCapability Include="Msix" />
 	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
 	</ItemGroup>
