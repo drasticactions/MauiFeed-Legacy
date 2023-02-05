@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Xml;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Modal;
 using Drastic.Services;
@@ -24,6 +25,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Newtonsoft.Json.Linq;
+using Windows.Storage.Pickers;
 using WinUICommunity.Common.Extensions;
 using WinUIEx;
 
@@ -46,6 +48,7 @@ namespace MauiFeed.WinUI
         private Flyout? folderFlyout;
         private Progress<RssCacheFeedUpdate> refreshProgress;
         private RssFeedCacheService rssFeedCacheService;
+        private OpmlFeedListItemFactory opmlFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -61,6 +64,7 @@ namespace MauiFeed.WinUI
             this.context = Ioc.Default.GetService<DatabaseContext>()!;
             this.themeSelectorService = Ioc.Default.GetService<ThemeSelectorService>()!;
             this.rssFeedCacheService = Ioc.Default.GetService<RssFeedCacheService>()!;
+            this.opmlFactory = Ioc.Default.GetService<OpmlFeedListItemFactory>()!;
 
             this.settingsPage = new SettingsPage(this);
             this.feedSplitPage = new FeedTimelineSplitPage(this);
@@ -79,7 +83,7 @@ namespace MauiFeed.WinUI
             this.filterSeparator = new NavigationViewItemSeparator();
             this.RemoveFeedCommand = new AsyncCommand<FeedSidebarItem>(this.RemoveFeed, null, this);
             this.RemoveFromFolderCommand = new AsyncCommand<FeedSidebarItem>((x) => this.RemoveFromFolderAsync(x, true), null, this);
-            this.GenerateMenuButtons();
+
             this.GenerateSidebarItems();
             this.NavView.Loaded += this.NavigationFrameLoaded;
 
@@ -256,6 +260,11 @@ namespace MauiFeed.WinUI
 
             addButton.MenuItems.Add(addFeedButton);
 
+            var addOpmlButton = new NavigationViewItem() { Content = Translations.Common.OPMLFeedLabel, Icon = new SymbolIcon(Symbol.Globe) };
+            addOpmlButton.SelectsOnInvoked = false;
+            addOpmlButton.Tapped += (sender, args) => this.OpenImportOpmlFeedPickerAsync().FireAndForgetSafeAsync(this);
+            addButton.MenuItems.Add(addOpmlButton);
+
             this.addFolderButton = new NavigationViewItem() { Content = Translations.Common.FolderLabel, Icon = new SymbolIcon(Symbol.Folder) };
             this.addFolderButton.SelectsOnInvoked = false;
             this.addFolderButton.Tapped += this.AddFolderButtonTapped;
@@ -278,7 +287,9 @@ namespace MauiFeed.WinUI
 
         private void GenerateSidebarItems()
         {
+            this.Items.Clear();
             this.SidebarItems.Clear();
+            this.GenerateMenuButtons();
             this.GenerateSmartFilters();
             this.GenerateFolderItems();
             this.GenerateNavigationItems();
@@ -353,6 +364,29 @@ namespace MauiFeed.WinUI
             }
 
             return (folder, feedSidebarItems);
+        }
+
+        private async Task OpenImportOpmlFeedPickerAsync()
+        {
+            var filePicker = new FileOpenPicker();
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, hwnd);
+            filePicker.FileTypeFilter.Add(".opml");
+            var file = await filePicker.PickSingleFileAsync();
+            if (file is null)
+            {
+                return;
+            }
+
+            var text = await Windows.Storage.FileIO.ReadTextAsync(file);
+            var xml = new XmlDocument();
+            xml.LoadXml(text);
+            var result = await this.opmlFactory.GenerateFeedListItemsFromOpmlAsync(new Models.OPML.Opml(xml));
+            if (result > 0)
+            {
+                this.GenerateSidebarItems();
+                this.RefreshAllFeedsAsync().FireAndForgetSafeAsync(this);
+            }
         }
 
         private void SidebarItemOnFolderDropped(object? sender, Events.FeedFolderDropEventArgs e)

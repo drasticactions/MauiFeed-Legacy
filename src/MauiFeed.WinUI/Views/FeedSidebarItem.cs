@@ -34,7 +34,8 @@ namespace MauiFeed.WinUI.Views
 
             if (this.FeedListItem.ImageCache is not byte[] cache)
             {
-                throw new InvalidOperationException("ImageCache must not be null");
+                System.Diagnostics.Debug.Assert(this.FeedListItem.ImageCache is not null, "ImageCache must not be null");
+                cache = Utilities.GetPlaceholderIcon();
             }
 
             var icon = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();

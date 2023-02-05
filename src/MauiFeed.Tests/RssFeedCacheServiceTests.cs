@@ -28,7 +28,8 @@ namespace MauiFeed.Tests
                 File.Delete(dbFile);
             }
 
-            var rssService = new FeedReaderService();
+            var errorHandler = new TestErrorHandler();
+            var rssService = new FeedReaderService(errorHandler);
             var databaseContext = new DatabaseContext(dbFile);
             var rssCache = new RssFeedCacheService(rssService, databaseContext);
 

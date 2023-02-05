@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using Drastic.Services;
 using MauiFeed.NewsService;
 using MauiFeed.Services;
 
@@ -14,13 +15,15 @@ namespace MauiFeed.Tests
     public class FeedReaderTests
     {
         private IRssService rss;
+        private IErrorHandlerService errorHandler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedReaderTests"/> class.
         /// </summary>
         public FeedReaderTests()
         {
-            this.rss = new FeedReaderService();
+            this.errorHandler = new TestErrorHandler();
+            this.rss = new FeedReaderService(this.errorHandler);
         }
 
         /// <summary>

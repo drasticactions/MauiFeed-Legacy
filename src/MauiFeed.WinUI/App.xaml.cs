@@ -47,6 +47,7 @@ namespace MauiFeed.WinUI
                 .AddSingleton<ApplicationSettingsService>()
                 .AddSingleton<ThemeSelectorService>()
                 .AddSingleton(new Progress<RssCacheFeedUpdate>())
+                .AddSingleton<OpmlFeedListItemFactory>()
                 .BuildServiceProvider());
 
             this.windowService = Ioc.Default.GetService<WindowService>()!;

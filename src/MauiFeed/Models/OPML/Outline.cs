@@ -39,7 +39,7 @@ namespace MauiFeed.Models.OPML
                 {
                     if (child.Name.Equals("outline", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        this.Outlines.Add(new Outline((XmlElement)child));
+                        this.Outlines.Add(new Outline((XmlElement)child) { Parent = this });
                     }
                 }
             }
@@ -105,6 +105,16 @@ namespace MauiFeed.Models.OPML
         /// Gets or sets uRL of the XML file.
         /// </summary>
         public string XMLUrl { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the outline is a feed.
+        /// </summary>
+        public bool IsFeed => !string.IsNullOrEmpty(this.XMLUrl);
+
+        /// <summary>
+        /// Gets or sets the parent element.
+        /// </summary>
+        public Outline? Parent { get; set; }
 
         /// <summary>
         /// Gets or sets outline list.
