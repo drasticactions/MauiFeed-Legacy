@@ -4,6 +4,7 @@
 
 using CodeHollow.FeedReader;
 using MauiFeed.Models;
+using MauiFeed.Models.OPML;
 
 namespace MauiFeed
 {
@@ -30,6 +31,25 @@ namespace MauiFeed
                 Language = feed.Language,
                 LastUpdatedDate = feed.LastUpdatedDate,
                 LastUpdatedDateString = feed.LastUpdatedDateString,
+            };
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeedListItem"/> class.
+        /// </summary>
+        /// <param name="feed"><see cref="Outline"/>.</param>
+        /// <returns><see cref="FeedListItem"/>.</returns>
+        public static FeedListItem ToFeedListItem(this Outline feed)
+        {
+            return new FeedListItem()
+            {
+                Name = feed.Title,
+                Uri = feed.XMLUrl is not null ? new Uri(feed.XMLUrl) : null,
+                Link = feed.HTMLUrl,
+                ImageUri = null,
+                Description = feed.Description,
+                Language = feed.Language,
+                Folder = feed.Parent is not null ? new FeedFolder() { Name = feed.Parent!.Title } : null,
             };
         }
 

@@ -29,7 +29,7 @@ namespace MauiFeed.NewsService
         }
 
         /// <inheritdoc/>
-        public async Task<(FeedListItem? FeedList, IList<Models.FeedItem>? FeedItemList)> ReadFeedAsync(string feedUri, FeedListItemType type = FeedListItemType.Local, CancellationToken? token = default)
+        public async Task<(FeedListItem? FeedList, IList<Models.FeedItem>? FeedItemList)> ReadFeedAsync(string feedUri, FeedListItemType type = FeedListItemType.Local, bool parseFeedItemList = true, CancellationToken? token = default)
         {
             var cancelationToken = token ?? CancellationToken.None;
             var feed = await FeedReader.ReadAsync(feedUri, cancelationToken);

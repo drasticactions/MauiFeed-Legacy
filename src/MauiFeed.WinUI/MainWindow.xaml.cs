@@ -3,6 +3,7 @@
 // </copyright>
 
 using Drastic.Modal;
+using MauiFeed.WinUI.Views;
 using Microsoft.UI.Xaml;
 using WinUIEx;
 

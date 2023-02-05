@@ -39,7 +39,7 @@ namespace MauiFeed.NewsService.Google
 
             var mainFeedFormat = string.Format(CultureInfo.InvariantCulture, this.mainFeedUri, cultureName, cultureLocale);
 
-            return await this.rssService.ReadFeedAsync(mainFeedFormat, FeedListItemType.GoogleNews, token);
+            return await this.rssService.ReadFeedAsync(mainFeedFormat, FeedListItemType.GoogleNews, true, token);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace MauiFeed.NewsService.Google
 
             var sectionFeedFormat = string.Format(CultureInfo.InvariantCulture, this.sectiondUri, section.ToString().ToUpperInvariant(), cultureName, cultureLocale);
 
-            return await this.rssService.ReadFeedAsync(sectionFeedFormat, FeedListItemType.GoogleNews, token);
+            return await this.rssService.ReadFeedAsync(sectionFeedFormat, FeedListItemType.GoogleNews, true, token);
         }
 
         private (string CultureName, string CultureLocal) GetCultureNameAndLocal(CultureInfo? culture = default)

@@ -16,8 +16,9 @@ namespace MauiFeed.Services
         /// </summary>
         /// <param name="feedUri">Feed Uri.</param>
         /// <param name="type">The type of feed to be read, <see cref="FeedListItemType"/>. Defaults to <see cref="FeedListItemType.Local"/>.</param>
+        /// <param name="parseFeedItemList">Parse Feed Item List.</param>
         /// <param name="token">Optional CancellationToken.</param>
         /// <returns>One feed list item and the list of feed items.</returns>
-        Task<(FeedListItem? FeedList, IList<FeedItem>? FeedItemList)> ReadFeedAsync(string feedUri, FeedListItemType type = FeedListItemType.Local, CancellationToken? token = default);
+        Task<(FeedListItem? FeedList, IList<FeedItem>? FeedItemList)> ReadFeedAsync(string feedUri, FeedListItemType type = FeedListItemType.Local, bool parseFeedItemList = true, CancellationToken? token = default);
     }
 }
