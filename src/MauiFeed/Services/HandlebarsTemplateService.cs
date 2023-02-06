@@ -27,16 +27,17 @@ namespace MauiFeed.Services
         /// <inheritdoc/>
         public async Task<string> RenderFeedItemAsync(FeedItem item, bool darkMode)
         {
-            if (item.Link is null)
+            var link = item.Link ?? item.ExternalLink;
+            if (link is null)
             {
-                throw new ArgumentNullException(nameof(item.Link));
+                throw new ArgumentNullException(nameof(link));
             }
 
             var isHtml = Regex.IsMatch(item.Content ?? string.Empty, "<.*?>");
 
             if (!isHtml)
             {
-                SmartReader.Article article = await SmartReader.Reader.ParseArticleAsync(item.Link);
+                SmartReader.Article article = await SmartReader.Reader.ParseArticleAsync(link);
                 item.Html = article.Content;
             }
             else

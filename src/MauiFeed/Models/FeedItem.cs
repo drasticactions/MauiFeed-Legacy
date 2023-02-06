@@ -66,6 +66,15 @@ namespace MauiFeed.Models
         }
 
         /// <summary>
+        /// Gets or sets link (url) to the feed item.
+        /// </summary>
+        public string? ExternalLink
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets description of the feed item.
         /// </summary>
         public string? Description

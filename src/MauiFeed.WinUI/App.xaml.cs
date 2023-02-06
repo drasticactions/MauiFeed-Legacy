@@ -22,6 +22,7 @@ namespace MauiFeed.WinUI
     {
         private Window? window;
         private WindowService windowService;
+        private ApplicationSettingsService applicationSettingsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="App"/> class.
@@ -32,24 +33,27 @@ namespace MauiFeed.WinUI
         {
             this.InitializeComponent();
             string databaseField = WinUIExtensions.IsRunningAsUwp() ? System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db") : Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly()!.Location!)!, "database.db");
-
+            string logLocation = WinUIExtensions.IsRunningAsUwp() ? System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "mauifeed-error.txt") : Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly()!.Location!)!, "mauifeed-error.txt");
             var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
-                .AddSingleton<IErrorHandlerService, WinUIErrorHandlerService>()
+                .AddSingleton<IErrorHandlerService>(new WinUIErrorHandlerService(logLocation))
                 .AddSingleton<IAppDispatcher>(new AppDispatcher(dispatcherQueue))
                 .AddSingleton<DatabaseContext>(new DatabaseContext(databaseField))
                 .AddSingleton<ITemplateService, HandlebarsTemplateService>()
-                .AddSingleton<IRssService, FeedReaderService>()
+                .AddSingleton<FeedService>()
                 .AddSingleton<RssFeedCacheService>()
                 .AddSingleton<WindowsPlatformService>()
                 .AddSingleton<WindowService>()
                 .AddSingleton<ApplicationSettingsService>()
                 .AddSingleton<ThemeSelectorService>()
                 .AddSingleton(new Progress<RssCacheFeedUpdate>())
+                .AddSingleton<OpmlFeedListItemFactory>()
                 .BuildServiceProvider());
 
             this.windowService = Ioc.Default.GetService<WindowService>()!;
+            this.applicationSettingsService = Ioc.Default.GetService<ApplicationSettingsService>()!;
+            this.applicationSettingsService.UpdateCulture();
         }
 
         /// <summary>

@@ -226,7 +226,7 @@ namespace MauiFeed.WinUI.Pages
         {
             if (this.selectedSidebarItem?.FeedListItem is not null && !this.isRefreshing)
             {
-                await this.rssFeedCacheService.RefreshFeedAsync(this.selectedSidebarItem.FeedListItem, this.refreshProgress);
+                await this.rssFeedCacheService.RefreshFeedAsync(this.selectedSidebarItem.FeedListItem);
                 this.UpdateFeed();
                 this.sidebar.UpdateSidebar();
             }

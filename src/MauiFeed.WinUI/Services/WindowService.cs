@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using MauiFeed.WinUI.Events;
 using Microsoft.UI.Xaml;
 
 namespace MauiFeed.WinUI.Services
@@ -11,6 +12,19 @@ namespace MauiFeed.WinUI.Services
     /// </summary>
     public class WindowService
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowService"/> class.
+        /// </summary>
+        /// <param name="service">Theme Service.</param>
+        public WindowService()
+        {
+        }
+
+        /// <summary>
+        /// Window added event.
+        /// </summary>
+        public event EventHandler<WindowAddedEventArgs>? WindowAdded;
+
         /// <summary>
         /// Gets the current application windows.
         /// </summary>
@@ -34,6 +48,7 @@ namespace MauiFeed.WinUI.Services
             this.ApplicationWindows.Add(win);
             win.Closed += this.WinClosed;
 
+            this.WindowAdded?.Invoke(this, new WindowAddedEventArgs(win));
             return instance;
         }
 

@@ -30,13 +30,12 @@ namespace MauiFeed.WinUI.Pages
     /// </summary>
     public sealed partial class SettingsPage : Page, INotifyPropertyChanged
     {
-        private ElementTheme elementTheme;
-        private ThemeSelectorService themeSelectorService;
         private IErrorHandlerService errorHandler;
         private IAppDispatcher dispatcher;
         private ApplicationSettingsService applicationSettingsService;
         private Window window;
         private DatabaseContext context;
+        private OpmlFeedListItemFactory opmlFeedListItemFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsPage"/> class.
@@ -51,9 +50,7 @@ namespace MauiFeed.WinUI.Pages
             this.errorHandler = Ioc.Default.GetService<IErrorHandlerService>()!;
             this.dispatcher = Ioc.Default.GetService<IAppDispatcher>()!;
             this.applicationSettingsService = Ioc.Default.GetService<ApplicationSettingsService>()!;
-            this.themeSelectorService = Ioc.Default.GetService<ThemeSelectorService>()!;
-            this.ElementTheme = this.themeSelectorService.Theme;
-            this.SwitchThemeCommand = new AsyncCommand<ElementTheme>(this.SetThemeAsync, (n) => true, this.errorHandler);
+            this.opmlFeedListItemFactory = Ioc.Default.GetService<OpmlFeedListItemFactory>()!;
             this.ImportDatabaseCommand = new AsyncCommand(this.ImportDatabaseAsync, null, this.dispatcher, this.errorHandler);
             this.ExportDatabaseCommand = new AsyncCommand(this.ExportDatabaseAsync, null, this.dispatcher, this.errorHandler);
         }
@@ -67,12 +64,19 @@ namespace MauiFeed.WinUI.Pages
         public string Version => WinUIExtensions.GetAppVersion();
 
         /// <summary>
-        /// Gets or sets the element theme.
+        /// Gets or sets the app theme.
         /// </summary>
-        public ElementTheme ElementTheme
+        public AppTheme AppTheme
         {
-            get { return this.elementTheme; }
-            set { this.SetProperty(ref this.elementTheme, value); }
+            get
+            {
+                return this.applicationSettingsService.ApplicationElementTheme;
+            }
+
+            set
+            {
+                this.applicationSettingsService.ApplicationElementTheme = value;
+            }
         }
 
         /// <summary>
@@ -102,9 +106,14 @@ namespace MauiFeed.WinUI.Pages
         public AsyncCommand ExportDatabaseCommand { get; private set; }
 
         /// <summary>
-        /// Gets the Switch Theme Command.
+        /// Gets the Languages.
         /// </summary>
-        public AsyncCommand<ElementTheme> SwitchThemeCommand { get; private set; }
+        public List<Tuple<string, AppTheme>> AppThemes { get; } = new List<Tuple<string, AppTheme>>()
+        {
+            new Tuple<string, AppTheme>(Common.DefaultThemeLabel, AppTheme.Default),
+            new Tuple<string, AppTheme>(Common.DarkThemeLabel, AppTheme.Dark),
+            new Tuple<string, AppTheme>(Common.LightThemeLabel, AppTheme.Light),
+        };
 
         /// <summary>
         /// Gets the Languages.
@@ -127,26 +136,23 @@ namespace MauiFeed.WinUI.Pages
 
         private async Task ExportDatabaseAsync()
         {
+            var opml = this.opmlFeedListItemFactory.GenerateOpmlFeed();
             var filePicker = new FileSavePicker();
             var hwnd = this.window.GetWindowHandle();
             WinRT.Interop.InitializeWithWindow.Initialize(filePicker, hwnd);
             filePicker.SuggestedFileName = "mauifeed";
             filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
             filePicker.SettingsIdentifier = "settingsIdentifier";
-            filePicker.FileTypeChoices.Add("db", new List<string>() { ".db" });
-            filePicker.DefaultFileExtension = ".db";
+            filePicker.FileTypeChoices.Add("opml", new List<string>() { ".opml" });
+            filePicker.DefaultFileExtension = ".opml";
             var file = await filePicker.PickSaveFileAsync();
             if (file is not null)
             {
                 Windows.Storage.CachedFileManager.DeferUpdates(file);
-                await this.context.Database.CloseConnectionAsync();
-                SqliteConnection.ClearAllPools();
-                using var stream = await file.OpenStreamForWriteAsync();
-                using var oldFile = System.IO.File.Open(this.context.Location, FileMode.Open, FileAccess.Read);
-                await oldFile.CopyToAsync(stream);
-                oldFile.Close();
-                stream.Close();
-                await this.context.Database.OpenConnectionAsync();
+
+                await Windows.Storage.FileIO.WriteTextAsync(file, opml.ToString());
+
+                Windows.Storage.Provider.FileUpdateStatus status = await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
             }
         }
 
@@ -180,13 +186,6 @@ namespace MauiFeed.WinUI.Pages
             return true;
         }
 
-        private Task SetThemeAsync(ElementTheme theme)
-        {
-            this.ElementTheme = theme;
-            this.themeSelectorService.SetTheme(theme);
-            return Task.CompletedTask;
-        }
-
         private void LanguageComboBoxLoaded(object sender, RoutedEventArgs e)
         {
             this.LanguageComboBox.SelectedIndex = this.Languages.IndexOf(this.Languages.First(n => n.Item2 == this.LanguageSetting));
@@ -195,6 +194,16 @@ namespace MauiFeed.WinUI.Pages
         private void LanguageComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             this.LanguageSetting = this.Languages[this.LanguageComboBox.SelectedIndex].Item2;
+        }
+
+        private void ThemeComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.AppTheme = this.AppThemes[this.ThemeComboBox.SelectedIndex].Item2;
+        }
+
+        private void ThemeComboBoxLoaded(object sender, RoutedEventArgs e)
+        {
+            this.ThemeComboBox.SelectedIndex = this.AppThemes.IndexOf(this.AppThemes.First(n => n.Item2 == this.AppTheme));
         }
     }
 }

@@ -22,38 +22,12 @@
             <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
                        Text="{x:Bind common:Common.SettingsLabel}" />
 
-            <StackPanel  Margin="5" Spacing="5">
-                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                       Text="{x:Bind common:Common.ThemeLabel}" />
-                <StackPanel Margin="{StaticResource EightTopMargin}">
-                    <RadioButton
-                            IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
-                            Command="{x:Bind SwitchThemeCommand}"
-                    Content="{x:Bind common:Common.LightThemeLabel}"
-                            GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Light</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                    <RadioButton
-                            IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
-                            Command="{x:Bind SwitchThemeCommand}"
-                            Content="{x:Bind common:Common.DarkThemeLabel}"
-                            GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Dark</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                    <RadioButton
-                            IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
-                            Command="{x:Bind SwitchThemeCommand}"
-                            Content="{x:Bind common:Common.DefaultThemeLabel}"
-                            GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Default</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                </StackPanel>
+            <StackPanel>
+                <ComboBox x:Name="ThemeComboBox" ItemsSource="{x:Bind AppThemes, Mode=OneWay}" SelectedItem="{x:Bind AppTheme, Mode=OneWay}"
+                          DisplayMemberPath="Item1" SelectedValuePath="Item2"
+                          SelectionChanged="ThemeComboBoxSelectionChanged"
+                          Loaded="ThemeComboBoxLoaded"
+                          Header="{x:Bind common:Common.ThemeLabel}" Width="200" />
             </StackPanel>
 
             <StackPanel>
@@ -64,19 +38,18 @@
                           Header="{x:Bind common:Common.LanguageLabel}" Width="200" />
             </StackPanel>
 
-            <!--<StackPanel>
+            <StackPanel Spacing="10">
                 <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                       Text="{x:Bind common:Common.DatabaseLabel}" />
+                       Text="{x:Bind common:Common.OPMLFeedLabel}" />
                 <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Button Command="{x:Bind ImportDatabaseCommand}" Content="{x:Bind common:Common.DatabaseImportLabel}"/>
                     <Button Command="{x:Bind ExportDatabaseCommand}" Content="{x:Bind common:Common.DatabaseExportLabel}" />
                 </StackPanel>
-            </StackPanel>-->
+            </StackPanel>
 
             <StackPanel Margin="5" Spacing="5">
-                <HyperlinkButton Content="Third-Party Licenses" NavigateUri="https://drasticactions.site/mauifeed-license.html" />
-                <HyperlinkButton Content="Terms and Conditions" NavigateUri="https://drasticactions.site/mauifeed-termsandconditions.html" />
-                <HyperlinkButton Content="Privacy Policy" NavigateUri="https://drasticactions.site/mauifeed-privacypolicy.html" />
+                <HyperlinkButton Content="Third-Party Licenses" NavigateUri="https://static.drasticactions.site/mauifeed/mauifeed-license.html" />
+                <HyperlinkButton Content="Terms and Conditions" NavigateUri="https://static.drasticactions.site/mauifeed/mauifeed-termsandconditions.html" />
+                <HyperlinkButton Content="Privacy Policy" NavigateUri="https://static.drasticactions.site/mauifeed/mauifeed-privacypolicy.html" />
                 <HyperlinkButton Content="GitHub" NavigateUri="https://github.com/drasticactions/mauifeed" />
             </StackPanel>
 

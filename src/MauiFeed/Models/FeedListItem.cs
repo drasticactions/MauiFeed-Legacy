@@ -92,10 +92,9 @@ namespace MauiFeed.Models
         public string? Link { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of FeedListItem this is.
-        /// This helps organize where in the list it goes.
+        /// Gets or sets the Feed Type.
         /// </summary>
-        public FeedListItemType Type { get; set; }
+        public FeedType FeedType { get; set; }
 
         /// <summary>
         /// Gets or sets the list of feed items.

@@ -18,7 +18,7 @@ namespace MauiFeed.Models
         /// <param name="feedsCompleted">Number of Feeds Completed.</param>
         /// <param name="totalFeeds">Total Feeds.</param>
         /// <param name="lastUpdated">Last Feed Updated.</param>
-        public RssCacheFeedUpdate(int feedsCompleted, int totalFeeds, FeedListItem lastUpdated)
+        public RssCacheFeedUpdate(int feedsCompleted, int totalFeeds, FeedListItem? lastUpdated = default)
         {
             this.LastUpdated = lastUpdated;
             this.TotalFeeds = totalFeeds;
@@ -26,9 +26,17 @@ namespace MauiFeed.Models
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="RssCacheFeedUpdate"/> class.
+        /// </summary>
+        public RssCacheFeedUpdate()
+        {
+            this.FireRefresh = true;
+        }
+
+        /// <summary>
         /// Gets the last feed update.
         /// </summary>
-        public FeedListItem LastUpdated { get; }
+        public FeedListItem? LastUpdated { get; }
 
         /// <summary>
         /// Gets the total number of feeds.
@@ -44,5 +52,10 @@ namespace MauiFeed.Models
         /// Gets a value indicating whether the update is done.
         /// </summary>
         public bool IsDone => this.FeedsCompleted >= this.TotalFeeds;
+
+        /// <summary>
+        /// Gets a value indicating whether to fire a refresh.
+        /// </summary>
+        public bool FireRefresh { get; }
     }
 }

@@ -15,6 +15,13 @@ namespace MauiFeed.Models.OPML
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Head"/> class.
+        /// </summary>
+        public Head()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Head"/> class.
         /// Constructor.
         /// </summary>
         /// <param name="element">element of Head.</param>

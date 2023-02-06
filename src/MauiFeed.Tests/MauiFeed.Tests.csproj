@@ -19,4 +19,10 @@
     <ProjectReference Include="..\MauiFeed\MauiFeed.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\Subscriptions.opml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

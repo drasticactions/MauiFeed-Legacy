@@ -51,6 +51,8 @@
             <tools:UnreadReadLabelConverter x:Name="UnreadReadLabelConverter"/>
             <tools:FavoriteLabelConverter x:Name="FavoriteLabelConverter"/>
             <tools:EmbeddedImageConverter x:Name="EmbeddedImageConverter"/>
+            <tools:StringNullVisibilityConverter x:Name="StringNullVisibilityConverter"/>
+            <tools:StringNullVisibilityInverter x:Name="StringNullVisibilityInverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

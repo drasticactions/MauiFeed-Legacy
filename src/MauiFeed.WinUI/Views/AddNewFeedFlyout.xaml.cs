@@ -53,7 +53,10 @@ namespace MauiFeed.WinUI.Views
             if (!this.sidebar.SidebarItems.Any(n => n.FeedListItem?.Uri == uri))
             {
                 var feed = await this.cache.RetrieveFeedAsync(uri);
-                this.sidebar.AddItemToSidebar(feed);
+                if (feed is not null)
+                {
+                    this.sidebar.AddItemToSidebar(feed);
+                }
             }
 
             this.FeedUrlField.Text = string.Empty;
