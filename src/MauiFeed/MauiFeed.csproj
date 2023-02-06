@@ -46,6 +46,7 @@
 	<ItemGroup>
 		<PackageReference Include="AngleSharp" Version="1.0.1" />
 		<PackageReference Include="CodeHollow.FeedReader" Version="1.2.4" />
+		<PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" Version="7.0.0" />
 		<PackageReference Include="Handlebars.Net" Version="2.1.2" />
 		<PackageReference Include="GitInfo" Version="2.3.0" PrivateAssets="all" />
 		<PackageReference Include="JsonFeed.NET" Version="1.1.0" />

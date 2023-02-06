@@ -2,6 +2,7 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using System.Collections.Concurrent;
 using MauiFeed.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -69,12 +70,39 @@ namespace MauiFeed.Services
         /// <returns>Task.</returns>
         public async Task RefreshFeedsAsync(List<FeedListItem> feeds, IProgress<RssCacheFeedUpdate>? progress = default)
         {
-            for (int i = 0; i < feeds.Count; i++)
+            var count = feeds.Count;
+            int current = 0;
+
+            ConcurrentBag<Tuple<FeedListItem, IList<FeedItem>>> results = new ConcurrentBag<Tuple<FeedListItem, IList<FeedItem>>>();
+
+            await Parallel.ForEachAsync(feeds, async (i, c) =>
             {
-                FeedListItem? feed = feeds[i];
-                await this.RefreshFeedAsync(feed);
-                progress?.Report(new RssCacheFeedUpdate(i + 1, feeds.Count, feed));
+                FeedListItem? item = i;
+                (var feed, var feedListItems) = await this.rssService.ReadFeedAsync(item);
+                if (feed is not null)
+                {
+                    results.Add(new Tuple<FeedListItem, IList<FeedItem>>(feed, feedListItems!));
+                }
+
+                current = current + 1;
+                progress?.Report(new RssCacheFeedUpdate(current, feeds.Count, feed));
+            });
+
+            var feedResults = results.Select(n => n.Item1);
+            var feedItemResults = results.SelectMany(n => n.Item2);
+
+            this.databaseContext.FeedListItems!.UpdateRange(feedResults);
+            foreach (var feedItem in feedItemResults)
+            {
+                var val = await this.databaseContext.FeedItems!.AnyAsync(n => n.RssId == feedItem.RssId && n.FeedListItemId == n.FeedListItemId);
+                if (!val)
+                {
+                    await this.databaseContext.FeedItems!.AddAsync(feedItem);
+                }
             }
+
+            await this.databaseContext.SaveChangesAsync();
+            progress?.Report(new RssCacheFeedUpdate());
         }
 
         /// <summary>

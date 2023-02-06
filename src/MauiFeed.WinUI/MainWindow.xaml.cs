@@ -604,7 +604,7 @@ namespace MauiFeed.WinUI
         {
             this.isRefreshing = !e.IsDone;
 
-            if (e.IsDone)
+            if (e.FireRefresh)
             {
                 this.appSettings.LastUpdated = DateTime.UtcNow;
             }

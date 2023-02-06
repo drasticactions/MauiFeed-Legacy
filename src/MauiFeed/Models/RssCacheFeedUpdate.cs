@@ -26,6 +26,14 @@ namespace MauiFeed.Models
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="RssCacheFeedUpdate"/> class.
+        /// </summary>
+        public RssCacheFeedUpdate()
+        {
+            this.FireRefresh = true;
+        }
+
+        /// <summary>
         /// Gets the last feed update.
         /// </summary>
         public FeedListItem? LastUpdated { get; }
@@ -44,5 +52,10 @@ namespace MauiFeed.Models
         /// Gets a value indicating whether the update is done.
         /// </summary>
         public bool IsDone => this.FeedsCompleted >= this.TotalFeeds;
+
+        /// <summary>
+        /// Gets a value indicating whether to fire a refresh.
+        /// </summary>
+        public bool FireRefresh { get; }
     }
 }
