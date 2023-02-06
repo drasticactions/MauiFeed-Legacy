@@ -49,6 +49,7 @@ namespace MauiFeed.WinUI
         private Progress<RssCacheFeedUpdate> refreshProgress;
         private RssFeedCacheService rssFeedCacheService;
         private OpmlFeedListItemFactory opmlFactory;
+        private IErrorHandlerService errorHandlerService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -65,6 +66,7 @@ namespace MauiFeed.WinUI
             this.themeSelectorService = Ioc.Default.GetService<ThemeSelectorService>()!;
             this.rssFeedCacheService = Ioc.Default.GetService<RssFeedCacheService>()!;
             this.opmlFactory = Ioc.Default.GetService<OpmlFeedListItemFactory>()!;
+            this.errorHandlerService = Ioc.Default.GetService<IErrorHandlerService>()!;
 
             this.settingsPage = new SettingsPage(this);
             this.feedSplitPage = new FeedTimelineSplitPage(this);
@@ -231,12 +233,8 @@ namespace MauiFeed.WinUI
         /// <inheritdoc/>
         public void HandleError(Exception ex)
         {
-            if (Debugger.IsAttached)
-            {
-                Debugger.Break();
-            }
-
             this.FeedRefreshView.IsRefreshing = false;
+            this.errorHandlerService.HandleError(ex);
         }
 
         private void GenerateMenuButtons()
@@ -293,6 +291,11 @@ namespace MauiFeed.WinUI
             this.GenerateSmartFilters();
             this.GenerateFolderItems();
             this.GenerateNavigationItems();
+        }
+
+        private Task TestThrow()
+        {
+            throw new Exception();
         }
 
         private void GenerateSmartFilters()

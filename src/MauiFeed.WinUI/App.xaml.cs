@@ -33,11 +33,11 @@ namespace MauiFeed.WinUI
         {
             this.InitializeComponent();
             string databaseField = WinUIExtensions.IsRunningAsUwp() ? System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "database.db") : Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly()!.Location!)!, "database.db");
-
+            string logLocation = WinUIExtensions.IsRunningAsUwp() ? System.IO.Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "mauifeed-error.txt") : Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly()!.Location!)!, "mauifeed-error.txt");
             var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
-                .AddSingleton<IErrorHandlerService, WinUIErrorHandlerService>()
+                .AddSingleton<IErrorHandlerService>(new WinUIErrorHandlerService(logLocation))
                 .AddSingleton<IAppDispatcher>(new AppDispatcher(dispatcherQueue))
                 .AddSingleton<DatabaseContext>(new DatabaseContext(databaseField))
                 .AddSingleton<ITemplateService, HandlebarsTemplateService>()
