@@ -5,9 +5,12 @@
 using System;
 using System.Diagnostics;
 using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
 using MauiFeed.Models;
 using MauiFeed.Models.OPML;
 using MauiFeed.Tools;
+using Microsoft.EntityFrameworkCore;
 
 namespace MauiFeed.Services
 {
@@ -19,6 +22,7 @@ namespace MauiFeed.Services
         private HttpClient client;
         private DatabaseContext context;
         private byte[] placeholderImage;
+        private HtmlParser parser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpmlFeedListItemFactory"/> class.
@@ -29,7 +33,44 @@ namespace MauiFeed.Services
         {
             this.context = context;
             this.client = client ?? new HttpClient();
+            this.parser = new HtmlParser();
             this.placeholderImage = Utilities.GetPlaceholderIcon();
+        }
+
+        /// <summary>
+        /// Generate an Opml feed from given database.
+        /// </summary>
+        /// <returns>Opml.</returns>
+        public Opml GenerateOpmlFeed()
+        {
+            var opml = new Opml();
+            opml.Head = new Head()
+            {
+                Title = "MauiFeed",
+                DateCreated = DateTime.UtcNow,
+            };
+
+            opml.Body = new Body();
+
+            foreach (var folder in this.context.FeedFolder!.Include(n => n.Items))
+            {
+                var folderOutline = new Outline() { Text = folder.Name, Title = folder.Name };
+                foreach (var feedItem in folder.Items ?? new List<FeedListItem>())
+                {
+                    var feedOutline = new Outline() { Text = feedItem.Name, Title = feedItem.Name, Description = feedItem.Description, Type = "rss", Version = "RSS", HTMLUrl = feedItem.Link, XMLUrl = feedItem.Uri?.ToString() };
+                    folderOutline.Outlines.Add(feedOutline);
+                }
+
+                opml.Body.Outlines.Add(folderOutline);
+            }
+
+            foreach (var feedItem in this.context.FeedListItems!.Where(n => n.FolderId == null))
+            {
+                var feedOutline = new Outline() { Text = feedItem.Name, Title = feedItem.Name, Description = feedItem.Description, Type = "rss", Version = "RSS", HTMLUrl = feedItem.Link, XMLUrl = feedItem.Uri?.ToString() };
+                opml.Body.Outlines.Add(feedOutline);
+            }
+
+            return opml;
         }
 
         /// <summary>
@@ -88,7 +129,20 @@ namespace MauiFeed.Services
 
         private async Task GetImageAsync(FeedListItem item)
         {
-            if (item.Uri is not null)
+            if (!item.HasValidImage())
+            {
+                try
+                {
+                    // If all else fails, get the icon from the webpage itself by parsing it.
+                    item.ImageCache = await this.ParseRootWebpageForIcon(item.Uri!);
+                }
+                catch (Exception)
+                {
+                    // If it fails to work for whatever reason, ignore it for now, use the placeholder.
+                }
+            }
+
+            if (!item.HasValidImage() && item.Uri is not null)
             {
                 try
                 {
@@ -106,6 +160,19 @@ namespace MauiFeed.Services
                     item.ImageCache = await this.GetByteArrayAsync(item.ImageUri);
                 }
             }
+        }
+
+        private async Task<byte[]?> ParseRootWebpageForIcon(Uri uri)
+        {
+            var htmlString = await this.client.GetStringAsync(new Uri($"{uri.Scheme}://{uri.Host}/"));
+            var html = await this.parser.ParseDocumentAsync(htmlString);
+            var favIcon = html.QuerySelector("link[rel~='icon']");
+            if (favIcon is not IHtmlLinkElement anchor)
+            {
+                return null;
+            }
+
+            return anchor.Href is not null ? await this.GetByteArrayAsync(new Uri(anchor.Href)) : null;
         }
 
         private async Task<byte[]?> GetByteArrayAsync(Uri uri)

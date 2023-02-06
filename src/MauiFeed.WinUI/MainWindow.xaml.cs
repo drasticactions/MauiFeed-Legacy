@@ -511,7 +511,7 @@ namespace MauiFeed.WinUI
         private void MainWindowActivated(object sender, WindowActivatedEventArgs args)
         {
             this.Activated -= this.MainWindowActivated;
-            this.themeSelectorService.SetRequestedTheme();
+            this.appSettings.UpdateTheme();
         }
 
         private void NavItemRightTapped(object? sender, Events.NavItemRightTappedEventArgs e)
@@ -532,7 +532,11 @@ namespace MauiFeed.WinUI
                     var folderItemText = sidebarItem.FeedListItem?.FolderId > 0 ? Common.MoveToFolderLabel : Common.AddToFolderLabel;
                     var folderId = sidebarItem.FeedListItem?.FolderId ?? 0;
                     menuFlyout.Items.Add(new MenuFlyoutItem() { Icon = new SymbolIcon(Symbol.Delete), Text = Common.RemoveFeedLabel, Command = this.RemoveFeedCommand, CommandParameter = sidebarItem });
-                    menuFlyout.Items.Add(new MenuFlyoutItem() { Icon = new SymbolIcon(Symbol.Remove), Text = Common.RemoveFromFolderLabel, Command = this.RemoveFromFolderCommand, CommandParameter = sidebarItem });
+                    if (folderId > 0)
+                    {
+                        menuFlyout.Items.Add(new MenuFlyoutItem() { Icon = new SymbolIcon(Symbol.Remove), Text = Common.RemoveFromFolderLabel, Command = this.RemoveFromFolderCommand, CommandParameter = sidebarItem });
+                    }
+
                     var folderItem = new MenuFlyoutSubItem() { Text = folderItemText, Icon = new SymbolIcon(Symbol.Folder) };
                     foreach (var item in folders.Where(n => n.FeedFolder?.Id != folderId))
                     {

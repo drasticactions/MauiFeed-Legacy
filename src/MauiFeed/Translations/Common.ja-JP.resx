@@ -157,10 +157,10 @@
     <value>既定のテーマ</value>
   </data>
   <data name="FeedLabel" xml:space="preserve">
-    <value>RSS フィード</value>
+    <value>フィード</value>
   </data>
   <data name="FeedUrlLabel" xml:space="preserve">
-    <value>RSS フィード URL</value>
+    <value>フィード URL</value>
   </data>
   <data name="FolderLabel" xml:space="preserve">
     <value>フォルダ</value>

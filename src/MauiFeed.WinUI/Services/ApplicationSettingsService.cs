@@ -19,6 +19,7 @@ namespace MauiFeed.WinUI.Services
     /// </summary>
     public class ApplicationSettingsService
     {
+        private ThemeSelectorService themeSelectorService;
         private DatabaseContext databaseContext;
         private AppSettings appSettings;
         private CultureInfo defaultCulture;
@@ -27,7 +28,8 @@ namespace MauiFeed.WinUI.Services
         /// Initializes a new instance of the <see cref="ApplicationSettingsService"/> class.
         /// </summary>
         /// <param name="context">Database Context.</param>
-        public ApplicationSettingsService(DatabaseContext context)
+        /// <param name="themeSelectorService">Theme selector service.</param>
+        public ApplicationSettingsService(DatabaseContext context, ThemeSelectorService themeSelectorService)
         {
             this.databaseContext = context;
             this.defaultCulture = Thread.CurrentThread.CurrentUICulture;
@@ -40,7 +42,7 @@ namespace MauiFeed.WinUI.Services
             }
 
             this.appSettings = appSettings;
-            this.UpdateCulture();
+            this.themeSelectorService = themeSelectorService;
         }
 
         /// <summary>
@@ -94,7 +96,45 @@ namespace MauiFeed.WinUI.Services
             }
         }
 
-        private void UpdateCulture()
+        /// <summary>
+        /// Refresh the app with the given app settings.
+        /// </summary>
+        public void RefreshApp()
+        {
+            this.UpdateCulture();
+            this.UpdateTheme();
+        }
+
+        /// <summary>
+        /// Update Theme.
+        /// </summary>
+        public void UpdateTheme()
+        {
+            ElementTheme theme;
+
+            switch (this.ApplicationElementTheme)
+            {
+                case AppTheme.Default:
+                    theme = ElementTheme.Default;
+                    break;
+                case AppTheme.Light:
+                    theme = ElementTheme.Light;
+                    break;
+                case AppTheme.Dark:
+                    theme = ElementTheme.Dark;
+                    break;
+                default:
+                    theme = ElementTheme.Default;
+                    break;
+            }
+
+            this.themeSelectorService.SetTheme(theme);
+        }
+
+        /// <summary>
+        /// Update Culture.
+        /// </summary>
+        public void UpdateCulture()
         {
             var culture = this.defaultCulture;
             switch (this.ApplicationLanguageSetting)
@@ -115,7 +155,7 @@ namespace MauiFeed.WinUI.Services
         {
             this.databaseContext.AppSettings!.Update(this.appSettings);
             this.databaseContext.SaveChanges();
-            this.UpdateCulture();
+            this.RefreshApp();
         }
     }
 }

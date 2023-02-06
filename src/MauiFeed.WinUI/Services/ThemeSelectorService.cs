@@ -18,18 +18,16 @@ namespace MauiFeed.WinUI.Services
     {
         private UISettings uiSettings = new UISettings();
         private WindowService windowService;
-        private ApplicationSettingsService applicationSettingsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ThemeSelectorService"/> class.
         /// </summary>
         /// <param name="windowService"><see cref="WindowService"/>.</param>
         /// <param name="applicationSettingsService">App Settings Service.</param>
-        public ThemeSelectorService(WindowService windowService, ApplicationSettingsService applicationSettingsService)
+        public ThemeSelectorService(WindowService windowService)
         {
             this.windowService = windowService;
-            this.applicationSettingsService = applicationSettingsService;
-            this.Theme = this.GetElementTheme(this.applicationSettingsService.ApplicationElementTheme);
+            this.windowService.WindowAdded += this.WindowServiceWindowAdded;
             this.uiSettings.ColorValuesChanged += (sender, args) =>
             {
                 if (this.Theme == ElementTheme.Default)
@@ -66,6 +64,18 @@ namespace MauiFeed.WinUI.Services
         public bool IsDark => this.Theme == ElementTheme.Dark || (this.Theme == ElementTheme.Default && ThemeSelectorService.IsDarkDefault);
 
         /// <summary>
+        /// Sets the requested theme on a window.
+        /// </summary>
+        /// <param name="window">The Window.</param>
+        public void SetRequestedThemeOnWindow(Window window)
+        {
+            if (window.Content is FrameworkElement frameworkElement)
+            {
+                frameworkElement.RequestedTheme = this.Theme;
+            }
+        }
+
+        /// <summary>
         /// Sets the current application theme for all windows.
         /// </summary>
         /// <param name="theme">The theme to change to.</param>
@@ -74,7 +84,6 @@ namespace MauiFeed.WinUI.Services
             this.Theme = theme;
 
             this.SetRequestedTheme();
-            this.applicationSettingsService.ApplicationElementTheme = this.GetAppTheme(this.Theme);
         }
 
         /// <summary>
@@ -84,10 +93,7 @@ namespace MauiFeed.WinUI.Services
         {
             foreach (var window in this.windowService.ApplicationWindows)
             {
-                if (window.Content is FrameworkElement frameworkElement)
-                {
-                    frameworkElement.RequestedTheme = this.Theme;
-                }
+                this.SetRequestedThemeOnWindow((Window)window);
             }
 
             this.ThemeChanged?.Invoke(this, EventArgs.Empty);
@@ -121,6 +127,11 @@ namespace MauiFeed.WinUI.Services
                 default:
                     return AppTheme.Default;
             }
+        }
+
+        private void WindowServiceWindowAdded(object? sender, Events.WindowAddedEventArgs e)
+        {
+            this.SetRequestedThemeOnWindow(e.Window);
         }
     }
 }

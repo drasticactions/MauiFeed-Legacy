@@ -160,7 +160,7 @@ namespace MauiFeed
             {
                 RssId = item.Id,
                 FeedListItemId = feedListItem.Id,
-                Title = item.Title,
+                Title = HttpUtility.HtmlDecode(item.Title),
                 Link = item.Url,
                 ExternalLink = item.ExternalUrl,
                 Description = string.Empty,

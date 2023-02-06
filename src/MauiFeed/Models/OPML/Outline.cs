@@ -15,6 +15,13 @@ namespace MauiFeed.Models.OPML
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Outline"/> class.
+        /// </summary>
+        public Outline()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Outline"/> class.
         /// Constructor.
         /// </summary>
         /// <param name="element">element of Head.</param>
@@ -48,17 +55,17 @@ namespace MauiFeed.Models.OPML
         /// <summary>
         /// Gets or sets text of the XML file (required).
         /// </summary>
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         /// <summary>
         /// Gets or sets true / false.
         /// </summary>
-        public string IsComment { get; set; }
+        public string? IsComment { get; set; }
 
         /// <summary>
         /// Gets or sets true / false.
         /// </summary>
-        public string IsBreakpoint { get; set; }
+        public string? IsBreakpoint { get; set; }
 
         /// <summary>
         /// Gets or sets outline node was created.
@@ -73,38 +80,38 @@ namespace MauiFeed.Models.OPML
         /// <summary>
         /// Gets or sets description.
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Gets or sets hTML URL.
         /// </summary>
-        public string HTMLUrl { get; set; }
+        public string? HTMLUrl { get; set; }
 
         /// <summary>
         /// Gets or sets language.
         /// </summary>
-        public string Language { get; set; }
+        public string? Language { get; set; }
 
         /// <summary>
         /// Gets or sets title.
         /// </summary>
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         /// <summary>
         /// Gets or sets type (rss/atom).
         /// </summary>
-        public string Type { get; set; }
+        public string? Type { get; set; }
 
         /// <summary>
         /// Gets or sets version of RSS.
         /// RSS1 for RSS1.0. RSS for 0.91, 0.92 or 2.0.
         /// </summary>
-        public string Version { get; set; }
+        public string? Version { get; set; }
 
         /// <summary>
         /// Gets or sets uRL of the XML file.
         /// </summary>
-        public string XMLUrl { get; set; }
+        public string? XMLUrl { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the outline is a feed.
@@ -183,7 +190,7 @@ namespace MauiFeed.Models.OPML
             return list;
         }
 
-        private string GetAttributeString(string name, string value)
+        private string GetAttributeString(string name, string? value)
         {
             if (string.IsNullOrEmpty(value))
             {

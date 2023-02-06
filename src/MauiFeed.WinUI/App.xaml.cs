@@ -22,6 +22,7 @@ namespace MauiFeed.WinUI
     {
         private Window? window;
         private WindowService windowService;
+        private ApplicationSettingsService applicationSettingsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="App"/> class.
@@ -51,6 +52,8 @@ namespace MauiFeed.WinUI
                 .BuildServiceProvider());
 
             this.windowService = Ioc.Default.GetService<WindowService>()!;
+            this.applicationSettingsService = Ioc.Default.GetService<ApplicationSettingsService>()!;
+            this.applicationSettingsService.UpdateCulture();
         }
 
         /// <summary>
