@@ -23,7 +23,7 @@ namespace MauiFeed.WinUI.Tools
             var htmlString = !string.IsNullOrEmpty(feedListItem.Description) ? feedListItem.Description : feedListItem.Content;
 
             // We don't want to render the HTML, we just want to get the raw text out.
-            var test = Regex.Replace(htmlString ?? string.Empty, "<.*?>", string.Empty);
+            var test = Regex.Replace(htmlString ?? string.Empty, "<[^>]*>", string.Empty);
             return test.Trim();
         }
 

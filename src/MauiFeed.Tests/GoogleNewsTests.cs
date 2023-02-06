@@ -15,7 +15,7 @@ namespace MauiFeed.Tests
     [TestClass]
     public class GoogleNewsTests
     {
-        private IRssService rss;
+        private FeedService rss;
         private GoogleNewsService googleNews;
         private IErrorHandlerService errorHandler;
 
@@ -25,7 +25,7 @@ namespace MauiFeed.Tests
         public GoogleNewsTests()
         {
             this.errorHandler = new TestErrorHandler();
-            this.rss = new FeedReaderService(this.errorHandler);
+            this.rss = new FeedService(this.errorHandler);
             this.googleNews = new GoogleNewsService(this.rss);
         }
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="FeedReaderTests.cs" company="Drastic Actions">
+﻿// <copyright file="FeedTests.cs" company="Drastic Actions">
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
@@ -12,18 +12,18 @@ namespace MauiFeed.Tests
     /// FeedReader Tests.
     /// </summary>
     [TestClass]
-    public class FeedReaderTests
+    public class FeedTests
     {
-        private IRssService rss;
+        private FeedService rss;
         private IErrorHandlerService errorHandler;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FeedReaderTests"/> class.
+        /// Initializes a new instance of the <see cref="FeedTests"/> class.
         /// </summary>
-        public FeedReaderTests()
+        public FeedTests()
         {
             this.errorHandler = new TestErrorHandler();
-            this.rss = new FeedReaderService(this.errorHandler);
+            this.rss = new FeedService(this.errorHandler);
         }
 
         /// <summary>

@@ -106,12 +106,6 @@ namespace MauiFeed.Services
                     item.ImageCache = await this.GetByteArrayAsync(item.ImageUri);
                 }
             }
-
-            // If still null, use the placeholder.
-            if (!item.HasValidImage())
-            {
-                item.ImageCache = this.placeholderImage;
-            }
         }
 
         private async Task<byte[]?> GetByteArrayAsync(Uri uri)

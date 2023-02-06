@@ -5,6 +5,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MauiFeed.Models;
+using MauiFeed.Tools;
 using MauiFeed.Views;
 using MauiFeed.WinUI.Events;
 using MauiFeed.WinUI.Tools;
@@ -32,10 +33,15 @@ namespace MauiFeed.WinUI.Views
             this.id = Guid.NewGuid();
             this.FeedListItem = feedListItem;
 
-            if (this.FeedListItem.ImageCache is not byte[] cache)
+            byte[] cache;
+
+            if (!this.FeedListItem.HasValidImage())
             {
-                System.Diagnostics.Debug.Assert(this.FeedListItem.ImageCache is not null, "ImageCache must not be null");
                 cache = Utilities.GetPlaceholderIcon();
+            }
+            else
+            {
+                cache = this.FeedListItem.ImageCache!;
             }
 
             var icon = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();

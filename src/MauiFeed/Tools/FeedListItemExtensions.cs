@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Web;
+using System.Xml.Linq;
 using CodeHollow.FeedReader;
 using JsonFeedNet;
 using MauiFeed.Models;
@@ -33,7 +34,27 @@ namespace MauiFeed
                 Language = feed.Language,
                 LastUpdatedDate = feed.LastUpdatedDate,
                 LastUpdatedDateString = feed.LastUpdatedDateString,
+                FeedType = Models.FeedType.Rss,
             };
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeedListItem"/> class.
+        /// </summary>
+        /// <param name="feed"><see cref="Feed"/>.</param>
+        /// <param name="oldItem">Original Feed Uri.</param>
+        /// <returns><see cref="FeedListItem"/>.</returns>
+        public static FeedListItem Update(this Feed feed, FeedListItem oldItem)
+        {
+            oldItem.Name = feed.Title;
+            oldItem.Link = feed.Link;
+            oldItem.ImageUri = string.IsNullOrEmpty(feed.ImageUrl) ? null : new Uri(feed.ImageUrl);
+            oldItem.Description = feed.Description;
+            oldItem.Language = feed.Language;
+            oldItem.LastUpdatedDate = feed.LastUpdatedDate;
+            oldItem.LastUpdatedDateString = feed.LastUpdatedDateString;
+            oldItem.FeedType = Models.FeedType.Rss;
+            return oldItem;
         }
 
         /// <summary>
@@ -52,7 +73,25 @@ namespace MauiFeed
                 ImageUri = string.IsNullOrEmpty(feed.Icon) ? null : new Uri(feed.Icon),
                 Description = feed.Description,
                 Language = feed.Language,
+                FeedType = Models.FeedType.Json,
             };
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeedListItem"/> class.
+        /// </summary>
+        /// <param name="feed"><see cref="Feed"/>.</param>
+        /// <param name="oldItem">Old Item.</param>
+        /// <returns><see cref="FeedListItem"/>.</returns>
+        public static FeedListItem Update(this JsonFeed feed, FeedListItem oldItem)
+        {
+            oldItem.Name = feed.Title;
+            oldItem.Link = feed.HomePageUrl;
+            oldItem.ImageUri = string.IsNullOrEmpty(feed.Icon) ? null : new Uri(feed.Icon);
+            oldItem.Description = feed.Description;
+            oldItem.Language = feed.Language;
+            oldItem.FeedType = Models.FeedType.Json;
+            return oldItem;
         }
 
         /// <summary>

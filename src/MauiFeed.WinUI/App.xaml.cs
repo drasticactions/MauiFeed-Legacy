@@ -40,7 +40,7 @@ namespace MauiFeed.WinUI
                 .AddSingleton<IAppDispatcher>(new AppDispatcher(dispatcherQueue))
                 .AddSingleton<DatabaseContext>(new DatabaseContext(databaseField))
                 .AddSingleton<ITemplateService, HandlebarsTemplateService>()
-                .AddSingleton<IRssService, FeedReaderService>()
+                .AddSingleton<FeedService>()
                 .AddSingleton<RssFeedCacheService>()
                 .AddSingleton<WindowsPlatformService>()
                 .AddSingleton<WindowService>()
