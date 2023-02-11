@@ -22,11 +22,17 @@
 	  <None Remove="Services\" />
 	  <None Remove="ViewControllers\" />
 	  <None Remove="Toolbar\" />
+	  <None Remove="Sidebar\" />
+	  <None Remove="Views\" />
+	  <None Remove="Tools\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Services\" />
 	  <Folder Include="ViewControllers\" />
 	  <Folder Include="Toolbar\" />
+	  <Folder Include="Sidebar\" />
+	  <Folder Include="Views\" />
+	  <Folder Include="Tools\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="Drastic.PureLayout" Version="1.0.4" />

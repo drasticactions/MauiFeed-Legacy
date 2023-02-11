@@ -3,17 +3,19 @@
 // </copyright>
 
 using System;
+using MauiFeed.Models;
 
 namespace MauiFeed.MacCatalyst.ViewControllers
 {
     /// <summary>
     /// Root Split View Controller.
     /// </summary>
-    public class RootSplitViewController : UISplitViewController
+    public class RootSplitViewController : UISplitViewController, IUISplitViewControllerDelegate
     {
         private SidebarViewController sidebar;
         private TimelineCollectionViewController feedCollection;
         private FeedWebViewController webview;
+        private Progress<RssCacheFeedUpdate> progressUpdate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RootSplitViewController"/> class.
@@ -21,6 +23,9 @@ namespace MauiFeed.MacCatalyst.ViewControllers
         public RootSplitViewController()
             : base(UISplitViewControllerStyle.TripleColumn)
         {
+            this.progressUpdate = new Progress<RssCacheFeedUpdate>();
+            this.progressUpdate.ProgressChanged += this.ProgressUpdateProgressChanged;
+
             this.feedCollection = new TimelineCollectionViewController(this);
             this.sidebar = new SidebarViewController(this);
             this.webview = new FeedWebViewController(this);
@@ -34,7 +39,19 @@ namespace MauiFeed.MacCatalyst.ViewControllers
             // WHAT THE F APPLE THIS TOOK ME AN HOUR TO FIGURE OUT!!!!
             this.PrimaryBackgroundStyle = UISplitViewControllerBackgroundStyle.Sidebar;
 
-            this.PreferredPrimaryColumnWidth = 200f;
+            this.PreferredPrimaryColumnWidth = 275f;
+        }
+
+        /// <summary>
+        /// Gets the Progress Update.
+        /// </summary>
+        public Progress<RssCacheFeedUpdate> ProgressUpdate => this.progressUpdate;
+
+        private void ProgressUpdateProgressChanged(object? sender, RssCacheFeedUpdate e)
+        {
+            if (e.IsDone)
+            {
+            }
         }
     }
 }
