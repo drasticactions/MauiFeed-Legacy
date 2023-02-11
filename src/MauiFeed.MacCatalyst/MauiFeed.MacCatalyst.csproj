@@ -20,8 +20,32 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Services\" />
+	  <None Remove="ViewControllers\" />
+	  <None Remove="Toolbar\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Services\" />
+	  <Folder Include="ViewControllers\" />
+	  <Folder Include="Toolbar\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="Drastic.PureLayout" Version="1.0.4" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ImageAsset Update="Assets.xcassets\AppIcon.appiconset\icon_32x32%402x.png">
+	    <Link>Assets.xcassets\AppIcon.appiconset\icon_32x32%402x.png</Link>
+	  </ImageAsset>
+	  <ImageAsset Update="Assets.xcassets\AppIcon.appiconset\icon_256x256%402x.png">
+	    <Link>Assets.xcassets\AppIcon.appiconset\icon_256x256%402x.png</Link>
+	  </ImageAsset>
+	  <ImageAsset Update="Assets.xcassets\AppIcon.appiconset\icon_16x16%402x.png">
+	    <Link>Assets.xcassets\AppIcon.appiconset\icon_16x16%402x.png</Link>
+	  </ImageAsset>
+	  <ImageAsset Update="Assets.xcassets\AppIcon.appiconset\icon_128x128%402x.png">
+	    <Link>Assets.xcassets\AppIcon.appiconset\icon_128x128%402x.png</Link>
+	  </ImageAsset>
+	  <ImageAsset Update="Assets.xcassets\AppIcon.appiconset\icon_512x512%402x.png">
+	    <Link>Assets.xcassets\AppIcon.appiconset\icon_512x512%402x.png</Link>
+	  </ImageAsset>
 	</ItemGroup>
 </Project>

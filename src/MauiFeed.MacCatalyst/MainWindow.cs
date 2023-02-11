@@ -3,6 +3,9 @@
 // </copyright>
 
 using System;
+using AppKit;
+using MauiFeed.MacCatalyst.Toolbar;
+using MauiFeed.MacCatalyst.ViewControllers;
 
 namespace MauiFeed.MacCatalyst
 {
@@ -18,7 +21,25 @@ namespace MauiFeed.MacCatalyst
         public MainWindow(CGRect frame)
             : base(frame)
         {
-            this.RootViewController = new UIViewController();
+            this.RootViewController = new RootSplitViewController();
+
+            var windowScene = this.WindowScene;
+
+            if (windowScene is not null)
+            {
+#pragma warning disable CA1416 // プラットフォームの互換性を検証
+                windowScene.Titlebar!.TitleVisibility = UITitlebarTitleVisibility.Visible;
+
+                var toolbar = new NSToolbar();
+                toolbar.Delegate = new MainToolbarDelegate((RootSplitViewController)this.RootViewController);
+                toolbar.DisplayMode = NSToolbarDisplayMode.Icon;
+
+                windowScene.Title = MauiFeed.Translations.Common.AppTitle;
+                windowScene.Titlebar.Toolbar = toolbar;
+                windowScene.Titlebar.ToolbarStyle = UITitlebarToolbarStyle.Automatic;
+                windowScene.Titlebar.Toolbar.Visible = true;
+#pragma warning restore CA1416 // プラットフォームの互換性を検証
+            }
         }
     }
 }
