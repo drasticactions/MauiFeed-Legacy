@@ -454,7 +454,7 @@ namespace MauiFeed.WinUI
         {
             if (navigationViewItem.FeedListItem?.FolderId > 0)
             {
-                var oldFolder = this.SidebarItems.FirstOrDefault(n => n.ItemType is SidebarItemType.Folder && n.FeedFolder?.Id == navigationViewItem.FeedListItem.FolderId);
+                var oldFolder = this.SidebarItems.FirstOrDefault(n => n.ItemType is SidebarItemType.Folder && n.FeedFolder is not null && n.FeedFolder?.Id == navigationViewItem.FeedListItem.FolderId);
                 if (oldFolder != null)
                 {
                     System.Diagnostics.Debug.Assert(oldFolder.NavItem.MenuItems.Remove(navigationViewItem.NavItem), "Should not be null");
