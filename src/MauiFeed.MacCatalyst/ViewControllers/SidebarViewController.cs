@@ -5,6 +5,7 @@
 using System;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.PureLayout;
+using MauiFeed.MacCatalyst.Services;
 using MauiFeed.MacCatalyst.Sidebar;
 using MauiFeed.Models;
 using MauiFeed.Services;
@@ -19,7 +20,7 @@ namespace MauiFeed.MacCatalyst.ViewControllers
     public class SidebarViewController : UIViewController, IUICollectionViewDelegate, IUICollectionViewDragDelegate
     {
         private RootSplitViewController rootSplitViewController;
-
+        private CatalystPlatformService catalyst;
         private DatabaseContext databaseContext;
         private UICollectionView? collectionView;
         private UICollectionViewDiffableDataSource<NSString, SidebarItem>? dataSource;
@@ -36,6 +37,7 @@ namespace MauiFeed.MacCatalyst.ViewControllers
             this.sidebarItems = new List<SidebarItem>();
             this.rootSplitViewController = controller;
             this.databaseContext = (DatabaseContext)Ioc.Default.GetService<DatabaseContext>()!;
+            this.catalyst = (CatalystPlatformService)Ioc.Default.GetService<CatalystPlatformService>()!;
         }
 
         private NSString SmartFilterIdentifier => new NSString(SidebarItemType.SmartFilter.ToString());
@@ -142,6 +144,7 @@ namespace MauiFeed.MacCatalyst.ViewControllers
         protected void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
             this.rootSplitViewController.FeedCollection.SidebarItem = this.dataSource?.GetItemIdentifier(indexPath);
+            this.catalyst.SetTitle(this.rootSplitViewController.FeedCollection.SidebarItem?.Title ?? null);
         }
 
         private NSDiffableDataSourceSectionSnapshot<SidebarItem> ConfigureSmartFeedSnapshot()

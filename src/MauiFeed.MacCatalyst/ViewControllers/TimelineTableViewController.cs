@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.PureLayout;
 using Drastic.Services;
 using Drastic.Tools;
+using Foundation;
 using MauiFeed.MacCatalyst.Sidebar;
 using MauiFeed.MacCatalyst.Tools;
 using MauiFeed.Models;
@@ -121,6 +122,24 @@ namespace MauiFeed.MacCatalyst.ViewControllers
             this.tableView.ReloadData();
         }
 
+        /// <summary>
+        /// Set the given feed item.
+        /// </summary>
+        /// <param name="item">Item.</param>
+        /// <param name="path">Path.</param>
+        public void SelectFeedItem(FeedItem item, NSIndexPath? path = default)
+        {
+            item.IsRead = true;
+            this.SelectedItem = item;
+            if (path is not null)
+            {
+                var cell = (RssItemViewCell)this.tableView.CellAt(path)!;
+                cell.UpdateIsRead();
+            }
+
+            this.controller.Webview.SetFeedItem(this.SelectedItem);
+        }
+
         private class RssTableView : UITableView
         {
             public RssTableView(CGRect rect, UITableViewStyle style)
@@ -167,10 +186,8 @@ namespace MauiFeed.MacCatalyst.ViewControllers
 
             public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
             {
-                this.controller.SelectedItem = this.tableItems[indexPath.Row];
-                this.controller.SelectedItem.IsRead = true;
-                var cell = (RssItemViewCell)tableView.CellAt(indexPath)!;
-                cell.UpdateIsRead();
+                var item = this.tableItems[indexPath.Row];
+                this.controller.SelectFeedItem(item, indexPath);
             }
         }
 
@@ -272,7 +289,7 @@ namespace MauiFeed.MacCatalyst.ViewControllers
             {
                 this.item = item;
 
-                this.icon.Image = UIImage.LoadFromData(NSData.FromArray(item.Feed!.ImageCache!))!.Scale(new CGSize(50f, 50f), 2f).WithRoundedCorners(5f);
+                this.icon.Image = UIImage.LoadFromData(NSData.FromArray(item.Feed!.ImageCache!))!.WithRoundedCorners(5f);
                 this.title.Text = item.Title;
                 this.author.Text = item.Author;
 

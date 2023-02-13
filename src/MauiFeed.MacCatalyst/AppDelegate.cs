@@ -4,6 +4,7 @@
 
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.Services;
+using MauiFeed.MacCatalyst.Services;
 using MauiFeed.NewsService;
 using MauiFeed.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,8 @@ public class AppDelegate : UIApplicationDelegate
     /// <inheritdoc/>
     public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
     {
+        var catalyst = new CatalystPlatformService();
+
         Ioc.Default.ConfigureServices(
         new ServiceCollection()
         .AddSingleton<IAppDispatcher>(new AppDispatcher())
@@ -39,10 +42,13 @@ public class AppDelegate : UIApplicationDelegate
         .AddSingleton<ITemplateService, HandlebarsTemplateService>()
         .AddSingleton<FeedService>()
         .AddSingleton<RssFeedCacheService>()
+        .AddSingleton(catalyst)
         .BuildServiceProvider());
 
         // create a new window instance based on the screen size
         this.Window = new MainWindow(UIScreen.MainScreen.Bounds);
+
+        catalyst.SetMainWindow(this.Window);
 
         // make the window visible
         this.Window.MakeKeyAndVisible();

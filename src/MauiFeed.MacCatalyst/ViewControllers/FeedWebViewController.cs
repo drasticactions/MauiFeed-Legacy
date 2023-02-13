@@ -5,6 +5,8 @@
 using System;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Drastic.PureLayout;
+using Drastic.Tools;
+using MauiFeed.Models;
 using MauiFeed.Services;
 
 namespace MauiFeed.MacCatalyst.ViewControllers
@@ -31,6 +33,19 @@ namespace MauiFeed.MacCatalyst.ViewControllers
             this.webview = new RssWebview(this.View?.Frame ?? CGRect.Empty, new WebKit.WKWebViewConfiguration());
             this.View?.AddSubview(this.webview);
             this.webview.AutoPinEdgesToSuperviewSafeArea();
+        }
+
+        /// <summary>
+        /// Set the feed item on the webview.
+        /// </summary>
+        /// <param name="item">Item.</param>
+        public void SetFeedItem(FeedItem item)
+        {
+            Task.Run(async () =>
+            {
+                var result = await this.templateService.RenderFeedItemAsync(item, true);
+                this.webview.SetSource(result);
+            }).FireAndForgetSafeAsync();
         }
     }
 }

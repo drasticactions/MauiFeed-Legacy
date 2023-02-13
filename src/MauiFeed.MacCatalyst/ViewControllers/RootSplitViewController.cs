@@ -53,6 +53,11 @@ namespace MauiFeed.MacCatalyst.ViewControllers
         public TimelineTableViewController FeedCollection => this.feedCollection;
 
         /// <summary>
+        /// Gets the web view.
+        /// </summary>
+        public FeedWebViewController Webview => this.webview;
+
+        /// <summary>
         /// Gets the Progress Update.
         /// </summary>
         public Progress<RssCacheFeedUpdate> ProgressUpdate => this.progressUpdate;
