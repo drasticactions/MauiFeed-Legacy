@@ -38,6 +38,10 @@ namespace MauiFeed.MacCatalyst.ViewControllers
             this.databaseContext = (DatabaseContext)Ioc.Default.GetService<DatabaseContext>()!;
         }
 
+        private NSString SmartFilterIdentifier => new NSString(SidebarItemType.SmartFilter.ToString());
+
+        private NSString FeedListItemIdentifier => new NSString(SidebarItemType.FeedListItem.ToString());
+
         /// <inheritdoc/>
         public override void ViewDidLoad()
         {
@@ -48,13 +52,31 @@ namespace MauiFeed.MacCatalyst.ViewControllers
         }
 
         /// <summary>
+        /// Update the sidebar.
+        /// </summary>
+        public void UpdateSidebar()
+        {
+            var smartFilter = this.dataSource!.GetSnapshot(this.SmartFilterIdentifier);
+            foreach (var item in smartFilter.Items)
+            {
+                item.Update();
+            }
+
+            var feedList = this.dataSource!.GetSnapshot(this.FeedListItemIdentifier);
+            foreach (var item in feedList.Items)
+            {
+                item.Update();
+            }
+        }
+
+        /// <summary>
         /// Generate the sidebar.
         /// </summary>
         public void GenerateSidebar()
         {
             this.smartFilterItems.Clear();
-            this.dataSource!.ApplySnapshot(this.ConfigureSmartFeedSnapshot(), new NSString(SidebarItemType.SmartFilter.ToString()), false);
-            this.dataSource!.ApplySnapshot(this.ConfigureLocalSnapshot(), new NSString(SidebarItemType.FeedListItem.ToString()), false);
+            this.dataSource!.ApplySnapshot(this.ConfigureSmartFeedSnapshot(), this.SmartFilterIdentifier, false);
+            this.dataSource!.ApplySnapshot(this.ConfigureLocalSnapshot(), this.FeedListItemIdentifier, false);
         }
 
         /// <inheritdoc/>
@@ -110,6 +132,17 @@ namespace MauiFeed.MacCatalyst.ViewControllers
         {
         }
 #pragma warning restore SA1600 // Elements should be documented
+
+        /// <summary>
+        /// Fired when Item is Selected.
+        /// </summary>
+        /// <param name="collectionView">CollectionView.</param>
+        /// <param name="indexPath">Index Path.</param>
+        [Export("collectionView:didSelectItemAtIndexPath:")]
+        protected void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
+        {
+            this.rootSplitViewController.FeedCollection.SidebarItem = this.dataSource?.GetItemIdentifier(indexPath);
+        }
 
         private NSDiffableDataSourceSectionSnapshot<SidebarItem> ConfigureSmartFeedSnapshot()
         {

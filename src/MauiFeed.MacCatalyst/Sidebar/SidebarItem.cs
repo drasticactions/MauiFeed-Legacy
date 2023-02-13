@@ -190,7 +190,7 @@ namespace MauiFeed.MacCatalyst.Sidebar
         /// <inheritdoc/>
         public void Update()
         {
-            var count = this.UnreadCount;
+            this.Cell?.UpdateIsRead();
         }
 
         /// <summary>

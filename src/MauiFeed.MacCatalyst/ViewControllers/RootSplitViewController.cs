@@ -13,7 +13,7 @@ namespace MauiFeed.MacCatalyst.ViewControllers
     public class RootSplitViewController : UISplitViewController, IUISplitViewControllerDelegate
     {
         private SidebarViewController sidebar;
-        private TimelineCollectionViewController feedCollection;
+        private TimelineTableViewController feedCollection;
         private FeedWebViewController webview;
         private Progress<RssCacheFeedUpdate> progressUpdate;
 
@@ -26,7 +26,7 @@ namespace MauiFeed.MacCatalyst.ViewControllers
             this.progressUpdate = new Progress<RssCacheFeedUpdate>();
             this.progressUpdate.ProgressChanged += this.ProgressUpdateProgressChanged;
 
-            this.feedCollection = new TimelineCollectionViewController(this);
+            this.feedCollection = new TimelineTableViewController(this);
             this.sidebar = new SidebarViewController(this);
             this.webview = new FeedWebViewController(this);
 
@@ -41,6 +41,16 @@ namespace MauiFeed.MacCatalyst.ViewControllers
 
             this.PreferredPrimaryColumnWidth = 275f;
         }
+
+        /// <summary>
+        /// Gets the sidebar view.
+        /// </summary>
+        public SidebarViewController Sidebar => this.sidebar;
+
+        /// <summary>
+        /// Gets the feed collection view.
+        /// </summary>
+        public TimelineTableViewController FeedCollection => this.feedCollection;
 
         /// <summary>
         /// Gets the Progress Update.
