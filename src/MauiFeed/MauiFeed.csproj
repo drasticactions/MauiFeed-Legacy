@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -44,10 +44,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AngleSharp" Version="1.0.1" />
-		<PackageReference Include="CodeHollow.FeedReader" Version="1.2.4" />
-		<PackageReference Include="Handlebars.Net" Version="2.1.2" />
-		<PackageReference Include="GitInfo" Version="2.3.0" PrivateAssets="all" />
+		<PackageReference Include="AngleSharp" Version="1.0.4" />
+		<PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
+		<PackageReference Include="Handlebars.Net" Version="2.1.4" />
 		<PackageReference Include="JsonFeed.NET" Version="1.1.0" />
 	</ItemGroup>
 
@@ -55,17 +54,12 @@
 		<ProjectReference Include="..\..\external\SmartReader\src\SmartReader\SmartReader.csproj" />
 	</ItemGroup>
 
-	<Target Name="_SetVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
-		<PropertyGroup>
-			<Version>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)$(GitSemVerDashLabel)+$(GitBranch).$(GitCommit)</Version>
-		</PropertyGroup>
-	</Target>
-
-	<Target Name="PopulateInfo" DependsOnTargets="GitInfo" BeforeTargets="PrepareForBuild">
-		<PropertyGroup>
-			<RepositoryBranch>$(GitBranch)</RepositoryBranch>
-			<RepositoryCommit>$(GitCommit)</RepositoryCommit>
-			<SourceRevisionId>$(GitBranch) $(GitCommit)</SourceRevisionId>
-		</PropertyGroup>
-	</Target>
+	<ItemGroup>
+	  <PackageReference Update="CommunityToolkit.Mvvm" Version="8.2.1" />
+	  <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0-rc.1.23419.6" />
+	  <PackageReference Update="StyleCop.Analyzers" Version="1.2.0-beta.507">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
 </Project>

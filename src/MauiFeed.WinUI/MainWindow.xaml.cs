@@ -74,12 +74,10 @@ namespace MauiFeed.WinUI
 
             this.ExtendsContentIntoAppTitleBar(true);
             this.SetTitleBar(this.AppTitleBar);
+            this.AppWindow.TitleBar.ButtonBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
+            this.AppWindow.TitleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
 
-            this.GetAppWindow().TitleBar.ButtonBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
-            this.GetAppWindow().TitleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
-
-            var manager = WinUIEx.WindowManager.Get(this);
-            manager.Backdrop = new WinUIEx.MicaSystemBackdrop();
+            this.SystemBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
 
             this.folderSeparator = new NavigationViewItemSeparator();
             this.filterSeparator = new NavigationViewItemSeparator();
